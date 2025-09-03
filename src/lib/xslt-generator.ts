@@ -34,30 +34,50 @@ export const generateXslt = (
   }
 
   const rootSourcePath = sourceSchema.name;
+  
+  const mappingsByTarget = mappings.reduce((acc, mapping) => {
+    if (!acc[mapping.targetId]) {
+      acc[mapping.targetId] = [];
+    }
+    acc[mapping.targetId].push(mapping);
+    return acc;
+  }, {} as { [key: string]: Mapping[] });
 
-  const mappingTemplates = mappings
-    .map((mapping) => {
-      const sourcePath = findNodePath(sourceSchema, mapping.sourceId).replace(`${rootSourcePath}/`, '');
-      const targetPath = findNodePath(targetSchema, mapping.targetId);
+
+  const mappingTemplates = Object.entries(mappingsByTarget)
+    .map(([targetId, relatedMappings]) => {
+      const targetPath = findNodePath(targetSchema, targetId);
       const targetElementName = targetPath.split('/').pop() || '';
+      
+      let valueOf = '';
 
-      let valueOf = `<xsl:value-of select="${sourcePath}" />`;
+      if (relatedMappings.length > 1) {
+        const sourcePaths = relatedMappings.map(m => findNodePath(sourceSchema, m.sourceId).replace(`${rootSourcePath}/`, ''));
+        valueOf = `<xsl:value-of select="concat(${sourcePaths.join(", ' ', ")})" />`;
+      } else {
+        const mapping = relatedMappings[0];
+        const sourcePath = findNodePath(sourceSchema, mapping.sourceId).replace(`${rootSourcePath}/`, '');
 
-      if (mapping.transformation) {
-        switch (mapping.transformation.type) {
-          case 'UPPERCASE':
-            valueOf = `<xsl:value-of select="translate(${sourcePath}, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')" />`;
-            break;
-          case 'CONCAT':
-            // This is a simplified representation. Real concat is more complex.
-            valueOf = `<!-- CONCAT Transformation logic for ${sourcePath} -->`;
-            break;
-          case 'SPLIT':
-            valueOf = `<!-- SPLIT Transformation logic for ${sourcePath} -->`;
-            break;
-          case 'MERGE':
-             valueOf = `<!-- MERGE Transformation logic for ${sourcePath} -->`;
-            break;
+        if (mapping.transformation) {
+          switch (mapping.transformation.type) {
+            case 'UPPERCASE':
+              valueOf = `<xsl:value-of select="translate(${sourcePath}, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')" />`;
+              break;
+            case 'CONCAT':
+               // This is now handled by multi-mapping.
+              valueOf = `<!-- CONCAT Transformation logic for ${sourcePath} -->`;
+              break;
+            case 'SPLIT':
+              valueOf = `<!-- SPLIT Transformation logic for ${sourcePath} -->`;
+              break;
+            case 'MERGE':
+               valueOf = `<!-- MERGE Transformation logic for ${sourcePath} -->`;
+              break;
+            default:
+              valueOf = `<xsl:value-of select="${sourcePath}" />`;
+          }
+        } else {
+           valueOf = `<xsl:value-of select="${sourcePath}" />`;
         }
       }
 

@@ -28,23 +28,29 @@ export const generateXmlPreview = (mappings: Mapping[], targetSchema: XsdNode | 
   const generateNode = (node: XsdNode, indent: string): string => {
     let childXml = '';
     
-    // Check if there is a mapping to this node
-    const mapping = mappings.find(m => m.targetId === node.id);
+    const relevantMappings = mappings.filter(m => m.targetId === node.id);
     
     let nodeValue = '';
-    if (mapping) {
-      const sourceValue = mockSourceData[mapping.sourceId] || `[${mapping.sourceId}]`;
-      
-      switch (mapping.transformation?.type) {
-        case 'UPPERCASE':
-          nodeValue = sourceValue.toUpperCase();
-          break;
-        case 'CONCAT':
-          // Simplified Concat example
-          nodeValue = `${mockSourceData['source-first-name'] || ''} ${mockSourceData['source-last-name'] || ''}`.trim();
-          break;
-        default:
-          nodeValue = sourceValue;
+    if (relevantMappings.length > 0) {
+      if (relevantMappings.length > 1) {
+        // CONCAT multiple sources
+        nodeValue = relevantMappings.map(m => mockSourceData[m.sourceId] || `[${m.sourceId}]`).join(' ');
+      } else {
+        const mapping = relevantMappings[0];
+        const sourceValue = mockSourceData[mapping.sourceId] || `[${mapping.sourceId}]`;
+        
+        switch (mapping.transformation?.type) {
+          case 'UPPERCASE':
+            nodeValue = sourceValue.toUpperCase();
+            break;
+          case 'CONCAT':
+            // This is now handled by the multi-mapping logic, but we'll keep a simplified version
+            // for when CONCAT is explicitly set on a single mapping for some reason.
+            nodeValue = `${mockSourceData['source-first-name'] || ''} ${mockSourceData['source-last-name'] || ''}`.trim();
+            break;
+          default:
+            nodeValue = sourceValue;
+        }
       }
     }
 
