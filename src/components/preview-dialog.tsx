@@ -15,16 +15,6 @@ interface PreviewDialogProps {
   content: string
 }
 
-// Basic XML syntax highlighting
-const highlightXml = (xml: string) => {
-  if (!xml) return '';
-  return xml
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/(&lt;\/?[\w\s="/.:-]+&gt;)/g, '<span class="text-primary/80">$1</span>')
-    .replace(/(\s[\w-]+="[^"]+")/g, '<span class="text-accent/80">$1</span>');
-};
-
-
 export default function PreviewDialog({ isOpen, onOpenChange, content }: PreviewDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -37,7 +27,7 @@ export default function PreviewDialog({ isOpen, onOpenChange, content }: Preview
         </DialogHeader>
         <ScrollArea className="h-[60vh] mt-4 rounded-md border bg-muted/30">
           <pre className="p-4 text-sm">
-            <code dangerouslySetInnerHTML={{ __html: highlightXml(content) }} />
+            <code>{content}</code>
           </pre>
         </ScrollArea>
       </DialogContent>
