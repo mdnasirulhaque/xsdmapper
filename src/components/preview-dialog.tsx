@@ -17,11 +17,11 @@ interface PreviewDialogProps {
 
 // Basic XML syntax highlighting
 const highlightXml = (xml: string) => {
+  if (!xml) return '';
   return xml
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/(&lt;[a-zA-Z0-9\s="/._:\-]+&gt;)/g, '<span class="text-primary/80">$1</span>')
-    .replace(/(&lt;\/[a-zA-Z0-9\s]+&gt;)/g, '<span class="text-primary/80">$1</span>')
-    .replace(/(\s[a-zA-Z-]+="[^"]+")/g, '<span class="text-accent/80">$1</span>');
+    .replace(/(&lt;\/?[\w\s="/.:-]+&gt;)/g, '<span class="text-primary/80">$1</span>')
+    .replace(/(\s[\w-]+="[^"]+")/g, '<span class="text-accent/80">$1</span>');
 };
 
 
