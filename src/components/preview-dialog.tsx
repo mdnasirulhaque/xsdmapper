@@ -19,7 +19,7 @@ interface PreviewDialogProps {
 const highlightXml = (xml: string) => {
   return xml
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/(&lt;[a-zA-Z0-9\s="/._:-]+&gt;)/g, '<span class="text-primary/80">$1</span>')
+    .replace(/(&lt;[a-zA-Z0-9\s="/._:\-]+&gt;)/g, '<span class="text-primary/80">$1</span>')
     .replace(/(&lt;\/[a-zA-Z0-9\s]+&gt;)/g, '<span class="text-primary/80">$1</span>')
     .replace(/(\s[a-zA-Z-]+="[^"]+")/g, '<span class="text-accent/80">$1</span>');
 };
