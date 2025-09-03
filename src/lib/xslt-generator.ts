@@ -5,24 +5,87 @@ const findNodePath = (schema: XsdNode | null, nodeId: string): string => {
   const path: string[] = [];
 
   function search(node: XsdNode, targetId: string): boolean {
-    path.push(node.name);
     if (node.id === targetId) {
+      path.push(node.name);
       return true;
     }
     if (node.children) {
       for (const child of node.children) {
         if (search(child, targetId)) {
+          path.unshift(node.name);
           return true;
         }
       }
     }
-    path.pop();
     return false;
   }
 
   search(schema, nodeId);
   return path.join('/');
 };
+
+const generateRecursiveTemplates = (
+  targetNode: XsdNode,
+  mappingsByTarget: { [key: string]: Mapping[] },
+  sourceSchema: XsdNode,
+  targetSchema: XsdNode
+) => {
+  let template = '';
+  const children = targetNode.children || [];
+
+  template += `<xsl:element name="${targetNode.name}">\n`;
+
+  // Process direct mappings for this node
+  const directMappings = mappingsByTarget[targetNode.id];
+  if(directMappings) {
+      // This is a leaf node with a mapping.
+      if (directMappings.length > 1) {
+        const sourcePaths = directMappings.map(m => findNodePath(sourceSchema, m.sourceId).replace(`${sourceSchema.name}/`, ''));
+        template += `    <xsl:value-of select="concat(${sourcePaths.join(", ' ', ")})" />\n`;
+      } else {
+        const mapping = directMappings[0];
+        const sourcePath = findNodePath(sourceSchema, mapping.sourceId).replace(`${sourceSchema.name}/`, '');
+
+        if (mapping.transformation) {
+          switch (mapping.transformation.type) {
+            case 'UPPERCASE':
+              template += `      <xsl:value-of select="translate(${sourcePath}, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')" />\n`;
+              break;
+            case 'CONDITION':
+              const { conditionValue = '', outputValue = '' } = mapping.transformation.params || {};
+              template += `      <xsl:if test="${sourcePath} = '${conditionValue}'">\n`;
+              template += `        <xsl:value-of select="'${outputValue}'"/>\n`;
+              template += `      </xsl:if>\n`;
+              break;
+            default:
+              template += `      <xsl:value-of select="${sourcePath}" />\n`;
+          }
+        } else {
+           template += `      <xsl:value-of select="${sourcePath}" />\n`;
+        }
+      }
+  }
+
+  // Process children
+  children.forEach(child => {
+    // A child should be generated if it or any of its descendants has a mapping
+    const hasMapping = (node: XsdNode): boolean => {
+       if (mappingsByTarget[node.id]) return true;
+       if (node.children) {
+           return node.children.some(hasMapping);
+       }
+       return false;
+    }
+
+    if(hasMapping(child)){
+      template += generateRecursiveTemplates(child, mappingsByTarget, sourceSchema, targetSchema);
+    }
+  });
+
+  template += `</xsl:element>\n`;
+  return template;
+};
+
 
 export const generateXslt = (
   mappings: Mapping[],
@@ -44,49 +107,20 @@ export const generateXslt = (
   }, {} as { [key: string]: Mapping[] });
 
 
-  const mappingTemplates = Object.entries(mappingsByTarget)
-    .map(([targetId, relatedMappings]) => {
-      const targetPath = findNodePath(targetSchema, targetId);
-      const targetElementName = targetPath.split('/').pop() || '';
-      
-      let valueOf = '';
-
-      if (relatedMappings.length > 1) {
-        const sourcePaths = relatedMappings.map(m => findNodePath(sourceSchema, m.sourceId).replace(`${rootSourcePath}/`, ''));
-        valueOf = `<xsl:value-of select="concat(${sourcePaths.join(", ' ', ")})" />`;
-      } else {
-        const mapping = relatedMappings[0];
-        const sourcePath = findNodePath(sourceSchema, mapping.sourceId).replace(`${rootSourcePath}/`, '');
-
-        if (mapping.transformation) {
-          switch (mapping.transformation.type) {
-            case 'UPPERCASE':
-              valueOf = `<xsl:value-of select="translate(${sourcePath}, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')" />`;
-              break;
-            case 'CONCAT':
-               // This is now handled by multi-mapping.
-              valueOf = `<!-- CONCAT Transformation logic for ${sourcePath} -->`;
-              break;
-            case 'SPLIT':
-              valueOf = `<!-- SPLIT Transformation logic for ${sourcePath} -->`;
-              break;
-            case 'MERGE':
-               valueOf = `<!-- MERGE Transformation logic for ${sourcePath} -->`;
-              break;
-            default:
-              valueOf = `<xsl:value-of select="${sourcePath}" />`;
-          }
-        } else {
-           valueOf = `<xsl:value-of select="${sourcePath}" />`;
-        }
-      }
-
-      return `
-      <xsl:element name="${targetElementName}">
-        ${valueOf}
-      </xsl:element>`;
-    })
-    .join('');
+  const mappingTemplates = targetSchema.children?.map(childNode => {
+      const hasMapping = (node: XsdNode): boolean => {
+       if (mappingsByTarget[node.id]) return true;
+       if (node.children) {
+           return node.children.some(hasMapping);
+       }
+       return false;
+    }
+    if(hasMapping(childNode)){
+        return generateRecursiveTemplates(childNode, mappingsByTarget, sourceSchema, targetSchema)
+    }
+    return '';
+  }).join('');
+  
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -94,7 +128,7 @@ export const generateXslt = (
 
   <xsl:template match="/${rootSourcePath}">
     <xsl:element name="${targetSchema.name}">
-      ${mappingTemplates}
+${mappingTemplates}
     </xsl:element>
   </xsl:template>
 

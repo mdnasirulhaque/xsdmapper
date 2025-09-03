@@ -12,7 +12,7 @@ export interface Mapping {
   transformation?: Transformation;
 }
 
-export type TransformationType = 'NONE' | 'CONCAT' | 'UPPERCASE' | 'SPLIT' | 'MERGE';
+export type TransformationType = 'NONE' | 'CONCAT' | 'UPPERCASE' | 'SPLIT' | 'MERGE' | 'CONDITION';
 
 export interface Transformation {
   type: TransformationType;

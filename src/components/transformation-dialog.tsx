@@ -23,11 +23,12 @@ interface TransformationDialogProps {
 }
 
 const transformationOptions: { value: TransformationType; label: string, description: string }[] = [
-  { value: "NONE", label: "None", description: "Direct 1-to-1 mapping." },
-  { value: "UPPERCASE", label: "Uppercase", description: "Converts text to uppercase." },
-  { value: "CONCAT", label: "Concatenate", description: "Joins multiple fields. (Simulated)" },
-  { value: "SPLIT", label: "Split", description: "Splits a field into multiple. (Simulated)" },
-  { value: "MERGE", label: "Merge", description: "Merges fields. (Simulated)" },
+    { value: "NONE", label: "None", description: "Direct 1-to-1 mapping." },
+    { value: "UPPERCASE", label: "Uppercase", description: "Converts text to uppercase." },
+    { value: "CONCAT", label: "Concatenate", description: "Joins multiple fields. (Simulated)" },
+    { value: "SPLIT", label: "Split", description: "Splits a field into multiple. (Simulated)" },
+    { value: "MERGE", label: "Merge", description: "Merges fields. (Simulated)" },
+    { value: "CONDITION", label: "Condition", description: "Apply a value based on a condition." },
 ]
 
 export default function TransformationDialog({
@@ -101,6 +102,28 @@ export default function TransformationDialog({
                placeholder="e.g., a comma ','"
              />
            </div>
+          )}
+          {type === 'CONDITION' && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="condition-value">If source equals</Label>
+                <Input
+                  id="condition-value"
+                  value={params.conditionValue || ""}
+                  onChange={e => setParams({ ...params, conditionValue: e.target.value })}
+                  placeholder="e.g., 'Completed'"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="output-value">Then set target to</Label>
+                <Input
+                  id="output-value"
+                  value={params.outputValue || ""}
+                  onChange={e => setParams({ ...params, outputValue: e.target.value })}
+                  placeholder="e.g., 'C'"
+                />
+              </div>
+            </div>
           )}
         </div>
 
