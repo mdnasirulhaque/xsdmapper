@@ -10,6 +10,8 @@ import MappingCanvas from '@/components/mapping-canvas'
 import TransformationDialog from '@/components/transformation-dialog'
 import PreviewDialog from '@/components/preview-dialog'
 
+const MAPPINGS_STORAGE_KEY = 'xsd-mapper-mappings';
+
 export default function Home() {
   const [sourceSchema, setSourceSchema] = useState<XsdNode | null>(initialSourceSchema)
   const [targetSchema, setTargetSchema] = useState<XsdNode | null>(initialTargetSchema)
@@ -24,6 +26,27 @@ export default function Home() {
   const nodeRefs = useRef<Map<string, HTMLElement | null>>(new Map())
   const canvasRef = useRef<HTMLDivElement>(null)
   const [canvasKey, setCanvasKey] = useState(0)
+
+  // Load mappings from local storage on initial render
+  useEffect(() => {
+    try {
+      const savedMappings = localStorage.getItem(MAPPINGS_STORAGE_KEY);
+      if (savedMappings) {
+        setMappings(JSON.parse(savedMappings));
+      }
+    } catch (error) {
+      console.error("Failed to load mappings from local storage", error);
+    }
+  }, []);
+
+  // Save mappings to local storage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(MAPPINGS_STORAGE_KEY, JSON.stringify(mappings));
+    } catch (error) {
+      console.error("Failed to save mappings to local storage", error);
+    }
+  }, [mappings]);
 
   const rerenderCanvas = useCallback(() => {
     setCanvasKey(prev => prev + 1)
