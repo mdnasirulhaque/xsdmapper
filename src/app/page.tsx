@@ -4,7 +4,6 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import type { XsdNode, Mapping, Transformation, TransformationType } from '@/types'
 import { sourceSchema as initialSourceSchema, targetSchema as initialTargetSchema } from '@/lib/mock-data'
 import { generateXslt } from '@/lib/xslt-generator'
-import { generateXmlPreview } from '@/lib/xml-preview-generator'
 import PageHeader from '@/components/page-header'
 import XsdPanel from '@/components/xsd-panel'
 import MappingCanvas from '@/components/mapping-canvas'
@@ -103,7 +102,7 @@ export default function Home() {
   }
 
   const handlePreview = () => {
-    const preview = generateXmlPreview(mappings, targetSchema)
+    const preview = generateXslt(mappings, sourceSchema, targetSchema)
     setPreviewContent(preview)
     setPreviewDialogOpen(true)
   }

@@ -20,9 +20,9 @@ export default function PreviewDialog({ isOpen, onOpenChange, content }: Preview
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>XML Output Preview</DialogTitle>
+          <DialogTitle>XSLT Output Preview</DialogTitle>
           <DialogDescription>
-            This is a sample XML generated based on your mappings and transformations.
+            This is the generated XSLT based on your mappings and transformations.
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-[60vh] mt-4 rounded-md border bg-muted/30">
