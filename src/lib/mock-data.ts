@@ -1,5 +1,6 @@
 import type { XsdNode } from '@/types';
 
+// This is now just a fallback or for the target schema
 export const sourceSchema: XsdNode = {
   id: 'source-root',
   name: 'CustomerOrder',
