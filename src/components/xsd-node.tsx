@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react"
 import { Braces, FileCode } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { XsdNode, Mapping } from "@/types"
-import XsdTree from "./xsd-tree"
 
 interface XsdNodeProps {
   node: XsdNode
@@ -38,7 +37,6 @@ export default function XsdNodeComponent({
     if (nodeRef.current) {
       nodeRefs.current.set(node.id, nodeRef.current)
     }
-    // Rerender canvas when a node mounts to draw initial lines
     rerenderCanvas()
     return () => {
       nodeRefs.current.delete(node.id)
