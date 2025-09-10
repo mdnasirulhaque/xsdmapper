@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useRef } from 'react'
@@ -31,6 +32,7 @@ export default function FileUploadButton({ onFileLoad, type }: FileUploadButtonP
           }
           onFileLoad(schema);
           toast({
+            variant: "success",
             title: "Schema Loaded",
             description: `Successfully parsed and loaded ${file.name}.`,
           });

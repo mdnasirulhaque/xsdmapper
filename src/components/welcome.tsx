@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -33,6 +34,7 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, f
                     setFileContent(content);
                     onFileUpload(content, fileType);
                     toast({
+                        variant: "success",
                         title: "Upload Successful",
                         description: `${file.name} has been processed.`,
                     })

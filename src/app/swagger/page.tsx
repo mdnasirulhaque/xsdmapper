@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -91,6 +92,7 @@ export default function SwaggerUploadPage() {
                     }
                     setSwaggerSchema(schema);
                     toast({
+                        variant: "success",
                         title: "Upload Successful",
                         description: `${file.name} has been processed.`,
                     })
