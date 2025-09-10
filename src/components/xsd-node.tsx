@@ -83,7 +83,18 @@ export default function XsdNodeComponent({
   const isDragging = draggingNodeId === node.id
 
   if (node.children) {
-    return <XsdTree node={node} type={type} onDragStart={onDragStart} onDragEnd={onDragEnd} onDrop={onDrop} nodeRefs={nodeRefs} mappings={mappings} draggingNodeId={draggingNodeId} rerenderCanvas={rerenderCanvas} />
+    return (
+        <div
+        ref={nodeRef}
+        className={cn(
+            "relative flex items-center p-2 rounded-md transition-all duration-150 group",
+        )}
+        >
+         <Braces className="w-4 h-4 mr-2 text-muted-foreground" />
+         <span className="font-medium text-sm flex-1">{node.name}</span>
+         <span className="text-xs text-muted-foreground ml-2">{node.type}</span>
+        </div>
+    )
   }
 
   return (

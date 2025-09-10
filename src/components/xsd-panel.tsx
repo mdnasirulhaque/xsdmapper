@@ -32,13 +32,14 @@ export default function XsdPanel({
   draggingNodeId,
   rerenderCanvas
 }: XsdPanelProps) {
+  const panelId = `${type}-panel-content`;
   return (
     <Card className="shadow-lg h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{title}</CardTitle>
         <FileUploadButton onFileLoad={onFileLoad} type={type} />
       </CardHeader>
-      <CardContent className="flex-1 overflow-y-auto">
+      <CardContent id={panelId} className="flex-1 overflow-y-auto">
         {schema ? (
           <XsdTree
             node={schema}

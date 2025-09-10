@@ -50,7 +50,7 @@ export default function Home() {
   }, [mappings]);
 
   const rerenderCanvas = useCallback(() => {
-    setCanvasKey(prev => prev + 1)
+     setTimeout(() => setCanvasKey(prev => prev + 1), 50)
   }, [])
 
   useEffect(() => {
@@ -60,9 +60,19 @@ export default function Home() {
     window.addEventListener('resize', rerenderCanvas)
     mainContainer.addEventListener('scroll', rerenderCanvas)
 
+    // Also need to rerender when a panel is scrolled
+    const sourcePanel = document.getElementById('source-panel-content');
+    const targetPanel = document.getElementById('target-panel-content');
+    sourcePanel?.addEventListener('scroll', rerenderCanvas);
+    targetPanel?.addEventListener('scroll', rerenderCanvas);
+
+    rerenderCanvas();
+
     return () => {
       window.removeEventListener('resize', rerenderCanvas)
       mainContainer.removeEventListener('scroll', rerenderCanvas)
+      sourcePanel?.removeEventListener('scroll', rerenderCanvas);
+      targetPanel?.removeEventListener('scroll', rerenderCanvas);
     }
   }, [rerenderCanvas])
 
