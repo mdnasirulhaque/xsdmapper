@@ -11,6 +11,7 @@ import MappingCanvas from '@/components/mapping-canvas'
 import TransformationDialog from '@/components/transformation-dialog'
 import PreviewDialog from '@/components/preview-dialog'
 import { useSearchParams } from 'next/navigation'
+import AppLayout from '@/components/layout'
 
 const MAPPINGS_STORAGE_KEY = 'xsd-mapper-mappings';
 
@@ -173,61 +174,63 @@ export default function MapperPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
-      <PageHeader onDownload={handleDownloadXslt} onPreview={handlePreview} />
-      <main ref={canvasRef} className="flex-1 overflow-auto relative p-4 sm:p-6 md:p-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <XsdPanel
-            title="Source Schema"
-            schema={sourceSchema}
-            type="source"
-            onFileLoad={(schema) => handleFileLoad(schema, 'source')}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            nodeRefs={nodeRefs}
-            mappings={mappings}
-            draggingNodeId={draggingNode?.id}
-            rerenderCanvas={rerenderCanvas}
-          />
-          <XsdPanel
-            title="Target Schema"
-            schema={targetSchema}
-            type="target"
-            onFileLoad={(schema) => handleFileLoad(schema, 'target')}
-            onDrop={handleDrop}
-            nodeRefs={nodeRefs}
-            mappings={mappings}
-            draggingNodeId={draggingNode?.id}
-            rerenderCanvas={rerenderCanvas}
-          />
-        </div>
-        
-        {canvasRef.current && (
-          <MappingCanvas
-            key={canvasKey}
-            mappings={mappings}
-            nodeRefs={nodeRefs.current}
-            canvasRef={canvasRef.current}
-            onMappingClick={handleOpenTransformationDialog}
-            onMappingDelete={deleteMapping}
+    <AppLayout currentStep={2}>
+      <div className="flex flex-col h-screen bg-background text-foreground">
+        <PageHeader onDownload={handleDownloadXslt} onPreview={handlePreview} />
+        <main ref={canvasRef} className="flex-1 overflow-auto relative p-4 sm:p-6 md:p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <XsdPanel
+              title="Source Schema"
+              schema={sourceSchema}
+              type="source"
+              onFileLoad={(schema) => handleFileLoad(schema, 'source')}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              nodeRefs={nodeRefs}
+              mappings={mappings}
+              draggingNodeId={draggingNode?.id}
+              rerenderCanvas={rerenderCanvas}
+            />
+            <XsdPanel
+              title="Target Schema"
+              schema={targetSchema}
+              type="target"
+              onFileLoad={(schema) => handleFileLoad(schema, 'target')}
+              onDrop={handleDrop}
+              nodeRefs={nodeRefs}
+              mappings={mappings}
+              draggingNodeId={draggingNode?.id}
+              rerenderCanvas={rerenderCanvas}
+            />
+          </div>
+          
+          {canvasRef.current && (
+            <MappingCanvas
+              key={canvasKey}
+              mappings={mappings}
+              nodeRefs={nodeRefs.current}
+              canvasRef={canvasRef.current}
+              onMappingClick={handleOpenTransformationDialog}
+              onMappingDelete={deleteMapping}
+            />
+          )}
+        </main>
+
+        {selectedMapping && (
+          <TransformationDialog
+            isOpen={isTransformationDialogOpen}
+            onOpenChange={setTransformationDialogOpen}
+            mapping={selectedMapping}
+            onSave={handleSaveTransformation}
           />
         )}
-      </main>
 
-      {selectedMapping && (
-        <TransformationDialog
-          isOpen={isTransformationDialogOpen}
-          onOpenChange={setTransformationDialogOpen}
-          mapping={selectedMapping}
-          onSave={handleSaveTransformation}
+        <PreviewDialog
+          isOpen={isPreviewDialogOpen}
+          onOpenChange={setPreviewDialogOpen}
+          content={previewContent}
         />
-      )}
-
-      <PreviewDialog
-        isOpen={isPreviewDialogOpen}
-        onOpenChange={setPreviewDialogOpen}
-        content={previewContent}
-      />
-    </div>
+      </div>
+    </AppLayout>
   )
 }
