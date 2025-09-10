@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Braces, FileCode } from "lucide-react"
+import { FileCode } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { XsdNode, Mapping } from "@/types"
 
@@ -43,11 +43,8 @@ export default function XsdNodeComponent({
     }
   }, [node.id, nodeRefs, rerenderCanvas])
 
-  const hasChildren = node.children && node.children.length > 0
-  const isLeaf = !hasChildren
-
-  const isDraggable = type === 'source' && isLeaf;
-  const isDroppable = type === 'target' && isLeaf;
+  const isDraggable = type === 'source';
+  const isDroppable = type === 'target';
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     if (!isDraggable || !onDragStart) return
@@ -77,7 +74,7 @@ export default function XsdNodeComponent({
     if(onDragEnd) onDragEnd();
   }
 
-  const isMapped = isLeaf && (type === 'source'
+  const isMapped = (type === 'source'
     ? mappings.some(m => m.sourceId === node.id)
     : mappings.some(m => m.targetId === node.id))
 
@@ -102,21 +99,15 @@ export default function XsdNodeComponent({
         !isRoot && "ml-4"
       )}
     >
-      {isLeaf && (
-        <div
-            className={cn(
-            "absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 bg-card transition-colors",
-            type === 'source' ? "-right-1.5 translate-x-1/2" : "-left-1.5 -translate-x-1/2",
-            isMapped ? "bg-primary border-primary" : "border-muted-foreground/50 group-hover:border-primary",
-            )}
-        />
-      )}
+      <div
+          className={cn(
+          "absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 bg-card transition-colors",
+          type === 'source' ? "-right-1.5 translate-x-1/2" : "-left-1.5 -translate-x-1/2",
+          isMapped ? "bg-primary border-primary" : "border-muted-foreground/50 group-hover:border-primary",
+          )}
+      />
 
-      {hasChildren ? (
-        <Braces className="w-4 h-4 mr-2 text-muted-foreground" />
-      ) : (
-        <FileCode className="w-4 h-4 mr-2 text-muted-foreground" />
-      )}
+      <FileCode className="w-4 h-4 mr-2 text-muted-foreground" />
       <span className="font-medium text-sm flex-1">{node.name}</span>
       <span className="text-xs text-muted-foreground ml-2">{node.type}</span>
     </div>
