@@ -91,7 +91,7 @@ export default function Welcome() {
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Welcome to XSD Mapper</CardTitle>
-          <CardDescription>Start by uploading your source XML file to generate a schema.</CardDescription>
+          <CardDescription>Start by uploading your input XML file to generate a schema.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-4">
           <p className="text-sm text-muted-foreground text-center">
@@ -106,7 +106,7 @@ export default function Welcome() {
           />
           <Button onClick={handleClick} size="lg" className="w-full">
             <FileUp className="mr-2 h-5 w-5" />
-            Upload Source XML
+            Upload Input XML
           </Button>
         </CardContent>
       </Card>
