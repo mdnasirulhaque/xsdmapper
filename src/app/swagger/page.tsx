@@ -9,54 +9,7 @@ import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import AppLayout from '@/components/layout';
 import FilePreviewDialog from '@/components/file-preview-dialog';
-
-
-// Basic XSD parsing to create XsdNode structure
-const parseXsdToXsdNode = (xsdString: string, type: 'source' | 'target'): XsdNode | null => {
-  try {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xsdString, "application/xml");
-
-    if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
-        throw new Error("Failed to parse XSD string.");
-    }
-  
-    const simpleId = (name: string, index: number) => `${type}-${name.toLowerCase().replace(/[:\s]+/g, '-')}-${index}`;
-  
-    function processNode(element: Element, index: number): XsdNode {
-      const nodeName = element.getAttribute('name') || element.localName;
-      const children: XsdNode[] = [];
-      
-      const complexType = element.querySelector(":scope > complexType, :scope > xs\\:complexType, :scope > xsd\\:complexType");
-      const sequence = complexType ? complexType.querySelector(":scope > sequence, :scope > xs\\:sequence, :scope > xsd\\:sequence") : element.querySelector(":scope > sequence, :scope > xs\\:sequence, :scope > xsd\\:sequence");
-  
-      if (sequence) {
-        Array.from(sequence.children).forEach((child, i) => {
-          if (child.localName === 'element') {
-            children.push(processNode(child, i));
-          }
-        });
-      }
-  
-      return {
-        id: simpleId(nodeName, index),
-        name: nodeName,
-        type: element.getAttribute('type') || (children.length > 0 ? 'complexType' : 'xs:string'),
-        children: children.length > 0 ? children : undefined
-      };
-    }
-  
-    const rootElement = xmlDoc.querySelector("element, xs\\:element, xsd\\:element");
-    if (!rootElement) {
-      throw new Error("No root element found in XSD");
-    }
-  
-    return processNode(rootElement, 0);
-  } catch(e) {
-    console.error("Error parsing XSD for node structure", e);
-    return null;
-  }
-}
+import { parseXsdToXsdNode } from '@/lib/xsd-parser';
 
 
 // Basic YAML parsing to find paths and schemas.
