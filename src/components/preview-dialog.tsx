@@ -18,14 +18,14 @@ interface PreviewDialogProps {
 export default function PreviewDialog({ isOpen, onOpenChange, content }: PreviewDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>XML Output Preview</DialogTitle>
           <DialogDescription>
             This is a sample XML output based on your current mappings and transformations, using mock data.
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="h-[60vh] mt-4 rounded-md border bg-muted/30">
+        <ScrollArea className="h-[80vh] mt-4 rounded-md border bg-muted/30">
           <pre className="p-4 text-sm">
             <code>{content}</code>
           </pre>
