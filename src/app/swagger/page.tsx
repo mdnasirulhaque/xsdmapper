@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import AppLayout from '@/components/layout';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import FilePreviewDialog from '@/components/file-preview-dialog';
+
 
 // Basic XSD parsing to create XsdNode structure
 const parseXsdToXsdNode = (xsdString: string, type: 'source' | 'target'): XsdNode | null => {
@@ -101,6 +101,8 @@ export default function SwaggerUploadPage() {
 
     const [swaggerSchema, setSwaggerSchema] = useState<XsdNode | null>(null);
     const [fileContent, setFileContent] = useState<string | null>(null);
+    const [fileName, setFileName] = useState<string | null>(null);
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
     useEffect(() => {
         // The schemas are now passed as raw XSD strings
@@ -124,6 +126,7 @@ export default function SwaggerUploadPage() {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
+            setFileName(file.name);
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
@@ -141,6 +144,7 @@ export default function SwaggerUploadPage() {
                 } catch (error) {
                     console.error("Error processing YAML/JSON file:", error);
                     setFileContent(null);
+                    setFileName(null);
                     toast({
                         variant: "destructive",
                         title: "Upload Failed",
@@ -187,18 +191,9 @@ export default function SwaggerUploadPage() {
                                 {swaggerSchema ? "Uploaded" : 'Upload File'}
                             </Button>
                              {fileContent && (
-                                <Collapsible className="w-full">
-                                    <CollapsibleTrigger asChild>
-                                        <Button variant="ghost" className="w-full text-sm">
-                                            <Eye className="mr-2 h-4 w-4" /> Preview File
-                                        </Button>
-                                    </CollapsibleTrigger>
-                                    <CollapsibleContent>
-                                        <ScrollArea className="mt-2 h-48 w-full rounded-md border bg-muted/50 p-2">
-                                            <pre className="text-xs">{fileContent}</pre>
-                                        </ScrollArea>
-                                    </CollapsibleContent>
-                                </Collapsible>
+                                <Button variant="ghost" className="w-full text-sm" onClick={() => setIsPreviewOpen(true)}>
+                                    <Eye className="mr-2 h-4 w-4" /> Preview File
+                                </Button>
                             )}
                         </div>
 
@@ -207,6 +202,14 @@ export default function SwaggerUploadPage() {
                         </Button>
                     </CardContent>
                 </Card>
+                 {fileContent && (
+                    <FilePreviewDialog
+                        isOpen={isPreviewOpen}
+                        onOpenChange={setIsPreviewOpen}
+                        content={fileContent}
+                        title={fileName || 'File Preview'}
+                    />
+                )}
             </div>
         </AppLayout>
     );

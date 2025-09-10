@@ -6,8 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import FilePreviewDialog from './file-preview-dialog';
+
 
 const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, fileType }: {
     title: string;
@@ -19,10 +19,13 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, f
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
     const [fileContent, setFileContent] = useState<string | null>(null);
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [fileName, setFileName] = useState<string | null>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
+            setFileName(file.name);
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
@@ -37,6 +40,7 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, f
                 } catch (error) {
                     console.error("Error processing XML file:", error);
                     setFileContent(null);
+                    setFileName(null);
                     toast({
                         variant: "destructive",
                         title: "Upload Failed",
@@ -53,35 +57,36 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, f
     };
 
     return (
-        <div className="flex flex-col items-center gap-4 rounded-lg border p-6">
-             <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-                accept=".xml"
-            />
-            <h3 className="font-semibold">{title}</h3>
-            <p className="text-sm text-muted-foreground text-center">{description}</p>
-            <Button onClick={handleClick} size="lg" className="w-full" variant={uploadComplete ? "secondary" : "default"}>
-                {uploadComplete ? <CheckCircle className="mr-2 h-5 w-5" /> : <FileUp className="mr-2 h-5 w-5" />}
-                {uploadComplete ? "Uploaded" : `Upload ${title}`}
-            </Button>
+        <>
+            <div className="flex flex-col items-center gap-4 rounded-lg border p-6">
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept=".xml"
+                />
+                <h3 className="font-semibold">{title}</h3>
+                <p className="text-sm text-muted-foreground text-center">{description}</p>
+                <Button onClick={handleClick} size="lg" className="w-full" variant={uploadComplete ? "secondary" : "default"}>
+                    {uploadComplete ? <CheckCircle className="mr-2 h-5 w-5" /> : <FileUp className="mr-2 h-5 w-5" />}
+                    {uploadComplete ? "Uploaded" : `Upload ${title}`}
+                </Button>
+                {fileContent && (
+                    <Button variant="ghost" className="w-full text-sm" onClick={() => setIsPreviewOpen(true)}>
+                        <Eye className="mr-2 h-4 w-4" /> Preview File
+                    </Button>
+                )}
+            </div>
             {fileContent && (
-                 <Collapsible className="w-full">
-                    <CollapsibleTrigger asChild>
-                        <Button variant="ghost" className="w-full text-sm">
-                            <Eye className="mr-2 h-4 w-4" /> Preview File
-                        </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                        <ScrollArea className="mt-2 h-48 w-full rounded-md border bg-muted/50 p-2">
-                            <pre className="text-xs">{fileContent}</pre>
-                        </ScrollArea>
-                    </CollapsibleContent>
-                </Collapsible>
+                <FilePreviewDialog
+                    isOpen={isPreviewOpen}
+                    onOpenChange={setIsPreviewOpen}
+                    content={fileContent}
+                    title={fileName || 'File Preview'}
+                />
             )}
-        </div>
+        </>
     )
 }
 
