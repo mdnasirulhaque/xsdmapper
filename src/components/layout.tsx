@@ -1,3 +1,4 @@
+
 "use client"
 
 import Stepper from "@/components/stepper"
@@ -19,6 +20,8 @@ import {
     SidebarGroupLabel,
     SidebarGroupContent
 } from "@/components/ui/sidebar"
+import { usePathname } from 'next/navigation'
+
 
 interface AppLayoutProps {
   children: React.ReactNode
@@ -26,6 +29,9 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children, currentStep }: AppLayoutProps) {
+  const pathname = usePathname();
+  const isCreationFlow = ['/', '/preview-xsd', '/swagger', '/mapper'].includes(pathname);
+
   return (
     <SidebarProvider>
         <div className="flex min-h-screen w-full bg-muted/40">
@@ -39,31 +45,33 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
             <SidebarContent className="p-0">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton href="/" tooltip="Create New Request" isActive={currentStep < 5}>
+                        <SidebarMenuButton href="/" tooltip="Create New Request" isActive={isCreationFlow}>
                             <FilePlus className="size-4" />
                             <span className="group-data-[collapsible=icon]:hidden">Create New Request</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                      <SidebarMenuItem>
-                        <SidebarMenuButton href="#" tooltip="Check Requests">
+                        <SidebarMenuButton href="/requests" tooltip="Check Requests" isActive={pathname === '/requests'}>
                             <FileCheck className="size-4" />
                             <span className="group-data-[collapsible=icon]:hidden">Check Requests</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <SidebarMenuButton href="#" tooltip="View Existing Configurations">
+                        <SidebarMenuButton href="/configurations" tooltip="View Existing Configurations" isActive={pathname === '/configurations'}>
                             <Folder className="size-4" />
                             <span className="group-data-[collapsible=icon]:hidden">View Existing Configurations</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
                 
-                <SidebarGroup>
-                    <SidebarGroupLabel>Creation Steps</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <Stepper currentStep={currentStep} />
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                {isCreationFlow && (
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Creation Steps</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <Stepper currentStep={currentStep} />
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                )}
             </SidebarContent>
             <SidebarFooter className="p-2">
                 <div className="text-xs text-muted-foreground">Version 1.0.0</div>
