@@ -96,7 +96,7 @@ export default function FileUploadButton({ onFileLoad, type }: FileUploadButtonP
         className="hidden"
         accept=".xsd, .xml"
       />
-      <Button variant="ghost" size="sm" onClick={handleClick}>
+      <Button variant="secondary" size="sm" onClick={handleClick}>
         <FileUp className="mr-2 h-4 w-4" />
         Upload XSD
       </Button>
