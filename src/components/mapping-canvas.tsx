@@ -20,6 +20,24 @@ interface LinePath {
   midPoint: { x: number; y: number };
 }
 
+// Helper to find the closest visible parent element for a node ID
+const findVisibleParent = (nodeId: string, nodeRefs: Map<string, HTMLElement | null>): HTMLElement | null => {
+  let currentId = nodeId;
+  while (currentId) {
+    const element = nodeRefs.get(currentId);
+    if (element) {
+      return element;
+    }
+    // Go up one level by removing the last part of the ID
+    const parts = currentId.split('-');
+    if (parts.length <= 2) return null; // Reached root or invalid ID
+    parts.pop();
+    currentId = parts.join('-');
+  }
+  return null;
+};
+
+
 export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMappingClick, onMappingDelete }: MappingCanvasProps) {
   const [lines, setLines] = useState<LinePath[]>([])
   const [hoveredLine, setHoveredLine] = useState<string | null>(null)
@@ -31,8 +49,17 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
     const newLines: LinePath[] = []
 
     mappings.forEach(mapping => {
-      const sourceEl = nodeRefs.get(mapping.sourceId)
-      const targetEl = nodeRefs.get(mapping.targetId)
+      let sourceEl = nodeRefs.get(mapping.sourceId)
+      let targetEl = nodeRefs.get(mapping.targetId)
+
+      // If an element is not found, it might be inside a collapsed accordion.
+      // Try to find its closest visible parent.
+      if (!sourceEl) {
+        sourceEl = findVisibleParent(mapping.sourceId, nodeRefs);
+      }
+      if (!targetEl) {
+        targetEl = findVisibleParent(mapping.targetId, nodeRefs);
+      }
 
       if (sourceEl && targetEl) {
         const sourceRect = sourceEl.getBoundingClientRect()
