@@ -1,8 +1,7 @@
 import { postApi } from '@/lib/handlers/api-handlers';
 import { NextRequest, NextResponse } from 'next/server';
+import { GENERATE_XSD_API_URL } from '@/lib/constants';
 
-// This is a placeholder for your actual backend endpoint.
-const EXTERNAL_API_URL = 'https://example.com/generate-xsd';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     // In a real scenario, you might want to forward headers or handle authentication.
-    const response = await postApi(EXTERNAL_API_URL, { xml }, {
+    const response = await postApi(GENERATE_XSD_API_URL, { xml }, {
         headers: {
             'Content-Type': 'application/json'
         }
