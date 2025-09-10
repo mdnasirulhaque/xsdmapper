@@ -2,8 +2,23 @@
 
 import Stepper from "@/components/stepper"
 import { Card, CardContent } from "@/components/ui/card"
-import { CodeXml } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { CodeXml, LayoutGrid, Folder, FileCheck, FilePlus } from "lucide-react"
 import Link from "next/link"
+import { 
+    Sidebar, 
+    SidebarProvider, 
+    SidebarTrigger,
+    SidebarContent,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuItem,
+    SidebarMenuButton,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupLabel,
+    SidebarGroupContent
+} from "@/components/ui/sidebar"
 
 interface AppLayoutProps {
   children: React.ReactNode
@@ -12,23 +27,52 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children, currentStep }: AppLayoutProps) {
   return (
-    <div className="flex min-h-screen w-full bg-muted/40">
-      <aside className="hidden w-64 flex-col border-r bg-background p-4 sm:flex">
-        <div className="flex h-full max-h-screen flex-col gap-2">
-            <div className="flex h-[60px] items-center border-b px-6">
-                <Link href="/" className="flex items-center gap-3 text-lg font-semibold">
-                    <CodeXml className="h-6 w-6" />
-                    <span>XSD Mapper</span>
-                </Link>
-            </div>
-            <div className="flex-1 overflow-auto py-2">
-                <Stepper currentStep={currentStep} />
-            </div>
+    <SidebarProvider>
+        <div className="flex min-h-screen w-full bg-muted/40">
+        <Sidebar>
+            <SidebarHeader>
+                <div className="flex items-center gap-3 p-2">
+                    <CodeXml className="h-6 w-6 text-primary" />
+                    <span className="text-lg font-semibold">XSD Mapper</span>
+                </div>
+            </SidebarHeader>
+            <SidebarContent className="p-0">
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton href="/" tooltip="Create New Request" isActive={currentStep < 5}>
+                            <FilePlus className="size-4" />
+                            <span className="group-data-[collapsible=icon]:hidden">Create New Request</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                        <SidebarMenuButton href="#" tooltip="Check Requests">
+                            <FileCheck className="size-4" />
+                            <span className="group-data-[collapsible=icon]:hidden">Check Requests</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton href="#" tooltip="View Existing Configurations">
+                            <Folder className="size-4" />
+                            <span className="group-data-[collapsible=icon]:hidden">View Existing Configurations</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+                
+                <SidebarGroup>
+                    <SidebarGroupLabel>Creation Steps</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <Stepper currentStep={currentStep} />
+                    </SidebarGroupContent>
+                </SidebarGroup>
+            </SidebarContent>
+            <SidebarFooter className="p-2">
+                <div className="text-xs text-muted-foreground">Version 1.0.0</div>
+            </SidebarFooter>
+        </Sidebar>
+        <main className="flex flex-1 flex-col">
+            {children}
+        </main>
         </div>
-      </aside>
-      <main className="flex flex-1 flex-col">
-        {children}
-      </main>
-    </div>
+    </SidebarProvider>
   )
 }
