@@ -45,8 +45,11 @@ export default function XsdNodeComponent({
     }
   }, [node.id, nodeRefs, rerenderCanvas])
 
-  const isDraggable = type === 'source' && !node.children;
-  const isDroppable = type === 'target' && !node.children;
+  const hasChildren = node.children && node.children.length > 0
+  const isLeaf = !hasChildren
+
+  const isDraggable = type === 'source' && isLeaf;
+  const isDroppable = type === 'target' && isLeaf;
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     if (!isDraggable || !onDragStart) return
@@ -76,13 +79,12 @@ export default function XsdNodeComponent({
     if(onDragEnd) onDragEnd();
   }
 
-  const isMapped = type === 'source'
+  const isMapped = isLeaf && (type === 'source'
     ? mappings.some(m => m.sourceId === node.id)
-    : mappings.some(m => m.targetId === node.id)
+    : mappings.some(m => m.targetId === node.id))
 
   const isDragging = draggingNodeId === node.id
   
-  const hasChildren = node.children && node.children.length > 0;
 
   return (
     <div
@@ -102,7 +104,7 @@ export default function XsdNodeComponent({
         !isRoot && "ml-4"
       )}
     >
-      {!hasChildren && (
+      {isLeaf && (
         <div
             className={cn(
             "absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 bg-card transition-colors",

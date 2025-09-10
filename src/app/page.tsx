@@ -89,7 +89,7 @@ export default function Home() {
   
   const handleDragStart = (node: XsdNode) => {
     // Only allow dragging leaf nodes
-    if (!node.children) {
+    if (!node.children || node.children.length === 0) {
       setDraggingNode(node)
     }
   }
@@ -99,7 +99,7 @@ export default function Home() {
   }
   
   const handleDrop = (targetNode: XsdNode) => {
-    if (draggingNode && !targetNode.children) {
+    if (draggingNode && (!targetNode.children || targetNode.children.length === 0)) {
       // Prevent mapping to itself or non-leaf nodes
       if (draggingNode.children || targetNode.children) {
         return;
