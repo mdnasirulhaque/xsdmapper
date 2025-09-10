@@ -81,21 +81,8 @@ export default function XsdNodeComponent({
     : mappings.some(m => m.targetId === node.id)
 
   const isDragging = draggingNodeId === node.id
-
-  if (node.children) {
-    return (
-        <div
-        ref={nodeRef}
-        className={cn(
-            "relative flex items-center p-2 rounded-md transition-all duration-150 group",
-        )}
-        >
-         <Braces className="w-4 h-4 mr-2 text-muted-foreground" />
-         <span className="font-medium text-sm flex-1">{node.name}</span>
-         <span className="text-xs text-muted-foreground ml-2">{node.type}</span>
-        </div>
-    )
-  }
+  
+  const hasChildren = node.children && node.children.length > 0;
 
   return (
     <div
@@ -115,15 +102,17 @@ export default function XsdNodeComponent({
         !isRoot && "ml-4"
       )}
     >
-      <div
-        className={cn(
-          "absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 bg-card transition-colors",
-          type === 'source' ? "-right-1.5 translate-x-1/2" : "-left-1.5 -translate-x-1/2",
-          isMapped ? "bg-primary border-primary" : "border-muted-foreground/50 group-hover:border-primary",
-        )}
-      />
+      {!hasChildren && (
+        <div
+            className={cn(
+            "absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 bg-card transition-colors",
+            type === 'source' ? "-right-1.5 translate-x-1/2" : "-left-1.5 -translate-x-1/2",
+            isMapped ? "bg-primary border-primary" : "border-muted-foreground/50 group-hover:border-primary",
+            )}
+        />
+      )}
 
-      {node.type === 'complexType' ? (
+      {hasChildren ? (
         <Braces className="w-4 h-4 mr-2 text-muted-foreground" />
       ) : (
         <FileCode className="w-4 h-4 mr-2 text-muted-foreground" />
