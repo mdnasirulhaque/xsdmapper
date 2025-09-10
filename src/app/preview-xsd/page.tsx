@@ -13,7 +13,7 @@ import { postApi } from '@/lib/handlers/api-handlers';
 const CodePreview = ({ title, content, language, isLoading = false }: { title: string; content: string | null; language: string; isLoading?: boolean }) => (
     <Card className="flex-1 flex flex-col">
         <CardHeader>
-            <CardTitle>{title}</CardTitle>
+            <CardTitle className="text-lg">{title}</CardTitle>
         </CardHeader>
         <CardContent className="flex-1 flex">
             <ScrollArea className="w-full h-96 rounded-md border bg-muted/50">
@@ -96,10 +96,8 @@ export default function PreviewXsdPage() {
     }, [inputXml, responseXml, toast]);
 
     const handleProceed = () => {
-        // This is a temporary placeholder. In a real app, we would parse the XSD
-        // strings into the `XsdNode` JSON structure before passing them.
-        const sourceSchema = { id: 'source-root', name: 'GeneratedSource', type: 'complexType', children: [] };
-        const targetSchema = { id: 'target-root', name: 'GeneratedTarget', type: 'complexType', children: [] };
+        const sourceSchema = parseXsdToXsdNode(inputXsd!, 'source');
+        const targetSchema = parseXsdToXsdNode(responseXsd!, 'target');
 
         const queryParams = new URLSearchParams();
         queryParams.set('sourceSchema', encodeURIComponent(JSON.stringify(sourceSchema)));
@@ -111,9 +109,57 @@ export default function PreviewXsdPage() {
         router.push(`/swagger?${queryParams.toString()}`);
     };
 
+    // Basic XSD parsing to create XsdNode structure
+    const parseXsdToXsdNode = (xsdString: string, type: 'source' | 'target'): any | null => {
+      try {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xsdString, "application/xml");
+
+        if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
+            throw new Error("Failed to parse XSD string.");
+        }
+    
+        const simpleId = (name: string, index: number) => `${type}-${name.toLowerCase().replace(/[:\s]+/g, '-')}-${index}`;
+    
+        function processNode(element: Element, index: number): any {
+          const nodeName = element.getAttribute('name') || element.localName;
+          const children: any[] = [];
+          
+          const complexType = element.querySelector(":scope > complexType, :scope > xs\\:complexType, :scope > xsd\\:complexType");
+          const sequence = complexType ? complexType.querySelector(":scope > sequence, :scope > xs\\:sequence, :scope > xsd\\:sequence") : element.querySelector(":scope > sequence, :scope > xs\\:sequence, :scope > xsd\\:sequence");
+    
+          if (sequence) {
+            Array.from(sequence.children).forEach((child, i) => {
+              if (child.localName === 'element') {
+                children.push(processNode(child, i));
+              }
+            });
+          }
+    
+          return {
+            id: simpleId(nodeName, index),
+            name: nodeName,
+            type: element.getAttribute('type') || (children.length > 0 ? 'complexType' : 'xs:string'),
+            children: children.length > 0 ? children : undefined
+          };
+        }
+    
+        const rootElement = xmlDoc.querySelector("element, xs\\:element, xsd\\:element");
+        if (!rootElement) {
+          throw new Error("No root element found in XSD");
+        }
+    
+        return processNode(rootElement, 0);
+      } catch(e) {
+        console.error("Error parsing XSD for node structure", e);
+        return null;
+      }
+    }
+
+
     return (
         <AppLayout currentStep={2}>
-            <div className="flex flex-col flex-1 p-4 sm:p-6 md:p-8 gap-6">
+            <div className="flex flex-col flex-1 p-4 sm:p-6 md:p-8 gap-6 overflow-auto">
                 <Card>
                     <CardHeader>
                         <CardTitle>Preview Generated XSDs</CardTitle>

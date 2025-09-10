@@ -182,11 +182,11 @@ export default function MapperPage() {
   }
 
   return (
-    <AppLayout currentStep={2}>
+    <AppLayout currentStep={4}>
       <div className="flex flex-col h-screen bg-background text-foreground">
         <PageHeader onDownload={handleDownloadXslt} onPreview={handlePreview} />
         <main ref={canvasRef} className="flex-1 overflow-auto relative p-4 sm:p-6 md:p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
             <XsdPanel
               title="Source Schema"
               schema={sourceSchema}

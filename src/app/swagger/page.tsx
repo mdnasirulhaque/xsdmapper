@@ -10,7 +10,6 @@ import { useRef, useState, useEffect } from 'react';
 import AppLayout from '@/components/layout';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { parse } from 'path';
 
 // Basic XSD parsing to create XsdNode structure
 const parseXsdToXsdNode = (xsdString: string, type: 'source' | 'target'): XsdNode | null => {
@@ -166,7 +165,7 @@ export default function SwaggerUploadPage() {
 
     return (
         <AppLayout currentStep={3}>
-            <div className="flex items-center justify-center flex-1 bg-background">
+            <div className="flex items-center justify-center flex-1 bg-background p-4 sm:p-6 md:p-8">
                 <Card className="w-full max-w-2xl shadow-2xl">
                     <CardHeader className="text-center">
                         <CardTitle className="text-2xl font-bold">Upload Swagger/OpenAPI File</CardTitle>

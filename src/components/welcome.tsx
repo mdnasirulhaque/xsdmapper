@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import type { XsdNode } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
@@ -113,7 +112,7 @@ export default function Welcome() {
   
 
   return (
-    <div className="flex items-center justify-center flex-1 bg-background">
+    <div className="flex items-center justify-center flex-1 bg-background p-4 sm:p-6 md:p-8">
       <Card className="w-full max-w-4xl shadow-2xl">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Create Your XSLT Mapping</CardTitle>
@@ -123,14 +122,14 @@ export default function Welcome() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FileUploadSection 
                     title="Input XML"
-                    description="This will become the source schema."
+                    description="This will be used to generate the source schema."
                     onFileUpload={handleFileUpload}
                     uploadComplete={!!inputXml}
                     fileType="input"
                 />
                  <FileUploadSection 
                     title="Response XML"
-                    description="This will become the target schema."
+                    description="This will be used to generate the target schema."
                     onFileUpload={handleFileUpload}
                     uploadComplete={!!responseXml}
                     fileType="response"

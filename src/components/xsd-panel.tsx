@@ -35,7 +35,7 @@ export default function XsdPanel({
 }: XsdPanelProps) {
   const panelId = `${type}-panel-content`;
   return (
-    <Card className="shadow-lg h-full flex flex-col">
+    <Card className="shadow-lg h-full flex flex-col max-h-[calc(100vh-12rem)]">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{title}</CardTitle>
         <FileUploadButton onFileLoad={onFileLoad} type={type} />
