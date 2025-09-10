@@ -5,9 +5,11 @@ import { useToast } from '@/hooks/use-toast';
 import type { XsdNode } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileUp, ArrowRight, CheckCircle } from 'lucide-react';
+import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import AppLayout from '@/components/layout';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Basic YAML parsing to find paths and schemas.
 // In a real app, you'd use a robust library like 'js-yaml'.
@@ -48,6 +50,7 @@ export default function SwaggerUploadPage() {
     const [sourceSchema, setSourceSchema] = useState<XsdNode | null>(null);
     const [targetSchema, setTargetSchema] = useState<XsdNode | null>(null);
     const [swaggerSchema, setSwaggerSchema] = useState<XsdNode | null>(null);
+    const [fileContent, setFileContent] = useState<string | null>(null);
 
     useEffect(() => {
         const sourceSchemaParam = searchParams.get('sourceSchema');
@@ -67,6 +70,7 @@ export default function SwaggerUploadPage() {
             reader.onload = (e) => {
                 try {
                     const content = e.target?.result as string;
+                    setFileContent(content);
                     const schema = parseSwaggerToXsdNode(content);
                     if(!schema) {
                          throw new Error("Could not derive a schema from the file.");
@@ -78,6 +82,7 @@ export default function SwaggerUploadPage() {
                     })
                 } catch (error) {
                     console.error("Error processing YAML/JSON file:", error);
+                    setFileContent(null);
                     toast({
                         variant: "destructive",
                         title: "Upload Failed",
@@ -123,6 +128,20 @@ export default function SwaggerUploadPage() {
                                 {swaggerSchema ? <CheckCircle className="mr-2 h-5 w-5" /> : <FileUp className="mr-2 h-5 w-5" />}
                                 {swaggerSchema ? "Uploaded" : 'Upload File'}
                             </Button>
+                             {fileContent && (
+                                <Collapsible className="w-full">
+                                    <CollapsibleTrigger asChild>
+                                        <Button variant="ghost" className="w-full text-sm">
+                                            <Eye className="mr-2 h-4 w-4" /> Preview File
+                                        </Button>
+                                    </CollapsibleTrigger>
+                                    <CollapsibleContent>
+                                        <ScrollArea className="mt-2 h-48 w-full rounded-md border bg-muted/50 p-2">
+                                            <pre className="text-xs">{fileContent}</pre>
+                                        </ScrollArea>
+                                    </CollapsibleContent>
+                                </Collapsible>
+                            )}
                         </div>
 
                         <Button onClick={handleProceed} size="lg" className="w-full" disabled={!swaggerSchema}>

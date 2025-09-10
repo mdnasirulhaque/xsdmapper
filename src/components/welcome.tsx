@@ -5,8 +5,11 @@ import { useToast } from '@/hooks/use-toast';
 import type { XsdNode } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileUp, ArrowRight, CheckCircle } from 'lucide-react';
+import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
 
 function xmlToXsdNode(element: Element, prefix: string, index: number): XsdNode {
   const nodeName = element.localName;
@@ -53,6 +56,7 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, p
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
+    const [fileContent, setFileContent] = useState<string | null>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -61,6 +65,7 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, p
             reader.onload = (e) => {
                 try {
                     const content = e.target?.result as string;
+                    setFileContent(content);
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(content, "application/xml");
 
@@ -78,6 +83,7 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, p
 
                 } catch (error) {
                     console.error("Error processing XML file:", error);
+                    setFileContent(null);
                     toast({
                         variant: "destructive",
                         title: "Upload Failed",
@@ -108,6 +114,20 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, p
                 {uploadComplete ? <CheckCircle className="mr-2 h-5 w-5" /> : <FileUp className="mr-2 h-5 w-5" />}
                 {uploadComplete ? "Uploaded" : `Upload ${title}`}
             </Button>
+            {fileContent && (
+                 <Collapsible className="w-full">
+                    <CollapsibleTrigger asChild>
+                        <Button variant="ghost" className="w-full text-sm">
+                            <Eye className="mr-2 h-4 w-4" /> Preview File
+                        </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <ScrollArea className="mt-2 h-48 w-full rounded-md border bg-muted/50 p-2">
+                            <pre className="text-xs">{fileContent}</pre>
+                        </ScrollArea>
+                    </CollapsibleContent>
+                </Collapsible>
+            )}
         </div>
     )
 }
