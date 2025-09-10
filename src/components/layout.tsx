@@ -2,6 +2,8 @@
 
 import Stepper from "@/components/stepper"
 import { Card, CardContent } from "@/components/ui/card"
+import { CodeXml } from "lucide-react"
+import Link from "next/link"
 
 interface AppLayoutProps {
   children: React.ReactNode
@@ -14,7 +16,10 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
       <aside className="hidden w-64 flex-col border-r bg-background p-4 sm:flex">
         <div className="flex h-full max-h-screen flex-col gap-2">
             <div className="flex h-[60px] items-center border-b px-6">
-                <h1 className="text-lg font-bold">XSD Mapper</h1>
+                <Link href="/" className="flex items-center gap-3 text-lg font-semibold">
+                    <CodeXml className="h-6 w-6" />
+                    <span>XSD Mapper</span>
+                </Link>
             </div>
             <div className="flex-1 overflow-auto py-2">
                 <Stepper currentStep={currentStep} />

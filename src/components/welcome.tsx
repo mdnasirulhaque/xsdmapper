@@ -10,49 +10,12 @@ import { useRef, useState } from 'react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-
-function xmlToXsdNode(element: Element, prefix: string, index: number): XsdNode {
-  const nodeName = element.localName;
-  const children: XsdNode[] = [];
-  
-  if (element.children.length > 0) {
-      const elementChildren = Array.from(element.children);
-      const childNames = new Map<string, number>();
-
-      elementChildren.forEach(child => {
-        const childName = child.localName;
-        const count = childNames.get(childName) || 0;
-        childNames.set(childName, count + 1);
-      });
-      
-      const uniqueChildren = new Map<string, Element>();
-      elementChildren.forEach(child => {
-        if (!uniqueChildren.has(child.localName)) {
-            uniqueChildren.set(child.localName, child);
-        }
-      });
-
-      Array.from(uniqueChildren.values()).forEach((child, i) => {
-        children.push(xmlToXsdNode(child, `${prefix}-${nodeName}`, i));
-      });
-  }
-  
-  const dataType = children.length > 0 ? 'complexType' : 'xs:string';
-
-  return {
-    id: `${prefix}-${nodeName}-${index}`,
-    name: nodeName,
-    type: dataType,
-    children: children.length > 0 ? children : undefined,
-  };
-}
-
-const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, prefix }: {
+const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, fileType }: {
     title: string;
     description: string;
-    onFileUpload: (schema: XsdNode, prefix: string) => void;
+    onFileUpload: (content: string, fileType: 'input' | 'response') => void;
     uploadComplete: boolean;
-    prefix: 'source' | 'target';
+    fileType: 'input' | 'response';
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
@@ -66,16 +29,7 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, p
                 try {
                     const content = e.target?.result as string;
                     setFileContent(content);
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(content, "application/xml");
-
-                    if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
-                        throw new Error("Failed to parse XML.");
-                    }
-
-                    const rootElement = xmlDoc.documentElement;
-                    const schema = xmlToXsdNode(rootElement, prefix, 0);
-                    onFileUpload(schema, prefix);
+                    onFileUpload(content, fileType);
                     toast({
                         title: "Upload Successful",
                         description: `${file.name} has been processed.`,
@@ -87,7 +41,7 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, p
                     toast({
                         variant: "destructive",
                         title: "Upload Failed",
-                        description: "Could not process the XML file. Please ensure it is well-formed.",
+                        description: "Could not process the XML file.",
                     });
                 }
             };
@@ -134,21 +88,27 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, p
 
 export default function Welcome() {
   const router = useRouter();
-  const [sourceSchema, setSourceSchema] = useState<XsdNode | null>(null);
-  const [targetSchema, setTargetSchema] = useState<XsdNode | null>(null);
+  const [inputXml, setInputXml] = useState<string | null>(null);
+  const [responseXml, setResponseXml] = useState<string | null>(null);
 
-  const handleFileUpload = (schema: XsdNode, prefix: string) => {
-    if (prefix === 'source') {
-        setSourceSchema(schema);
+  const handleFileUpload = (content: string, fileType: 'input' | 'response') => {
+    if (fileType === 'input') {
+        setInputXml(content);
     } else {
-        setTargetSchema(schema);
+        setResponseXml(content);
     }
   }
 
   const handleProceed = () => {
-    const sourceSchemaString = encodeURIComponent(JSON.stringify(sourceSchema));
-    const targetSchemaString = encodeURIComponent(JSON.stringify(targetSchema));
-    router.push(`/swagger?sourceSchema=${sourceSchemaString}&targetSchema=${targetSchemaString}`);
+    // We will now pass the raw XML content to the next page
+    const queryParams = new URLSearchParams();
+    if (inputXml) {
+        queryParams.set('inputXml', encodeURIComponent(inputXml));
+    }
+    if (responseXml) {
+        queryParams.set('responseXml', encodeURIComponent(responseXml));
+    }
+    router.push(`/preview-xsd?${queryParams.toString()}`);
   }
   
 
@@ -165,19 +125,19 @@ export default function Welcome() {
                     title="Input XML"
                     description="This will become the source schema."
                     onFileUpload={handleFileUpload}
-                    uploadComplete={!!sourceSchema}
-                    prefix="source"
+                    uploadComplete={!!inputXml}
+                    fileType="input"
                 />
                  <FileUploadSection 
                     title="Response XML"
-                    description="This will become the target schema (optional)."
+                    description="This will become the target schema."
                     onFileUpload={handleFileUpload}
-                    uploadComplete={!!targetSchema}
-                    prefix="target"
+                    uploadComplete={!!responseXml}
+                    fileType="response"
                 />
             </div>
 
-            <Button onClick={handleProceed} size="lg" className="w-full" disabled={!sourceSchema}>
+            <Button onClick={handleProceed} size="lg" className="w-full" disabled={!inputXml || !responseXml}>
                 Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
         </CardContent>

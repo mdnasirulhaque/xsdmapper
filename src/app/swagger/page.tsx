@@ -10,6 +10,55 @@ import { useRef, useState, useEffect } from 'react';
 import AppLayout from '@/components/layout';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { parse } from 'path';
+
+// Basic XSD parsing to create XsdNode structure
+const parseXsdToXsdNode = (xsdString: string, type: 'source' | 'target'): XsdNode | null => {
+  try {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xsdString, "application/xml");
+
+    if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
+        throw new Error("Failed to parse XSD string.");
+    }
+  
+    const simpleId = (name: string, index: number) => `${type}-${name.toLowerCase().replace(/[:\s]+/g, '-')}-${index}`;
+  
+    function processNode(element: Element, index: number): XsdNode {
+      const nodeName = element.getAttribute('name') || element.localName;
+      const children: XsdNode[] = [];
+      
+      const complexType = element.querySelector(":scope > complexType, :scope > xs\\:complexType, :scope > xsd\\:complexType");
+      const sequence = complexType ? complexType.querySelector(":scope > sequence, :scope > xs\\:sequence, :scope > xsd\\:sequence") : element.querySelector(":scope > sequence, :scope > xs\\:sequence, :scope > xsd\\:sequence");
+  
+      if (sequence) {
+        Array.from(sequence.children).forEach((child, i) => {
+          if (child.localName === 'element') {
+            children.push(processNode(child, i));
+          }
+        });
+      }
+  
+      return {
+        id: simpleId(nodeName, index),
+        name: nodeName,
+        type: element.getAttribute('type') || (children.length > 0 ? 'complexType' : 'xs:string'),
+        children: children.length > 0 ? children : undefined
+      };
+    }
+  
+    const rootElement = xmlDoc.querySelector("element, xs\\:element, xsd\\:element");
+    if (!rootElement) {
+      throw new Error("No root element found in XSD");
+    }
+  
+    return processNode(rootElement, 0);
+  } catch(e) {
+    console.error("Error parsing XSD for node structure", e);
+    return null;
+  }
+}
+
 
 // Basic YAML parsing to find paths and schemas.
 // In a real app, you'd use a robust library like 'js-yaml'.
@@ -48,19 +97,29 @@ export default function SwaggerUploadPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [sourceSchema, setSourceSchema] = useState<XsdNode | null>(null);
-    const [targetSchema, setTargetSchema] = useState<XsdNode | null>(null);
+    const [sourceXsd, setSourceXsd] = useState<string | null>(null);
+    const [targetXsd, setTargetXsd] = useState<string | null>(null);
+
     const [swaggerSchema, setSwaggerSchema] = useState<XsdNode | null>(null);
     const [fileContent, setFileContent] = useState<string | null>(null);
 
     useEffect(() => {
-        const sourceSchemaParam = searchParams.get('sourceSchema');
-        if (sourceSchemaParam) {
-            setSourceSchema(JSON.parse(decodeURIComponent(sourceSchemaParam)));
+        // The schemas are now passed as raw XSD strings
+        const sourceXsdParam = searchParams.get('sourceXsd');
+        if (sourceXsdParam) {
+            const decodedSourceXsd = decodeURIComponent(sourceXsdParam);
+            setSourceXsd(decodedSourceXsd);
+            const parsedSchema = parseXsdToXsdNode(decodedSourceXsd, 'source');
+            setSourceSchema(parsedSchema);
         }
-        const targetSchemaParam = searchParams.get('targetSchema');
-        if(targetSchemaParam) {
-            setTargetSchema(JSON.parse(decodeURIComponent(targetSchemaParam)));
+        
+        const targetXsdParam = searchParams.get('targetXsd');
+        if(targetXsdParam) {
+           const decodedTargetXsd = decodeURIComponent(targetXsdParam);
+           setTargetXsd(decodedTargetXsd);
+           // We don't parse the target XSD to a node here, as it will be replaced by the swagger schema
         }
+
     }, [searchParams]);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +165,7 @@ export default function SwaggerUploadPage() {
     }
 
     return (
-        <AppLayout currentStep={2}>
+        <AppLayout currentStep={3}>
             <div className="flex items-center justify-center flex-1 bg-background">
                 <Card className="w-full max-w-2xl shadow-2xl">
                     <CardHeader className="text-center">
@@ -144,7 +203,7 @@ export default function SwaggerUploadPage() {
                             )}
                         </div>
 
-                        <Button onClick={handleProceed} size="lg" className="w-full" disabled={!swaggerSchema}>
+                        <Button onClick={handleProceed} size="lg" className="w-full" disabled={!swaggerSchema || !sourceSchema}>
                             Proceed to Mapper <ArrowRight className="ml-2 h-5 w-5" />
                         </Button>
                     </CardContent>
