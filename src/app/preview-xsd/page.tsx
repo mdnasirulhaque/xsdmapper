@@ -7,8 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Wand2, Loader } from 'lucide-react';
-import { generateXsd } from '@/ai/flows/generate-xsd-flow';
 import { useToast } from '@/hooks/use-toast';
+import { postApi } from '@/lib/handlers/api-handlers';
 
 const CodePreview = ({ title, content, language, isLoading = false }: { title: string; content: string | null; language: string; isLoading?: boolean }) => (
     <Card className="flex-1 flex flex-col">
@@ -48,6 +48,11 @@ export default function PreviewXsdPage() {
         const response = searchParams.get('responseXml');
         if (response) setResponseXml(decodeURIComponent(response));
     }, [searchParams]);
+    
+    const generateXsd = async (xml: string): Promise<{ xsd: string }> => {
+        // This function now calls our internal Next.js API route
+        return postApi('/api/generate-xsd', { xml });
+    };
 
     const handleGenerateXsds = useCallback(async () => {
         if (!inputXml || !responseXml) {
@@ -62,13 +67,13 @@ export default function PreviewXsdPage() {
         setIsLoading(true);
         toast({
             title: "Generating Schemas",
-            description: "The AI is analyzing your XML files. This may take a moment...",
+            description: "Contacting backend to generate your XML schemas. This may take a moment...",
         });
 
         try {
             const [inputResult, responseResult] = await Promise.all([
-                generateXsd({ xml: inputXml }),
-                generateXsd({ xml: responseXml })
+                generateXsd(inputXml),
+                generateXsd(responseXml)
             ]);
             
             setInputXsd(inputResult.xsd);
@@ -83,7 +88,7 @@ export default function PreviewXsdPage() {
             toast({
                 variant: 'destructive',
                 title: "Generation Failed",
-                description: "The AI failed to generate the schemas. Please try again.",
+                description: "The backend failed to generate the schemas. Please check the console and try again.",
             });
         } finally {
             setIsLoading(false);
@@ -91,10 +96,6 @@ export default function PreviewXsdPage() {
     }, [inputXml, responseXml, toast]);
 
     const handleProceed = () => {
-        // Here we need to parse the generated XSDs into the XsdNode structure for the mapper
-        // For now, we'll pass the raw XSD content and handle parsing on the next page
-        // Or better, we could parse it here before passing. Let's create a placeholder for that logic
-        
         // This is a temporary placeholder. In a real app, we would parse the XSD
         // strings into the `XsdNode` JSON structure before passing them.
         const sourceSchema = { id: 'source-root', name: 'GeneratedSource', type: 'complexType', children: [] };
@@ -117,7 +118,7 @@ export default function PreviewXsdPage() {
                     <CardHeader>
                         <CardTitle>Preview Generated XSDs</CardTitle>
                         <CardDescription>
-                            Click the button below to generate XSD schemas from your uploaded XML files using AI.
+                            Click the button below to generate XSD schemas from your uploaded XML files.
                             Review the generated schemas before proceeding to the next step.
                         </CardDescription>
                     </CardHeader>
