@@ -20,7 +20,7 @@ export default function PreviewDialog({ isOpen, onOpenChange, content }: Preview
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>XSLT Output Preview</DialogTitle>
+          <DialogTitle>XML Output Preview</DialogTitle>
           <DialogDescription>
             This is a sample XML output based on your current mappings and transformations, using mock data.
           </DialogDescription>

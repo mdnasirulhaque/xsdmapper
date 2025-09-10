@@ -21,7 +21,7 @@ export default function PageHeader({ onPreview, onDownload }: PageHeaderProps) {
       <div className="flex items-center gap-2">
         <Button variant="outline" onClick={onPreview}>
           <Eye className="mr-2 h-4 w-4" />
-          Preview XSLT
+          Preview XML
         </Button>
         <Button onClick={onDownload} className="bg-primary hover:bg-primary/90 text-primary-foreground">
           <FileDown className="mr-2 h-4 w-4" />
