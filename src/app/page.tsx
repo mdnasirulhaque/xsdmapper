@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import type { XsdNode, Mapping, Transformation, TransformationType } from '@/types'
 import { sourceSchema as initialSourceSchema, targetSchema as initialTargetSchema } from '@/lib/mock-data'
 import { generateXslt } from '@/lib/xslt-generator'
+import { generateXmlPreview } from '@/lib/xml-preview-generator'
 import PageHeader from '@/components/page-header'
 import XsdPanel from '@/components/xsd-panel'
 import MappingCanvas from '@/components/mapping-canvas'
@@ -53,8 +54,8 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    const mainContainer = canvasRef.current;
     window.addEventListener('resize', rerenderCanvas)
-    const mainContainer = document.querySelector('main')
     mainContainer?.addEventListener('scroll', rerenderCanvas)
 
     return () => {
@@ -83,12 +84,23 @@ export default function Home() {
   }
   
   const handleDrop = (targetNode: XsdNode) => {
-    if (draggingNode && !mappings.some(m => m.sourceId === draggingNode.id && m.targetId === targetNode.id)) {
+    if (draggingNode) {
+      // Prevent mapping to itself or non-leaf nodes
+      if (draggingNode.children || targetNode.children) {
+        return;
+      }
+      
       const newMapping: Mapping = {
         id: `${draggingNode.id}-${targetNode.id}`,
         sourceId: draggingNode.id,
         targetId: targetNode.id,
       }
+      
+      // Check if this exact mapping already exists
+      if(mappings.some(m => m.id === newMapping.id)) {
+        return;
+      }
+
       setMappings(prev => [...prev, newMapping])
       rerenderCanvas()
     }
@@ -125,7 +137,7 @@ export default function Home() {
   }
 
   const handlePreview = () => {
-    const preview = generateXslt(mappings, sourceSchema, targetSchema)
+    const preview = generateXmlPreview(mappings, targetSchema)
     setPreviewContent(preview)
     setPreviewDialogOpen(true)
   }
@@ -185,6 +197,8 @@ export default function Home() {
         isOpen={isPreviewDialogOpen}
         onOpenChange={setPreviewDialogOpen}
         content={previewContent}
+        title="XML Preview"
+        description="This is a sample XML output based on your current mappings and transformations, using mock data."
       />
     </div>
   )

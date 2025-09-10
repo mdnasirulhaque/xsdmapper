@@ -38,15 +38,12 @@ export default function XsdNodeComponent({
     if (nodeRef.current) {
       nodeRefs.current.set(node.id, nodeRef.current)
     }
+    // Rerender canvas when a node mounts to draw initial lines
+    rerenderCanvas()
     return () => {
       nodeRefs.current.delete(node.id)
     }
-  }, [node.id, nodeRefs])
-
-  useEffect(() => {
-    rerenderCanvas()
-  }, [])
-  
+  }, [node.id, nodeRefs, rerenderCanvas])
 
   const isDraggable = type === 'source' && !node.children;
   const isDroppable = type === 'target' && !node.children;
