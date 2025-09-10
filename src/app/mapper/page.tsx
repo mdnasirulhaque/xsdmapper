@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import type { XsdNode, Mapping, Transformation, TransformationType } from '@/types'
-import { targetSchema as initialTargetSchema } from '@/lib/mock-data'
 import { generateXslt } from '@/lib/xslt-generator'
 import { generateXmlPreview } from '@/lib/xml-preview-generator'
 import PageHeader from '@/components/page-header'
@@ -18,20 +17,29 @@ const MAPPINGS_STORAGE_KEY = 'xsd-mapper-mappings';
 export default function MapperPage() {
   const searchParams = useSearchParams();
   const [sourceSchema, setSourceSchema] = useState<XsdNode | null>(null)
+  const [targetSchema, setTargetSchema] = useState<XsdNode | null>(null)
   
   useEffect(() => {
-    const schemaParam = searchParams.get('sourceSchema');
-    if (schemaParam) {
+    const sourceSchemaParam = searchParams.get('sourceSchema');
+    if (sourceSchemaParam) {
       try {
-        const schema = JSON.parse(decodeURIComponent(schemaParam));
+        const schema = JSON.parse(decodeURIComponent(sourceSchemaParam));
         setSourceSchema(schema);
       } catch (e) {
         console.error("Failed to parse source schema from URL", e);
       }
     }
+    const targetSchemaParam = searchParams.get('targetSchema');
+    if (targetSchemaParam) {
+        try {
+            const schema = JSON.parse(decodeURIComponent(targetSchemaParam));
+            setTargetSchema(schema);
+        } catch(e) {
+            console.error("Failed to parse target schema from URL", e);
+        }
+    }
   }, [searchParams]);
 
-  const [targetSchema, setTargetSchema] = useState<XsdNode | null>(initialTargetSchema)
   const [mappings, setMappings] = useState<Mapping[]>([])
   const [draggingNode, setDraggingNode] = useState<XsdNode | null>(null)
   
