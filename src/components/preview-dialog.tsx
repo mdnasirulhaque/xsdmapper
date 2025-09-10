@@ -22,7 +22,7 @@ export default function PreviewDialog({ isOpen, onOpenChange, content }: Preview
         <DialogHeader>
           <DialogTitle>XSLT Output Preview</DialogTitle>
           <DialogDescription>
-            This is the generated XSLT based on your mappings and transformations.
+            This is a sample XML output based on your current mappings and transformations, using mock data.
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-[60vh] mt-4 rounded-md border bg-muted/30">

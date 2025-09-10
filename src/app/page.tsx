@@ -55,12 +55,14 @@ export default function Home() {
 
   useEffect(() => {
     const mainContainer = canvasRef.current;
+    if (!mainContainer) return;
+
     window.addEventListener('resize', rerenderCanvas)
-    mainContainer?.addEventListener('scroll', rerenderCanvas)
+    mainContainer.addEventListener('scroll', rerenderCanvas)
 
     return () => {
       window.removeEventListener('resize', rerenderCanvas)
-      mainContainer?.removeEventListener('scroll', rerenderCanvas)
+      mainContainer.removeEventListener('scroll', rerenderCanvas)
     }
   }, [rerenderCanvas])
 
@@ -197,8 +199,6 @@ export default function Home() {
         isOpen={isPreviewDialogOpen}
         onOpenChange={setPreviewDialogOpen}
         content={previewContent}
-        title="XML Preview"
-        description="This is a sample XML output based on your current mappings and transformations, using mock data."
       />
     </div>
   )

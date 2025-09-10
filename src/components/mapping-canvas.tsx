@@ -26,6 +26,8 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
 
   useEffect(() => {
     const canvasRect = canvasRef.getBoundingClientRect()
+    const scrollTop = canvasRef.scrollTop;
+
     const newLines: LinePath[] = []
 
     mappings.forEach(mapping => {
@@ -37,9 +39,9 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
         const targetRect = targetEl.getBoundingClientRect()
 
         const startX = sourceRect.right - canvasRect.left
-        const startY = sourceRect.top - canvasRect.top + sourceRect.height / 2
+        const startY = sourceRect.top - canvasRect.top + scrollTop
         const endX = targetRect.left - canvasRect.left
-        const endY = targetRect.top - canvasRect.top + targetRect.height / 2
+        const endY = targetRect.top - canvasRect.top + scrollTop
 
         const controlX1 = startX + 60
         const controlY1 = startY
@@ -61,7 +63,7 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
 
   return (
     <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-      <svg width="100%" height="100%">
+      <svg width="100%" height="100%" style={{ top: 0, left: 0, position: 'absolute' }}>
         <defs>
           <marker
             id="arrowhead"
