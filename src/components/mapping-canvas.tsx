@@ -39,9 +39,9 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
         const targetRect = targetEl.getBoundingClientRect()
 
         const startX = sourceRect.right - canvasRect.left
-        const startY = sourceRect.top - canvasRect.top + scrollTop
+        const startY = sourceRect.top - canvasRect.top + scrollTop + sourceRect.height / 2
         const endX = targetRect.left - canvasRect.left
-        const endY = targetRect.top - canvasRect.top + scrollTop
+        const endY = targetRect.top - canvasRect.top + scrollTop + targetRect.height / 2
 
         const controlX1 = startX + 60
         const controlY1 = startY
