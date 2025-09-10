@@ -1,10 +1,11 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { FileUp, Link, FileDown, Check } from "lucide-react"
+import { FileUp, Link, FileDown, Check, FileJson } from "lucide-react"
 
 const steps = [
   { name: "Upload XML", href: "/", icon: FileUp },
+  { name: "Upload Swagger", href: "/swagger", icon: FileJson },
   { name: "Map Fields", href: "#", icon: Link },
   { name: "Generate XSLT", href: "#", icon: FileDown },
 ]

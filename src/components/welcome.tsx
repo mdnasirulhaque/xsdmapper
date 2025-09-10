@@ -128,7 +128,7 @@ export default function Welcome() {
   const handleProceed = () => {
     const sourceSchemaString = encodeURIComponent(JSON.stringify(sourceSchema));
     const targetSchemaString = encodeURIComponent(JSON.stringify(targetSchema));
-    router.push(`/mapper?sourceSchema=${sourceSchemaString}&targetSchema=${targetSchemaString}`);
+    router.push(`/swagger?sourceSchema=${sourceSchemaString}&targetSchema=${targetSchemaString}`);
   }
   
 
@@ -150,15 +150,15 @@ export default function Welcome() {
                 />
                  <FileUploadSection 
                     title="Response XML"
-                    description="This will become the target schema."
+                    description="This will become the target schema (optional)."
                     onFileUpload={handleFileUpload}
                     uploadComplete={!!targetSchema}
                     prefix="target"
                 />
             </div>
 
-            <Button onClick={handleProceed} size="lg" className="w-full" disabled={!sourceSchema || !targetSchema}>
-                Proceed to Mapper <ArrowRight className="ml-2 h-5 w-5" />
+            <Button onClick={handleProceed} size="lg" className="w-full" disabled={!sourceSchema}>
+                Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
         </CardContent>
       </Card>
