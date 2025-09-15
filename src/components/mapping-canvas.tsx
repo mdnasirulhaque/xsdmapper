@@ -126,13 +126,13 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
                     exit={{ opacity: 0, scale: 0.5 }}
                     className="flex items-center gap-2"
                   >
-                    <g transform="translate(-32, -16)">
-                       <rect x="0" y="0" width="64" height="32" rx="16" fill="hsl(var(--card))" stroke="hsl(var(--border))" />
-                       <g onClick={() => onMappingClick(mapping)} transform="translate(8, 8)">
-                         <Wand2 className="text-muted-foreground hover:text-primary" size={16} />
+                    <g transform="translate(-40, -20)">
+                       <rect x="0" y="0" width="80" height="40" rx="20" fill="hsl(var(--card))" stroke="hsl(var(--border))" />
+                       <g onClick={() => onMappingClick(mapping)} transform="translate(12, 10)">
+                         <Wand2 className="text-muted-foreground hover:text-primary" size={20} />
                        </g>
-                       <g onClick={() => onMappingDelete(id)} transform="translate(40, 8)">
-                         <X className="text-muted-foreground hover:text-destructive" size={16} />
+                       <g onClick={() => onMappingDelete(id)} transform="translate(48, 10)">
+                         <X className="text-muted-foreground hover:text-destructive" size={20} />
                        </g>
                     </g>
                   </motion.g>
