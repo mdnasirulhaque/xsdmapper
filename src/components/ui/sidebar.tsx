@@ -65,7 +65,7 @@ const SidebarProvider = React.forwardRef<
   ) => {
     // Helper to get the initial open state from cookies.
     const getInitialOpen = () => {
-        if (typeof window === "undefined") return defaultOpen ?? false;
+        if (typeof window === "undefined") return defaultOpen ?? true;
         const cookie = document.cookie
             .split("; ")
             .find((row) => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`));
@@ -73,7 +73,7 @@ const SidebarProvider = React.forwardRef<
         if (cookie) {
             return cookie.split("=")[1] === "true";
         }
-        return defaultOpen ?? false;
+        return defaultOpen ?? true;
     }
 
 
@@ -217,7 +217,7 @@ const Sidebar = React.forwardRef<
         />
         <div
           className={cn(
-            "duration-200 fixed inset-y-0 z-10 flex h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear",
+            "duration-200 fixed inset-y-0 z-20 flex h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear",
             side === "left"
               ? "left-0 group-data-[collapsible=offcanvas]:-left-[--sidebar-width]"
               : "right-0 group-data-[collapsible=offcanvas]:-right-[--sidebar-width]",
