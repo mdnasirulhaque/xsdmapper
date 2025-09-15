@@ -25,11 +25,11 @@ const Breadcrumbs = () => {
         <Breadcrumb>
             <BreadcrumbList>
                 <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                <BreadcrumbLink href="/" className="text-primary-foreground/80 hover:text-primary-foreground">Home</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                <BreadcrumbPage>New Request</BreadcrumbPage>
+                <BreadcrumbPage className="text-primary-foreground font-semibold">New Request</BreadcrumbPage>
                 </BreadcrumbItem>
             </BreadcrumbList>
         </Breadcrumb>
@@ -43,13 +43,13 @@ const PageHeaderActions = ({ onPreview, onDownload }: Pick<HeaderProps, 'onPrevi
 
     return (
          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={onPreview}>
-            <Eye className="mr-2 h-4 w-4" />
-            Preview XML
+            <Button variant="secondary" onClick={onPreview}>
+                <Eye className="mr-2 h-4 w-4" />
+                Preview XML
             </Button>
-            <Button onClick={onDownload} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-            <FileDown className="mr-2 h-4 w-4" />
-            Download XSLT
+            <Button variant="secondary" onClick={onDownload}>
+                <FileDown className="mr-2 h-4 w-4" />
+                Download XSLT
             </Button>
       </div>
     )
@@ -63,23 +63,23 @@ export default function Header({ onPreview, onDownload }: HeaderProps) {
   return (
     <header className="sticky top-0 z-10 flex flex-col">
         {isCreationFlow && (
-            <div className="flex h-14 items-center gap-4 px-4 sm:px-6 bg-muted/40 mx-4 sm:mx-6 mt-4 rounded-t-lg">
+            <div className="flex h-14 items-center gap-4 px-4 sm:px-6 bg-primary mx-4 sm:mx-6 mt-4 rounded-t-lg">
                 <Breadcrumbs />
             </div>
         )}
         <div className={cn(
-            "bg-card shadow-sm", 
-            isCreationFlow ? "mx-4 sm:mx-6 rounded-b-lg p-4" : "border-b p-4 rounded-lg"
+            "bg-primary text-primary-foreground shadow-sm", 
+            isCreationFlow ? "mx-4 sm:mx-6 rounded-b-lg p-4" : "bg-primary text-primary-foreground border-b p-4 rounded-lg"
         )}>
             <div className="flex items-center justify-between h-16">
                 <div className="flex items-center gap-3">
-                    <CodeXml className="h-8 w-8 text-primary" />
-                    <h1 className="text-xl font-bold tracking-tight text-foreground">
+                    <CodeXml className="h-8 w-8 text-primary-foreground" />
+                    <h1 className="text-xl font-bold tracking-tight text-primary-foreground">
                     XSD Mapper
                     </h1>
                 </div>
                 {!isCreationFlow && (
-                     <Button asChild>
+                     <Button asChild variant="secondary">
                         <Link href="/new/upload?keepState=true">
                             <FilePlus className="mr-2 h-4 w-4" />
                             Create New Request
