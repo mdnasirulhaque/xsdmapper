@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -6,32 +5,19 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
 export default function UploadStep() {
   const router = useRouter();
   const { toast } = useToast();
-  const { setState, inputXml: globalInputXml } = useAppContext();
-
-  // Local state for handling file content within this component
-  const [inputXml, setInputXml] = useState<string | null>(null);
-  const [responseXml, setResponseXml] = useState<string | null>(null);
+  const { inputXml, responseXml, setState } = useAppContext();
 
   const inputXmlRef = useRef<HTMLInputElement>(null);
   const responseXmlRef = useRef<HTMLInputElement>(null);
 
   const [previewing, setPreviewing] = useState<{ content: string; title: string } | null>(null);
-
-  // Effect to navigate only after the global state has been updated
-  useEffect(() => {
-    // We only navigate if globalInputXml has a value and matches our local state.
-    // This ensures this effect doesn't run on initial load or irrelevant updates.
-    if (globalInputXml && globalInputXml === inputXml) {
-      router.push(`/new/preview-xsd`);
-    }
-  }, [globalInputXml, inputXml, router]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, fileType: 'input' | 'response') => {
     const file = event.target.files?.[0];
@@ -41,9 +27,9 @@ export default function UploadStep() {
     reader.onload = (e) => {
       const content = e.target?.result as string;
       if (fileType === 'input') {
-        setInputXml(content);
+        setState({ inputXml: content });
       } else {
-        setResponseXml(content);
+        setState({ responseXml: content });
       }
       toast({
         variant: "success",
@@ -74,10 +60,8 @@ export default function UploadStep() {
       });
       return;
     }
-    // Set the global state. The useEffect will handle navigation once this is done.
+    // All other state is reset to ensure a clean slate for the next steps
     setState({ 
-        inputXml, 
-        responseXml,
         inputXsd: null, 
         responseXsd: null, 
         sourceSchema: null, 
@@ -85,6 +69,7 @@ export default function UploadStep() {
         swaggerFile: null,
         mappings: []
     });
+    router.push(`/new/preview-xsd`);
   }
   
   return (
