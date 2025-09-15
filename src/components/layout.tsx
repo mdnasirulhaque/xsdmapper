@@ -2,7 +2,7 @@
 "use client"
 
 import Header from "@/components/header"
-import { CodeXml, Folder, FileCheck } from "lucide-react"
+import { CodeXml, Folder, FileCheck, FilePlus } from "lucide-react"
 import { 
     Sidebar, 
     SidebarProvider, 
@@ -78,6 +78,12 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
             </SidebarHeader>
             <SidebarContent className="p-0">
                 <SidebarMenu>
+                     <SidebarMenuItem>
+                        <SidebarMenuButton href="/new/upload" tooltip="Create New Request" isActive={isCreationFlow}>
+                            <FilePlus className="size-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Create New Request</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                      <SidebarMenuItem>
                         <SidebarMenuButton href="/requests" tooltip="Check Requests" isActive={pathname === '/requests'}>
                             <FileCheck className="size-5" />

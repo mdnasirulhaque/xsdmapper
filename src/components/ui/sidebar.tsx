@@ -65,7 +65,7 @@ const SidebarProvider = React.forwardRef<
   ) => {
     // Helper to get the initial open state from cookies.
     const getInitialOpen = () => {
-        if (typeof window === "undefined") return defaultOpen ?? true;
+        if (typeof window === "undefined") return defaultOpen ?? false;
         const cookie = document.cookie
             .split("; ")
             .find((row) => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`));
@@ -73,7 +73,7 @@ const SidebarProvider = React.forwardRef<
         if (cookie) {
             return cookie.split("=")[1] === "true";
         }
-        return defaultOpen ?? true;
+        return defaultOpen ?? false;
     }
 
 
