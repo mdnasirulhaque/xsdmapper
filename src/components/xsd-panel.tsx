@@ -5,7 +5,7 @@ import { useState, useRef, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import FileUploadButton from "@/components/file-upload-button"
 import type { XsdNode, Mapping } from "@/types"
-import { Braces, FileCode, Star } from "lucide-react"
+import { Braces, FileCode, Star, Folder, File } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "./ui/button"
 import { useToast } from "@/hooks/use-toast"
@@ -45,11 +45,12 @@ const XsdNodeRecursive = ({
     }
   }, [node.id, nodeRefs, rerenderCanvas])
 
-  const isDraggable = type === 'source' && (!node.children || node.children.length === 0);
-  const isDroppable = type === 'target' && (!node.children || node.children.length === 0);
+  const hasChildren = node.children && node.children.length > 0;
+  const isDraggable = type === 'source';
+  const isDroppable = type === 'target';
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    if (isDraggable && onDragStart) {
+    if (onDragStart) {
       e.dataTransfer.effectAllowed = 'link'
       onDragStart(node)
     }
@@ -83,8 +84,7 @@ const XsdNodeRecursive = ({
     ? mappings.some(m => m.sourceId === node.id) 
     : mappings.some(m => m.targetId === node.id);
   const isDragging = draggingNodeId === node.id;
-  const hasChildren = node.children && node.children.length > 0;
-
+  
   return (
     <div className="ml-4">
         <div
@@ -103,17 +103,15 @@ const XsdNodeRecursive = ({
                 isDragOver && "bg-accent/20 ring-2 ring-accent"
             )}
             >
-            {!hasChildren && (
-                <div
-                className={cn(
-                    "absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 bg-card transition-colors",
-                    type === 'source' ? "-right-1.5 translate-x-1/2" : "-left-1.5 -translate-x-1/2",
-                    isMapped ? "bg-primary border-primary" : "border-muted-foreground/50 group-hover:border-primary"
-                )}
-                />
+            <div
+            className={cn(
+                "absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 bg-card transition-colors",
+                type === 'source' ? "-right-1.5 translate-x-1/2" : "-left-1.5 -translate-x-1/2",
+                isMapped ? "bg-primary border-primary" : "border-muted-foreground/50 group-hover:border-primary"
             )}
+            />
             
-            {hasChildren ? <Braces className="w-4 h-4 mr-2 text-muted-foreground" /> : <FileCode className="w-4 h-4 mr-2 text-muted-foreground" />}
+            {hasChildren ? <Folder className="w-4 h-4 mr-2 text-muted-foreground" /> : <File className="w-4 h-4 mr-2 text-muted-foreground" />}
             <span className="font-medium text-sm flex-1">{node.name}</span>
             <span className="text-xs text-muted-foreground ml-2">{node.type}</span>
         </div>
@@ -153,8 +151,30 @@ const renderSchemaTree = (
 ) => {
     return (
         <div>
-            <div className="relative flex items-center p-2 rounded-md transition-all duration-150 group">
-                <Braces className="w-4 h-4 mr-2 text-muted-foreground" />
+            <div
+                className={cn(
+                    "relative flex items-center p-2 rounded-md transition-all duration-150 group",
+                    type === 'source' && "cursor-grab"
+                )}
+                 draggable={type === 'source'}
+                 onDragStart={(e) => {
+                     if (onDragStart) {
+                         e.dataTransfer.effectAllowed = 'link';
+                         onDragStart(schema);
+                     }
+                 }}
+                 onDragEnd={onDragEnd}
+                 onDragOver={(e) => {
+                    if(type === 'target') e.preventDefault();
+                 }}
+                 onDrop={(e) => {
+                    if (type === 'target' && onDrop) {
+                        e.preventDefault();
+                        onDrop(schema);
+                    }
+                 }}
+            >
+                <Folder className="w-4 h-4 mr-2 text-muted-foreground" />
                 <span className="font-medium text-sm flex-1">{schema.name}</span>
                 <span className="text-xs text-muted-foreground ml-2">{schema.type}</span>
             </div>

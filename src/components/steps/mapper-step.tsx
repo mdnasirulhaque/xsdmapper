@@ -9,6 +9,11 @@ import TransformationDialog from '@/components/transformation-dialog'
 import { useAppContext } from '@/context/AppContext'
 import { useToast } from '@/hooks/use-toast'
 import { parseXsdToXsdNode } from '@/lib/xsd-parser'
+import PreviewDialog from '@/components/preview-dialog'
+import { generateXmlPreview } from '@/lib/xml-preview-generator'
+import { generateXslt } from '@/lib/xslt-generator'
+import { Button } from '@/components/ui/button'
+import { Download, Eye } from 'lucide-react'
 
 export default function MapperStep() {
   const { 
@@ -27,6 +32,9 @@ export default function MapperStep() {
   const nodeRefs = useRef<Map<string, HTMLElement | null>>(new Map())
   const canvasRef = useRef<HTMLDivElement>(null)
   const [canvasKey, setCanvasKey] = useState(0)
+
+  const [isPreviewOpen, setPreviewOpen] = useState(false);
+  const [xmlPreview, setXmlPreview] = useState('');
 
   const rerenderCanvas = useCallback(() => {
      setTimeout(() => setCanvasKey(prev => prev + 1), 50)
@@ -186,10 +194,29 @@ export default function MapperStep() {
     setTransformationDialogOpen(false)
     setSelectedMapping(null)
   }
+  
+  const handlePreview = () => {
+    const preview = generateXmlPreview(mappings, targetSchema);
+    setXmlPreview(preview);
+    setPreviewOpen(true);
+  };
+
+  const handleDownload = () => {
+    const xsltContent = generateXslt(mappings, sourceSchema, targetSchema);
+    const blob = new Blob([xsltContent], { type: 'application/xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'transformation.xslt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="flex-1 flex flex-col gap-4 overflow-hidden">
-      <div ref={canvasRef} className="flex-1 relative bg-card rounded-lg overflow-hidden">
+      <div ref={canvasRef} className="flex-1 relative bg-card rounded-lg overflow-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8">
           <XsdPanel
             title="Source Schema"
@@ -226,16 +253,22 @@ export default function MapperStep() {
             onMappingDelete={deleteMapping}
           />
         )}
-
-        {selectedMapping && (
-          <TransformationDialog
-            isOpen={isTransformationDialogOpen}
-            onOpenChange={setTransformationDialogOpen}
-            mapping={selectedMapping}
-            onSave={handleSaveTransformation}
-          />
-        )}
       </div>
+
+       {selectedMapping && (
+        <TransformationDialog
+          isOpen={isTransformationDialogOpen}
+          onOpenChange={setTransformationDialogOpen}
+          mapping={selectedMapping}
+          onSave={handleSaveTransformation}
+        />
+      )}
+
+      <PreviewDialog
+        isOpen={isPreviewOpen}
+        onOpenChange={setPreviewOpen}
+        content={xmlPreview}
+      />
     </div>
   )
 }
