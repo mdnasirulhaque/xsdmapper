@@ -196,11 +196,20 @@ export default function MapperStep() {
     setSelectedMapping(null)
   }
 
-  const handleResetMappings = () => {
+  const handleResetCurrentSet = () => {
+    setState({ mappings: { ...mappings, [activeSet]: [] } });
+    toast({
+      variant: "success",
+      title: "Current Set Reset",
+      description: `All mappings in Set ${activeSet.slice(-1)} have been cleared.`,
+    });
+  }
+
+  const handleResetAllMappings = () => {
     setState({ mappings: { set1: [], set2: [], set3: [] } });
     toast({
       variant: "success",
-      title: "Mappings Reset",
+      title: "All Mappings Reset",
       description: "All mappings in all sets have been cleared.",
     });
   }
@@ -211,11 +220,32 @@ export default function MapperStep() {
 
   return (
     <div className="flex-1 flex flex-col gap-4 overflow-hidden h-full">
-        <div className="flex items-center justify-center bg-card rounded-lg p-3 border">
+        <div className="flex items-center justify-center bg-card rounded-lg p-3 border gap-4">
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="outline">
+                        <RotateCcw className="mr-2 h-4 w-4" /> Reset Current Set
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action will permanently delete all your current mappings in <strong>Set {activeSet.slice(-1)}</strong>. You cannot undo this action.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleResetCurrentSet}>
+                            Continue
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
             <AlertDialog>
                 <AlertDialogTrigger asChild>
                     <Button variant="destructive">
-                        <RotateCcw className="mr-2 h-4 w-4" /> Reset all mappings
+                        <RotateCcw className="mr-2 h-4 w-4" /> Reset All Sets
                     </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -227,7 +257,7 @@ export default function MapperStep() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleResetMappings}>
+                        <AlertDialogAction onClick={handleResetAllMappings}>
                             Continue
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -307,5 +337,7 @@ export default function MapperStep() {
     </div>
   )
 }
+
+    
 
     
