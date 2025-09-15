@@ -86,55 +86,56 @@ const XsdNodeRecursive = ({
   const hasChildren = node.children && node.children.length > 0;
 
   return (
-    <div
-      ref={nodeRef}
-      draggable={isDraggable}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      className={cn(
-        "relative flex items-center p-2 rounded-md transition-all duration-150 group",
-        "ml-4",
-        isDraggable && "cursor-grab",
-        isDragging && "opacity-50 ring-2 ring-accent ring-offset-2 ring-offset-background",
-        isDroppable && "cursor-crosshair",
-        isDragOver && "bg-accent/20 ring-2 ring-accent"
-      )}
-    >
-      {!hasChildren && (
+    <div className="ml-4">
         <div
-          className={cn(
-            "absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 bg-card transition-colors",
-            type === 'source' ? "-right-1.5 translate-x-1/2" : "-left-1.5 -translate-x-1/2",
-            isMapped ? "bg-primary border-primary" : "border-muted-foreground/50 group-hover:border-primary"
-          )}
-        />
-      )}
-      
-      {hasChildren ? <Braces className="w-4 h-4 mr-2 text-muted-foreground" /> : <FileCode className="w-4 h-4 mr-2 text-muted-foreground" />}
-      <span className="font-medium text-sm flex-1">{node.name}</span>
-      <span className="text-xs text-muted-foreground ml-2">{node.type}</span>
-      
-      {hasChildren && (
-        <div className="pl-6 space-y-1 border-l border-dashed border-muted-foreground/30 absolute left-4 top-full w-full">
-          {node.children?.map(child => (
-            <XsdNodeRecursive
-              key={child.id}
-              node={child}
-              type={type}
-              onDragStart={onDragStart}
-              onDragEnd={onDragEnd}
-              onDrop={onDrop}
-              nodeRefs={nodeRefs}
-              mappings={mappings}
-              draggingNodeId={draggingNodeId}
-              rerenderCanvas={rerenderCanvas}
-            />
-          ))}
+            ref={nodeRef}
+            draggable={isDraggable}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={cn(
+                "relative flex items-center p-2 rounded-md transition-all duration-150 group",
+                isDraggable && "cursor-grab",
+                isDragging && "opacity-50 ring-2 ring-accent ring-offset-2 ring-offset-background",
+                isDroppable && "cursor-crosshair",
+                isDragOver && "bg-accent/20 ring-2 ring-accent"
+            )}
+            >
+            {!hasChildren && (
+                <div
+                className={cn(
+                    "absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 bg-card transition-colors",
+                    type === 'source' ? "-right-1.5 translate-x-1/2" : "-left-1.5 -translate-x-1/2",
+                    isMapped ? "bg-primary border-primary" : "border-muted-foreground/50 group-hover:border-primary"
+                )}
+                />
+            )}
+            
+            {hasChildren ? <Braces className="w-4 h-4 mr-2 text-muted-foreground" /> : <FileCode className="w-4 h-4 mr-2 text-muted-foreground" />}
+            <span className="font-medium text-sm flex-1">{node.name}</span>
+            <span className="text-xs text-muted-foreground ml-2">{node.type}</span>
         </div>
-      )}
+        
+        {hasChildren && (
+            <div className="pl-6 space-y-1 border-l border-dashed border-muted-foreground/30">
+            {node.children?.map(child => (
+                <XsdNodeRecursive
+                key={child.id}
+                node={child}
+                type={type}
+                onDragStart={onDragStart}
+                onDragEnd={onDragEnd}
+                onDrop={onDrop}
+                nodeRefs={nodeRefs}
+                mappings={mappings}
+                draggingNodeId={draggingNodeId}
+                rerenderCanvas={rerenderCanvas}
+                />
+            ))}
+            </div>
+        )}
     </div>
   )
 }
@@ -157,7 +158,7 @@ const renderSchemaTree = (
                 <span className="font-medium text-sm flex-1">{schema.name}</span>
                 <span className="text-xs text-muted-foreground ml-2">{schema.type}</span>
             </div>
-            <div className="pl-6 space-y-1 border-l border-dashed border-muted-foreground/30">
+            <div className="space-y-1 border-l border-dashed border-muted-foreground/30">
                 {schema.children?.map(child => (
                     <XsdNodeRecursive
                         key={child.id}
