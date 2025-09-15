@@ -23,12 +23,13 @@ const FileUploadSection = ({ title, description, onFileUpload, fileContent, uplo
     const { toast } = useToast();
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
-    const [internalFileContent, setInternalFileContent] = useState<string | null>(fileContent);
-
+    
     useEffect(() => {
-        setInternalFileContent(fileContent);
         if (fileContent && !fileName) {
             setFileName(`sample-${fileType}.xml`);
+        }
+        if (!fileContent && fileName) {
+            setFileName(null);
         }
     }, [fileContent, fileType, fileName]);
 
@@ -41,7 +42,6 @@ const FileUploadSection = ({ title, description, onFileUpload, fileContent, uplo
             reader.onload = (e) => {
                 try {
                     const content = e.target?.result as string;
-                    setInternalFileContent(content);
                     onFileUpload(content, fileType);
                     toast({
                         variant: "success",
@@ -51,7 +51,7 @@ const FileUploadSection = ({ title, description, onFileUpload, fileContent, uplo
 
                 } catch (error) {
                     console.error("Error processing XML file:", error);
-                    setInternalFileContent(null);
+                    onFileUpload('', fileType); // Clear content on error
                     setFileName(null);
                     toast({
                         variant: "destructive",
@@ -84,17 +84,17 @@ const FileUploadSection = ({ title, description, onFileUpload, fileContent, uplo
                     {uploadComplete ? <CheckCircle className="mr-2 h-5 w-5" /> : <FileUp className="mr-2 h-5 w-5" />}
                     {uploadComplete ? "Uploaded" : `Upload ${title}`}
                 </Button>
-                {internalFileContent && (
+                {fileContent && (
                     <Button variant="ghost" className="w-full text-sm" onClick={() => setIsPreviewOpen(true)}>
                         <Eye className="mr-2 h-4 w-4" /> Preview File
                     </Button>
                 )}
             </div>
-            {internalFileContent && (
+            {fileContent && (
                 <FilePreviewDialog
                     isOpen={isPreviewOpen}
                     onOpenChange={setIsPreviewOpen}
-                    content={internalFileContent}
+                    content={fileContent}
                     title={fileName || 'File Preview'}
                 />
             )}
@@ -109,9 +109,9 @@ export default function UploadStep() {
 
   const handleFileUpload = (content: string, fileType: 'input' | 'response') => {
     if (fileType === 'input') {
-        setState({ inputXml: content });
+        setState({ inputXml: content, inputXsd: null, sourceSchema: null, mappings: [] });
     } else {
-        setState({ responseXml: content });
+        setState({ responseXml: content, responseXsd: null, targetSchema: null, mappings: [] });
     }
   }
 
@@ -133,7 +133,12 @@ export default function UploadStep() {
 
         setState({
             inputXml: inputContent,
-            responseXml: responseContent
+            responseXml: responseContent,
+            inputXsd: null,
+            sourceSchema: null,
+            responseXsd: null,
+            targetSchema: null,
+            mappings: [],
         });
 
         toast({
@@ -153,6 +158,14 @@ export default function UploadStep() {
   }, [setState, toast]);
 
   const handleProceed = () => {
+    if (!inputXml || !responseXml) {
+        toast({
+            variant: 'destructive',
+            title: 'Files Missing',
+            description: 'Please upload both an input and a response XML file to continue.',
+        });
+        return;
+    }
     router.push(`/new/preview-xsd`);
   }
   
