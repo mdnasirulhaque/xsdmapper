@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -6,17 +5,17 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
 export default function UploadStep() {
   const router = useRouter();
   const { toast } = useToast();
-  const { setState, inputXml: contextInputXml, responseXml: contextResponseXml } = useAppContext();
+  const { setState } = useAppContext();
 
-  const [inputXml, setInputXml] = useState<string | null>(contextInputXml);
-  const [responseXml, setResponseXml] = useState<string | null>(contextResponseXml);
+  const [inputXml, setInputXml] = useState<string | null>(null);
+  const [responseXml, setResponseXml] = useState<string | null>(null);
 
   const inputXmlRef = useRef<HTMLInputElement>(null);
   const responseXmlRef = useRef<HTMLInputElement>(null);
@@ -55,7 +54,6 @@ export default function UploadStep() {
             description: "Could not process the XML file.",
           });
         } finally {
-            // Reset input value to allow re-uploading the same file
             if(event.target) {
                 event.target.value = "";
             }
@@ -63,6 +61,14 @@ export default function UploadStep() {
       };
       reader.readAsText(file);
     }
+  };
+
+  const handleUploadInputClick = () => {
+    inputXmlRef.current?.click();
+  };
+  
+  const handleUploadResponseClick = () => {
+    responseXmlRef.current?.click();
   };
 
   const handleProceed = () => {
@@ -74,11 +80,9 @@ export default function UploadStep() {
       });
       return;
     }
-    // Update global state before proceeding
     setState({ 
         inputXml, 
         responseXml,
-        // Reset subsequent state if files are re-uploaded
         inputXsd: null, 
         responseXsd: null, 
         sourceSchema: null, 
@@ -98,7 +102,6 @@ export default function UploadStep() {
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Input XML Section */}
             <div className="flex flex-col items-center gap-4 rounded-lg border p-6">
               <input
                 type="file"
@@ -109,7 +112,7 @@ export default function UploadStep() {
               />
               <h3 className="font-semibold">Input XML</h3>
               <p className="text-sm text-muted-foreground text-center">This will be used to generate the context and request XSD.</p>
-              <Button onClick={() => inputXmlRef.current?.click()} size="lg" className="w-full" variant={inputXml ? "secondary" : "default"}>
+              <Button onClick={handleUploadInputClick} size="lg" className="w-full" variant={inputXml ? "secondary" : "default"}>
                 {inputXml ? <CheckCircle className="mr-2 h-5 w-5" /> : <FileUp className="mr-2 h-5 w-5" />}
                 {inputXml ? "Uploaded" : "Upload Input XML"}
               </Button>
@@ -120,7 +123,6 @@ export default function UploadStep() {
               )}
             </div>
 
-            {/* Response XML Section */}
             <div className="flex flex-col items-center gap-4 rounded-lg border p-6">
               <input
                 type="file"
@@ -131,7 +133,7 @@ export default function UploadStep() {
               />
               <h3 className="font-semibold">Response XML</h3>
               <p className="text-sm text-muted-foreground text-center">This will be used to generate the response XSD.</p>
-              <Button onClick={() => responseXmlRef.current?.click()} size="lg" className="w-full" variant={responseXml ? "secondary" : "default"}>
+              <Button onClick={handleUploadResponseClick} size="lg" className="w-full" variant={responseXml ? "secondary" : "default"}>
                 {responseXml ? <CheckCircle className="mr-2 h-5 w-5" /> : <FileUp className="mr-2 h-5 w-5" />}
                 {responseXml ? "Uploaded" : "Upload Response XML"}
               </Button>
