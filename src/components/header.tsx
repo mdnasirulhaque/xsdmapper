@@ -25,11 +25,11 @@ const Breadcrumbs = () => {
         <Breadcrumb>
             <BreadcrumbList>
                 <BreadcrumbItem>
-                <BreadcrumbLink href="/" className="text-primary-foreground/80 hover:text-primary-foreground">Home</BreadcrumbLink>
+                <BreadcrumbLink href="/" className="text-muted-foreground hover:text-foreground">Home</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                <BreadcrumbPage className="text-primary-foreground font-semibold">New Request</BreadcrumbPage>
+                <BreadcrumbPage className="text-foreground font-semibold">New Request</BreadcrumbPage>
                 </BreadcrumbItem>
             </BreadcrumbList>
         </Breadcrumb>
@@ -61,20 +61,19 @@ export default function Header({ onPreview, onDownload }: HeaderProps) {
   const isCreationFlow = pathname.startsWith('/new');
 
   return (
-    <header className="sticky top-0 z-10 flex flex-col">
+    <header className="sticky top-0 z-10 flex flex-col gap-4 px-4 sm:px-6 pt-4">
         {isCreationFlow && (
-            <div className="flex h-14 items-center gap-4 px-4 sm:px-6 bg-primary mx-4 sm:mx-6 mt-4 rounded-t-lg">
+            <div className="h-14 flex items-center px-4 sm:px-6 bg-secondary rounded-lg">
                 <Breadcrumbs />
             </div>
         )}
         <div className={cn(
-            "bg-primary text-primary-foreground shadow-sm", 
-            isCreationFlow ? "mx-4 sm:mx-6 rounded-b-lg p-4" : "bg-primary text-primary-foreground border-b p-4 rounded-lg"
+            "bg-header text-header-foreground p-4 rounded-lg"
         )}>
             <div className="flex items-center justify-between h-16">
                 <div className="flex items-center gap-3">
-                    <CodeXml className="h-8 w-8 text-primary-foreground" />
-                    <h1 className="text-xl font-bold tracking-tight text-primary-foreground">
+                    <CodeXml className="h-8 w-8 text-header-foreground" />
+                    <h1 className="text-xl font-bold tracking-tight text-header-foreground">
                     XSD Mapper
                     </h1>
                 </div>

@@ -63,8 +63,6 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
     setPreviewDialogOpen(true)
   }
 
-  const showActions = pathname.endsWith('/mapper');
-
   return (
     <SidebarProvider defaultOpen={false}>
         <div className="flex min-h-screen w-full bg-muted/40">

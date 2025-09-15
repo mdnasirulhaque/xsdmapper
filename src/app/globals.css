@@ -37,6 +37,8 @@
     --sidebar-accent-foreground: #171717;
     --sidebar-border: #e8e8ea;
     --sidebar-ring: #3b82f6;
+    --header-background: #0A2540;
+    --header-foreground: #fcfcfc;
   }
 
   .dark {
@@ -72,6 +74,8 @@
     --sidebar-accent-foreground: #f5f5f7;
     --sidebar-border: #27282e;
     --sidebar-ring: #3b82f6;
+    --header-background: #0A2540;
+    --header-foreground: #fcfcfc;
   }
 }
 

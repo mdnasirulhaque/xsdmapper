@@ -72,6 +72,10 @@ export default {
           border: 'var(--sidebar-border)',
           ring: 'var(--sidebar-ring)',
         },
+        header: {
+          DEFAULT: 'var(--header-background)',
+          foreground: 'var(--header-foreground)',
+        }
       },
       borderRadius: {
         lg: 'var(--radius)',
