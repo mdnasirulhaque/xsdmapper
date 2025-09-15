@@ -10,15 +10,10 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
-import { CodeXml, Eye, FileDown, FilePlus } from "lucide-react"
+import { CodeXml, FilePlus } from "lucide-react"
 import { usePathname } from 'next/navigation'
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-
-interface HeaderProps {
-  onPreview?: () => void;
-  onDownload?: () => void;
-}
 
 const Breadcrumbs = () => {
     return (
@@ -36,27 +31,7 @@ const Breadcrumbs = () => {
     )
 }
 
-const PageHeaderActions = ({ onPreview, onDownload }: Pick<HeaderProps, 'onPreview' | 'onDownload'>) => {
-    const pathname = usePathname();
-    const showActions = pathname.endsWith('/mapper');
-    if (!showActions) return null;
-
-    return (
-         <div className="flex items-center gap-2">
-            <Button variant="secondary" onClick={onPreview}>
-                <Eye className="mr-2 h-4 w-4" />
-                Preview XML
-            </Button>
-            <Button variant="secondary" onClick={onDownload}>
-                <FileDown className="mr-2 h-4 w-4" />
-                Download XSLT
-            </Button>
-      </div>
-    )
-}
-
-
-export default function Header({ onPreview, onDownload }: HeaderProps) {
+export default function Header() {
   const pathname = usePathname();
   const isCreationFlow = pathname.startsWith('/new');
 
@@ -85,9 +60,6 @@ export default function Header({ onPreview, onDownload }: HeaderProps) {
                         </Link>
                     </Button>
                 )}
-                <div className="flex justify-end min-w-[200px]">
-                    <PageHeaderActions onPreview={onPreview} onDownload={onDownload} />
-                </div>
             </div>
         </div>
     </header>

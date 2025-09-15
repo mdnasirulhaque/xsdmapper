@@ -15,12 +15,6 @@ import {
     SidebarFooter,
 } from "@/components/ui/sidebar"
 import { usePathname } from 'next/navigation'
-import { useAppContext } from "@/context/AppContext"
-import { useToast } from "@/hooks/use-toast"
-import { generateXslt } from "@/lib/xslt-generator"
-import { generateXmlPreview } from "@/lib/xml-preview-generator"
-import { useState } from "react"
-import PreviewDialog from "./preview-dialog"
 import Stepper from "./stepper"
 
 
@@ -32,36 +26,6 @@ interface AppLayoutProps {
 export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps) {
   const pathname = usePathname();
   const isCreationFlow = pathname.startsWith('/new');
-
-  const { mappings, sourceSchema, targetSchema, resetState } = useAppContext();
-  const { toast } = useToast();
-  const [isPreviewDialogOpen, setPreviewDialogOpen] = useState(false)
-  const [previewContent, setPreviewContent] = useState('')
-
-  const handleDownloadXslt = () => {
-    if (!sourceSchema || !targetSchema) {
-      toast({ variant: 'destructive', title: "Missing Schemas", description: "Please load both source and target schemas." });
-      return;
-    }
-    const xsltContent = generateXslt(mappings, sourceSchema, targetSchema)
-    const blob = new Blob([xsltContent], { type: 'application/xml;charset=utf-8' })
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.download = 'transformation.xslt'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-
-  const handlePreview = () => {
-    if (!targetSchema) {
-      toast({ variant: 'destructive', title: "Missing Target Schema", description: "Please load a target schema to generate a preview." });
-      return;
-    }
-    const preview = generateXmlPreview(mappings, targetSchema)
-    setPreviewContent(preview)
-    setPreviewDialogOpen(true)
-  }
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -103,10 +67,7 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
             </SidebarFooter>
         </Sidebar>
         <main className="flex flex-1 flex-col h-screen overflow-y-auto">
-              <Header 
-                onDownload={handleDownloadXslt}
-                onPreview={handlePreview}
-              />
+              <Header />
               {isCreationFlow && (
                  <div className="mx-4 sm:mx-6 my-4 p-4 rounded-lg bg-card shadow-sm">
                     <Stepper currentStep={currentStep} />
@@ -116,11 +77,6 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
                 {children}
             </div>
         </main>
-        <PreviewDialog
-          isOpen={isPreviewDialogOpen}
-          onOpenChange={setPreviewDialogOpen}
-          content={previewContent}
-        />
         </div>
     </SidebarProvider>
   )
