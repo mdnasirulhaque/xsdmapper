@@ -125,45 +125,43 @@ export default function MapperStep() {
   }
 
   return (
-    <div className="flex flex-col bg-background text-foreground flex-1">
-      <main ref={canvasRef} className="flex-1 overflow-auto relative p-4 sm:p-6 md:p-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
-          <XsdPanel
-            title="Source Schema"
-            schema={sourceSchema}
-            type="source"
-            onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            nodeRefs={nodeRefs}
-            mappings={mappings}
-            draggingNodeId={draggingNode?.id}
-            rerenderCanvas={rerenderCanvas}
-          />
-          <XsdPanel
-            title="Target Schema"
-            schema={targetSchema}
-            type="target"
-            onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')}
-            onDrop={handleDrop}
-            nodeRefs={nodeRefs}
-            mappings={mappings}
-            draggingNodeId={draggingNode?.id}
-            rerenderCanvas={rerenderCanvas}
-          />
-        </div>
-        
-        {canvasRef.current && (
-          <MappingCanvas
-            key={canvasKey}
-            mappings={mappings}
-            nodeRefs={nodeRefs.current}
-            canvasRef={canvasRef.current}
-            onMappingClick={handleOpenTransformationDialog}
-            onMappingDelete={deleteMapping}
-          />
-        )}
-      </main>
+    <div ref={canvasRef} className="flex-1 overflow-auto relative p-4 sm:p-6 md:p-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
+        <XsdPanel
+          title="Source Schema"
+          schema={sourceSchema}
+          type="source"
+          onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          nodeRefs={nodeRefs}
+          mappings={mappings}
+          draggingNodeId={draggingNode?.id}
+          rerenderCanvas={rerenderCanvas}
+        />
+        <XsdPanel
+          title="Target Schema"
+          schema={targetSchema}
+          type="target"
+          onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')}
+          onDrop={handleDrop}
+          nodeRefs={nodeRefs}
+          mappings={mappings}
+          draggingNodeId={draggingNode?.id}
+          rerenderCanvas={rerenderCanvas}
+        />
+      </div>
+      
+      {canvasRef.current && (
+        <MappingCanvas
+          key={canvasKey}
+          mappings={mappings}
+          nodeRefs={nodeRefs.current}
+          canvasRef={canvasRef.current}
+          onMappingClick={handleOpenTransformationDialog}
+          onMappingDelete={deleteMapping}
+        />
+      )}
 
       {selectedMapping && (
         <TransformationDialog
