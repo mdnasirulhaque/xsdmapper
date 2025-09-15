@@ -110,7 +110,6 @@ export default function MapperStep() {
       
       if(mappings.some(m => m.targetId === newMapping.targetId)) {
         toast({
-            variant: 'destructive',
             title: "Mapping Conflict",
             description: `Target ${targetNode.name} is already mapped. Multiple source fields can be mapped to one target for concatenation.`,
         })
@@ -142,7 +141,7 @@ export default function MapperStep() {
 
   return (
     <div className="flex-1 flex flex-col gap-4">
-      <div ref={canvasRef} className="flex-1 relative bg-card rounded-lg">
+      <div ref={canvasRef} className="flex-1 relative bg-card rounded-lg overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8">
           <XsdPanel
             title="Source Schema"
