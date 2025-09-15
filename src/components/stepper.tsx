@@ -2,7 +2,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { FileUp, Eye, FileJson, Link as LinkIcon, FileDown, Check } from "lucide-react"
+import { FileUp, Eye, FileJson, Link as LinkIcon, FileDown, CheckCircle2, ChevronRight } from "lucide-react"
 import NextLink from 'next/link';
 
 
@@ -21,36 +21,53 @@ interface StepperProps {
 export default function Stepper({ currentStep }: StepperProps) {
   return (
     <nav aria-label="Progress">
-      <ol role="list" className="grid grid-cols-5 items-start">
+      <ol role="list" className="flex items-center">
         {steps.map((step, stepIdx) => {
             const stepNumber = stepIdx + 1;
             const isCompleted = currentStep > stepNumber;
             const isCurrent = currentStep === stepNumber;
+            const isLastStep = stepIdx === steps.length - 1;
+
             return (
-                <li key={step.name} className="relative flex justify-center">
-                  <NextLink 
-                    href={step.href} 
-                    className={cn(
-                        "relative flex flex-col items-center justify-center gap-2 transition-colors",
-                        !isCompleted && !isCurrent && "cursor-not-allowed opacity-50"
-                    )}
-                    onClick={(e) => {
-                        if(!isCompleted && !isCurrent) e.preventDefault();
-                    }}
-                   >
-                    <div className={cn(
-                        "flex h-10 w-10 items-center justify-center rounded-full border-2 bg-background",
-                         isCompleted ? "border-primary bg-primary text-primary-foreground" 
-                         : isCurrent ? "border-primary text-primary" 
-                         : "border-border text-muted-foreground"
-                    )}>
-                     {isCompleted ? <Check className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
+                <li key={step.name} className="relative flex-1">
+                    <div className="flex items-center">
+                        <NextLink 
+                            href={step.href} 
+                            className={cn(
+                                "relative flex flex-col items-center justify-center gap-2 transition-colors w-24",
+                                !isCompleted && !isCurrent && "cursor-not-allowed opacity-50"
+                            )}
+                            onClick={(e) => {
+                                if(!isCompleted && !isCurrent) e.preventDefault();
+                            }}
+                        >
+                            <div className={cn(
+                                "flex h-10 w-10 items-center justify-center rounded-full border-2 bg-background z-10",
+                                isCompleted ? "border-primary bg-primary text-primary-foreground" 
+                                : isCurrent ? "border-primary text-primary" 
+                                : "border-border text-muted-foreground"
+                            )}>
+                            {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
+                            </div>
+                            <p className={cn(
+                                "text-xs font-medium text-center",
+                                isCurrent ? "text-primary" : "text-muted-foreground"
+                            )}>{step.name}</p>
+                        </NextLink>
+
+                        {!isLastStep && (
+                            <div className="flex-1 h-px bg-border relative">
+                                {isCompleted && (
+                                    <div className="absolute inset-0 h-px bg-primary"></div>
+                                )}
+                                {isCurrent && (
+                                     <div className="absolute -left-3 top-1/2 -translate-y-1/2">
+                                        <ChevronRight className="h-6 w-6 text-primary" />
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
-                    <p className={cn(
-                        "text-xs font-medium text-center",
-                        isCurrent ? "text-primary" : "text-muted-foreground"
-                    )}>{step.name}</p>
-                  </NextLink>
                 </li>
             )
         })}
