@@ -74,7 +74,7 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
             markerHeight="6"
             orient="auto-start-reverse"
           >
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="hsl(var(--primary))" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--primary)" />
           </marker>
            <marker
             id="arrowhead-accent"
@@ -85,7 +85,7 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
             markerHeight="6"
             orient="auto-start-reverse"
           >
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="hsl(var(--accent))" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)" />
           </marker>
         </defs>
         <AnimatePresence>
@@ -127,7 +127,7 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
                     className="flex items-center gap-2"
                   >
                     <g transform="translate(-32, -16)">
-                       <rect x="0" y="0" width="64" height="32" rx="16" fill="hsl(var(--card))" stroke="hsl(var(--border))" />
+                       <rect x="0" y="0" width="64" height="32" rx="16" fill="var(--card)" stroke="var(--border)" />
                        <g onClick={() => onMappingClick(mapping)} transform="translate(8, 8)">
                          <Wand2 className="text-muted-foreground hover:text-primary" size={16} />
                        </g>
@@ -142,8 +142,8 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
                  {hoveredLine !== id && (
                     <motion.circle 
                         r={mapping.transformation ? 6 : 4}
-                        fill={mapping.transformation ? "hsl(var(--primary))" : "hsl(var(--card))"}
-                        stroke="hsl(var(--primary))" 
+                        fill={mapping.transformation ? "var(--primary)" : "var(--card)"}
+                        stroke="var(--primary)" 
                         strokeWidth="2"
                         initial={{ opacity: 0, scale: 0 }}
                         animate={{ opacity: 1, scale: 1 }}

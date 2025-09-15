@@ -31,10 +31,8 @@ const toastVariants = cva(
       variant: {
         default: "border bg-background text-foreground",
         destructive:
-          "destructive border-destructive bg-destructive text-destructive-foreground",
-        success: "success border-emerald-500 bg-emerald-500 text-white",
-        warning: "warning border-amber-500 bg-amber-500 text-white",
-        info: "info border-sky-500 bg-sky-500 text-white",
+          "destructive group border-destructive bg-destructive text-destructive-foreground",
+        success: "success group border-emerald-500 bg-emerald-500 text-white",
       },
     },
     defaultVariants: {
@@ -65,7 +63,7 @@ const ToastAction = React.forwardRef<
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
-      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-destructive-foreground/40 group-[.destructive]:hover:bg-destructive-foreground group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive-foreground",
+      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive",
       className
     )}
     {...props}
