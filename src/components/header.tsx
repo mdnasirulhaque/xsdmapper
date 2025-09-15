@@ -23,7 +23,7 @@ const Breadcrumbs = () => {
             <BreadcrumbList>
                 <BreadcrumbItem>
                 <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                </⚫i>
+                </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                 <BreadcrumbPage>New Request</BreadcrumbPage>
