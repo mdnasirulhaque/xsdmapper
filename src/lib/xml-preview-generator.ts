@@ -1,4 +1,5 @@
-import type { Mapping, XsdNode } from '@/types';
+
+import type { Mapping, MappingSets, XsdNode } from '@/types';
 
 // Simple mock data for preview
 const mockSourceData: { [key: string]: string } = {
@@ -23,13 +24,15 @@ const getNodeById = (schema: XsdNode, id: string): XsdNode | null => {
     return null;
 }
 
-export const generateXmlPreview = (mappings: Mapping[], targetSchema: XsdNode | null): string => {
+export const generateXmlPreview = (mappingSets: MappingSets, targetSchema: XsdNode | null): string => {
   if (!targetSchema) return '<preview/>';
+  
+  const allMappings = [...mappingSets.set1, ...mappingSets.set2, ...mappingSets.set3];
 
   const generateNode = (node: XsdNode, indent: string): string => {
     let childXml = '';
     
-    const relevantMappings = mappings.filter(m => m.targetId === node.id);
+    const relevantMappings = allMappings.filter(m => m.targetId === node.id);
     
     let nodeValue = '';
     if (relevantMappings.length > 0) {
@@ -176,7 +179,7 @@ export const generateXmlPreview = (mappings: Mapping[], targetSchema: XsdNode | 
       return toXml(obj, rootName);
   }
 
-  const hierarchy = buildHierarchy(mappings, targetSchema);
+  const hierarchy = buildHierarchy(allMappings, targetSchema);
   const rawXml = objToXml(hierarchy, targetSchema.name);
   
   try {

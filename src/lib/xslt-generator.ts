@@ -1,4 +1,5 @@
-import type { Mapping, XsdNode } from '@/types';
+
+import type { Mapping, MappingSets, XsdNode } from '@/types';
 
 const findNodePath = (schema: XsdNode | null, nodeId: string): string => {
   if (!schema) return '';
@@ -88,7 +89,7 @@ const generateRecursiveTemplates = (
 
 
 export const generateXslt = (
-  mappings: Mapping[],
+  mappingSets: MappingSets,
   sourceSchema: XsdNode | null,
   targetSchema: XsdNode | null
 ): string => {
@@ -96,9 +97,11 @@ export const generateXslt = (
     return '<!-- Load schemas to generate XSLT -->';
   }
 
+  const allMappings = [...mappingSets.set1, ...mappingSets.set2, ...mappingSets.set3];
+  
   const rootSourcePath = sourceSchema.name;
   
-  const mappingsByTarget = mappings.reduce((acc, mapping) => {
+  const mappingsByTarget = allMappings.reduce((acc, mapping) => {
     if (!acc[mapping.targetId]) {
       acc[mapping.targetId] = [];
     }

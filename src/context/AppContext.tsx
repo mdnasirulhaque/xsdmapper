@@ -2,7 +2,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import type { XsdNode, Mapping } from '@/types';
+import type { XsdNode, Mapping, MappingSets } from '@/types';
 
 interface AppState {
   inputXml: string | null;
@@ -12,7 +12,7 @@ interface AppState {
   swaggerFile: string | null;
   sourceSchema: XsdNode | null;
   targetSchema: XsdNode | null;
-  mappings: Mapping[];
+  mappings: MappingSets;
 }
 
 interface AppContextType extends AppState {
@@ -28,7 +28,11 @@ const initialState: AppState = {
   swaggerFile: null,
   sourceSchema: null,
   targetSchema: null,
-  mappings: [],
+  mappings: {
+    set1: [],
+    set2: [],
+    set3: [],
+  },
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -44,8 +48,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       try {
         const parsed = JSON.parse(savedState);
         // Basic validation to ensure the parsed state has the expected shape
-        if (parsed && typeof parsed === 'object' && 'sourceSchema' in parsed) {
+        if (parsed && typeof parsed === 'object' && 'sourceSchema' in parsed && 'mappings' in parsed && 'set1' in parsed.mappings) {
           setStateValue(parsed);
+        } else {
+            // If the stored state is old, reset to initial
+            localStorage.removeItem('appState');
+            setStateValue(initialState);
         }
       } catch (e) {
         console.error("Failed to parse state from localStorage", e);

@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import type { XsdNode, Mapping, Transformation } from '@/types'
+import type { XsdNode, Mapping, Transformation, MappingSet, MappingSets } from '@/types'
 import XsdPanel from '@/components/xsd-panel'
 import MappingCanvas from '@/components/mapping-canvas'
 import TransformationDialog from '@/components/transformation-dialog'
@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function MapperStep() {
   const router = useRouter();
@@ -34,6 +35,7 @@ export default function MapperStep() {
   } = useAppContext();
   const { toast } = useToast();
   
+  const [activeSet, setActiveSet] = useState<MappingSet>('set1');
   const [draggingNode, setDraggingNode] = useState<XsdNode | null>(null)
   
   const [selectedMapping, setSelectedMapping] = useState<Mapping | null>(null)
@@ -60,7 +62,7 @@ export default function MapperStep() {
     return () => {
       resizeObserver.disconnect();
     }
-  }, [rerenderCanvas])
+  }, [rerenderCanvas, activeSet])
 
   const handleFileLoad = (schemaContent: string, type: 'source' | 'target') => {
     try {
@@ -68,11 +70,13 @@ export default function MapperStep() {
         if (!newSchema) {
             throw new Error("Could not parse the uploaded XSD file.");
         }
+        
+        const resetMappings: MappingSets = { set1: [], set2: [], set3: [] };
 
         if (type === 'source') {
-          setState({ sourceSchema: newSchema, mappings: [] });
+          setState({ sourceSchema: newSchema, mappings: resetMappings });
         } else {
-          setState({ targetSchema: newSchema, mappings: [] });
+          setState({ targetSchema: newSchema, mappings: resetMappings });
         }
         rerenderCanvas();
     } catch(e: any) {
@@ -95,10 +99,29 @@ export default function MapperStep() {
   const handleDrop = (targetNode: XsdNode) => {
     if (!draggingNode) return;
 
+    const currentMappings = mappings[activeSet];
     const sourceIsParent = !!(draggingNode.children && draggingNode.children.length > 0);
     const targetIsParent = !!(targetNode.children && targetNode.children.length > 0);
-    const existingMappingIds = new Set(mappings.map(m => m.id));
     let newMappings: Mapping[] = [];
+    const existingMappingIds = new Set(currentMappings.map(m => m.id));
+
+    const createMapping = (sourceNode: XsdNode, targetNode: XsdNode) => {
+        const newMapping: Mapping = {
+            id: `${sourceNode.id}-${targetNode.id}`,
+            sourceId: sourceNode.id,
+            targetId: targetNode.id,
+        };
+        if (existingMappingIds.has(newMapping.id)) return; // Avoid duplicates
+
+        if (currentMappings.some(m => m.targetId === newMapping.targetId)) {
+             toast({
+                title: "Mapping for Concatenation",
+                description: `Target ${targetNode.name} is already mapped. Creating an additional mapping.`,
+            });
+        }
+        newMappings.push(newMapping);
+        existingMappingIds.add(newMapping.id);
+    }
 
     const mapBySequence = (sourceParent: XsdNode, targetParent: XsdNode) => {
         const sourceChildren = sourceParent.children || [];
@@ -111,23 +134,12 @@ export default function MapperStep() {
             const sourceChildIsParent = !!(sourceChild.children && sourceChild.children.length > 0);
             const targetChildIsParent = !!(targetChild.children && targetChild.children.length > 0);
 
-            // Case 1: Both are leaf nodes, create mapping.
             if (!sourceChildIsParent && !targetChildIsParent) {
-                const newMapping: Mapping = {
-                    id: `${sourceChild.id}-${targetChild.id}`,
-                    sourceId: sourceChild.id,
-                    targetId: targetChild.id,
-                };
-                if (!existingMappingIds.has(newMapping.id)) {
-                    newMappings.push(newMapping);
-                    existingMappingIds.add(newMapping.id);
-                }
+                createMapping(sourceChild, targetChild);
             }
-            // Case 2: Both are parent nodes, recurse.
             else if (sourceChildIsParent && targetChildIsParent) {
                 mapBySequence(sourceChild, targetChild);
             }
-            // Case 3: Mismatch (leaf to parent or parent to leaf), ignore and continue.
         }
     };
 
@@ -141,23 +153,7 @@ export default function MapperStep() {
             });
         }
     } else if (!sourceIsParent && !targetIsParent) {
-        const newMapping: Mapping = {
-            id: `${draggingNode.id}-${targetNode.id}`,
-            sourceId: draggingNode.id,
-            targetId: targetNode.id,
-        };
-
-        if (existingMappingIds.has(newMapping.id)) {
-            return;
-        }
-
-        if (mappings.some(m => m.targetId === newMapping.targetId)) {
-            toast({
-                title: "Mapping for Concatenation",
-                description: `Target ${targetNode.name} is already mapped. Creating an additional mapping.`,
-            });
-        }
-        newMappings.push(newMapping);
+        createMapping(draggingNode, targetNode);
     } else {
         toast({
             variant: 'destructive',
@@ -168,13 +164,13 @@ export default function MapperStep() {
     }
 
     if (newMappings.length > 0) {
-        setState({ mappings: [...mappings, ...newMappings] });
+        setState({ mappings: { ...mappings, [activeSet]: [...currentMappings, ...newMappings] } });
         rerenderCanvas();
     }
   }
   
   const deleteMapping = (mappingId: string) => {
-    setState({ mappings: mappings.filter(m => m.id !== mappingId) });
+    setState({ mappings: { ...mappings, [activeSet]: mappings[activeSet].filter(m => m.id !== mappingId) }});
   }
 
   const handleOpenTransformationDialog = (mapping: Mapping) => {
@@ -184,22 +180,24 @@ export default function MapperStep() {
 
   const handleSaveTransformation = (transformation: Transformation) => {
     if (selectedMapping) {
-      setState({ mappings: mappings.map(m => 
+      setState({ mappings: { ...mappings, [activeSet]: mappings[activeSet].map(m => 
         m.id === selectedMapping.id ? { ...m, transformation } : m
-      )});
+      )}});
     }
     setTransformationDialogOpen(false)
     setSelectedMapping(null)
   }
 
   const handleResetMappings = () => {
-    setState({ mappings: [] });
+    setState({ mappings: { set1: [], set2: [], set3: [] } });
     toast({
       variant: "success",
       title: "Mappings Reset",
-      description: "All mappings have been cleared.",
+      description: "All mappings in all sets have been cleared.",
     });
   }
+
+  const areAllSetsMapped = mappings.set1.length > 0 && mappings.set2.length > 0 && mappings.set3.length > 0;
 
   return (
     <div className="flex-1 flex flex-col gap-4 overflow-hidden">
@@ -217,7 +215,7 @@ export default function MapperStep() {
               <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                      This action will permanently delete all your current mappings. You cannot undo this action.
+                      This action will permanently delete all your current mappings across all sets. You cannot undo this action.
                   </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -230,7 +228,7 @@ export default function MapperStep() {
         </AlertDialog>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button>
+            <Button disabled={!areAllSetsMapped}>
                 Next <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </AlertDialogTrigger>
@@ -251,45 +249,56 @@ export default function MapperStep() {
         </AlertDialog>
       </div>
 
-      <div ref={canvasRef} className="flex-1 relative bg-card rounded-lg overflow-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8">
-          <XsdPanel
-            title="Source Schema"
-            schema={sourceSchema}
-            type="source"
-            onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            nodeRefs={nodeRefs}
-            mappings={mappings}
-            draggingNodeId={draggingNode?.id}
-            rerenderCanvas={rerenderCanvas}
-          />
-          <XsdPanel
-            title="Target Schema"
-            schema={targetSchema}
-            type="target"
-            onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')}
-            onDrop={handleDrop}
-            nodeRefs={nodeRefs}
-            mappings={mappings}
-            draggingNodeId={draggingNode?.id}
-            rerenderCanvas={rerenderCanvas}
-          />
-        </div>
-        
-        {canvasRef.current && (
-          <MappingCanvas
-            key={canvasKey}
-            mappings={mappings}
-            nodeRefs={nodeRefs.current}
-            canvasRef={canvasRef.current}
-            onMappingClick={handleOpenTransformationDialog}
-            onMappingDelete={deleteMapping}
-          />
-        )}
-      </div>
-
+        <Tabs value={activeSet} onValueChange={(value) => setActiveSet(value as MappingSet)} className="flex-1 flex flex-col gap-4">
+            <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="set1">Set 1</TabsTrigger>
+                <TabsTrigger value="set2">Set 2</TabsTrigger>
+                <TabsTrigger value="set3">Set 3</TabsTrigger>
+            </TabsList>
+             {(['set1', 'set2', 'set3'] as MappingSet[]).map((set) => (
+                <TabsContent key={set} value={set} className="flex-1 flex flex-col m-0">
+                    <div ref={canvasRef} className="flex-1 relative bg-card rounded-lg overflow-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8">
+                            <XsdPanel
+                                title="Source Schema"
+                                schema={sourceSchema}
+                                type="source"
+                                onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')}
+                                onDragStart={handleDragStart}
+                                onDragEnd={handleDragEnd}
+                                nodeRefs={nodeRefs}
+                                mappings={mappings[activeSet]}
+                                draggingNodeId={draggingNode?.id}
+                                rerenderCanvas={rerenderCanvas}
+                            />
+                            <XsdPanel
+                                title="Target Schema"
+                                schema={targetSchema}
+                                type="target"
+                                onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')}
+                                onDrop={handleDrop}
+                                nodeRefs={nodeRefs}
+                                mappings={mappings[activeSet]}
+                                draggingNodeId={draggingNode?.id}
+                                rerenderCanvas={rerenderCanvas}
+                            />
+                        </div>
+                        
+                        {canvasRef.current && activeSet === set && (
+                        <MappingCanvas
+                            key={`${set}-${canvasKey}`}
+                            mappings={mappings[set]}
+                            nodeRefs={nodeRefs.current}
+                            canvasRef={canvasRef.current}
+                            onMappingClick={handleOpenTransformationDialog}
+                            onMappingDelete={deleteMapping}
+                        />
+                        )}
+                    </div>
+                 </TabsContent>
+            ))}
+        </Tabs>
+      
        {selectedMapping && (
         <TransformationDialog
           isOpen={isTransformationDialogOpen}
