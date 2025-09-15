@@ -6,14 +6,14 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
 export default function UploadStep() {
   const router = useRouter();
   const { toast } = useToast();
-  const { setState, inputXml: globalInputXml } = useAppContext();
+  const { setState } = useAppContext();
 
   // Local state for handling file content within this component
   const [inputXml, setInputXml] = useState<string | null>(null);
@@ -23,15 +23,6 @@ export default function UploadStep() {
   const responseXmlRef = useRef<HTMLInputElement>(null);
 
   const [previewing, setPreviewing] = useState<{ content: string; title: string } | null>(null);
-
-  useEffect(() => {
-    // This effect will run when the global state is updated, triggering navigation.
-    if (globalInputXml && globalInputXml === inputXml) {
-        // We compare with local state to ensure we're not navigating on an old state update.
-        router.replace(`/new/preview-xsd`);
-    }
-  }, [globalInputXml, inputXml, router]);
-
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, fileType: 'input' | 'response') => {
     const file = event.target.files?.[0];
@@ -74,7 +65,7 @@ export default function UploadStep() {
       });
       return;
     }
-    // Set the global state. The useEffect will handle navigation once this is done.
+    // Set the global state. 
     setState({ 
         inputXml, 
         responseXml,
@@ -89,6 +80,8 @@ export default function UploadStep() {
           set3: [],
         }
     });
+    // Navigate to the next step directly.
+    router.push(`/new/preview-xsd`);
   }
   
   return (
