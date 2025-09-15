@@ -221,16 +221,6 @@ export default function MapperStep() {
           />
         )}
       </div>
-       <div className="flex items-center justify-center gap-4 p-4 bg-card rounded-lg shadow-sm">
-          <Button variant="secondary" onClick={handlePreview}>
-              <Eye className="mr-2 h-4 w-4" />
-              Preview XML
-          </Button>
-          <Button variant="secondary" onClick={handleDownloadXslt}>
-              <FileDown className="mr-2 h-4 w-4" />
-              Download XSLT
-          </Button>
-       </div>
        <PreviewDialog
           isOpen={isPreviewDialogOpen}
           onOpenChange={setPreviewDialogOpen}

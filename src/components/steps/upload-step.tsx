@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -5,14 +6,18 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
 export default function UploadStep() {
   const router = useRouter();
   const { toast } = useToast();
-  const { inputXml, responseXml, setState } = useAppContext();
+  const { setState, inputXml: globalInputXml } = useAppContext();
+
+  // Local state for handling file content within this component
+  const [inputXml, setInputXml] = useState<string | null>(null);
+  const [responseXml, setResponseXml] = useState<string | null>(null);
 
   const inputXmlRef = useRef<HTMLInputElement>(null);
   const responseXmlRef = useRef<HTMLInputElement>(null);
@@ -27,9 +32,9 @@ export default function UploadStep() {
     reader.onload = (e) => {
       const content = e.target?.result as string;
       if (fileType === 'input') {
-        setState({ inputXml: content });
+        setInputXml(content);
       } else {
-        setState({ responseXml: content });
+        setResponseXml(content);
       }
       toast({
         variant: "success",
@@ -60,8 +65,10 @@ export default function UploadStep() {
       });
       return;
     }
-    // All other state is reset to ensure a clean slate for the next steps
+    // Set the global state. The useEffect will handle navigation once this is done.
     setState({ 
+        inputXml, 
+        responseXml,
         inputXsd: null, 
         responseXsd: null, 
         sourceSchema: null, 
@@ -69,7 +76,7 @@ export default function UploadStep() {
         swaggerFile: null,
         mappings: []
     });
-    router.push(`/new/preview-xsd`);
+    router.replace(`/new/preview-xsd`);
   }
   
   return (
