@@ -10,7 +10,6 @@ export interface Mapping {
   sourceId: string;
   targetId: string;
   transformation?: Transformation;
-  matchType?: 'auto' | 'manual';
 }
 
 export type TransformationType = 'NONE' | 'CONCAT' | 'UPPERCASE' | 'SPLIT' | 'MERGE' | 'CONDITION';

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from 'react'
@@ -101,12 +100,11 @@ export default function MapperStep() {
     const sourceIsParent = draggingNode.children && draggingNode.children.length > 0;
     const targetIsParent = targetNode.children && targetNode.children.length > 0;
 
-    const createMappingIfNotExists = (source: XsdNode, target: XsdNode, matchType: 'manual' | 'auto') => {
+    const createMappingIfNotExists = (source: XsdNode, target: XsdNode) => {
         const newMapping: Mapping = {
             id: `${source.id}-${target.id}`,
             sourceId: source.id,
             targetId: target.id,
-            matchType: matchType,
         };
 
         if (!existingMappings.some(m => m.id === newMapping.id)) {
@@ -139,7 +137,7 @@ export default function MapperStep() {
                         mapRecursive(sourceChild, targetChild);
                     } else if (!sourceHasChildren && !targetHasChildren) {
                         // If both are leaves, create mapping
-                        createMappingIfNotExists(sourceChild, targetChild, 'auto');
+                        createMappingIfNotExists(sourceChild, targetChild);
                     }
                 }
             });
@@ -157,7 +155,7 @@ export default function MapperStep() {
 
     } else if (!sourceIsParent && !targetIsParent) {
         // Single node to single node mapping
-        createMappingIfNotExists(draggingNode, targetNode, 'manual');
+        createMappingIfNotExists(draggingNode, targetNode);
 
     } else {
         // Invalid mapping (parent to child or child to parent)
