@@ -19,7 +19,6 @@ import {
     SidebarRail
 } from "@/components/ui/sidebar"
 import { usePathname } from 'next/navigation'
-import { cn } from "@/lib/utils"
 
 
 interface AppLayoutProps {
@@ -47,19 +46,19 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton href="/" tooltip="Create New Request" isActive={isCreationFlow}>
-                            <FilePlus className="size-4" />
+                            <FilePlus className="size-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Create New Request</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                      <SidebarMenuItem>
                         <SidebarMenuButton href="/requests" tooltip="Check Requests" isActive={pathname === '/requests'}>
-                            <FileCheck className="size-4" />
+                            <FileCheck className="size-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Check Requests</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton href="/configurations" tooltip="View Existing Configurations" isActive={pathname === '/configurations'}>
-                            <Folder className="size-4" />
+                            <Folder className="size-5" />
                             <span className="group-data-[collapsible=icon]:hidden">View Existing Configurations</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
