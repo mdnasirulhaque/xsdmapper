@@ -101,17 +101,18 @@ export default function MapperStep() {
     const existingMappingIds = new Set(mappings.map(m => m.id));
     let newMappings: Mapping[] = [];
 
-    // Case 1: Parent-to-Parent mapping (1-level deep for leaves only)
+    // Case 1: Parent-to-Parent mapping (1-level deep, by sequence, for leaves only)
     if (sourceIsParent && targetIsParent) {
       const sourceChildren = draggingNode.children || [];
       const targetChildren = targetNode.children || [];
+      const shorterLength = Math.min(sourceChildren.length, targetChildren.length);
 
-      sourceChildren.forEach(sourceChild => {
-        // Find a target child with the same name
-        const targetChild = targetChildren.find(tc => tc.name === sourceChild.name);
-
+      for (let i = 0; i < shorterLength; i++) {
+        const sourceChild = sourceChildren[i];
+        const targetChild = targetChildren[i];
+        
         // Map only if both are leaf nodes (no children)
-        if (targetChild && !sourceChild.children && !targetChild.children) {
+        if (!sourceChild.children && !targetChild.children) {
           const newMapping: Mapping = {
             id: `${sourceChild.id}-${targetChild.id}`,
             sourceId: sourceChild.id,
@@ -122,13 +123,13 @@ export default function MapperStep() {
             existingMappingIds.add(newMapping.id);
           }
         }
-      });
+      }
       
       if (newMappings.length > 0) {
         toast({
           variant: 'success',
           title: 'Auto-Mapped Child Fields',
-          description: `Created ${newMappings.length} new mappings for matching child fields.`
+          description: `Created ${newMappings.length} new mappings for matching child fields by sequence.`
         });
       }
 
