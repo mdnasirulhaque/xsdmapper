@@ -43,22 +43,27 @@ export default function Stepper({ currentStep }: StepperProps) {
                         >
                             <div className={cn(
                                 "flex h-10 w-10 items-center justify-center rounded-full border-2 bg-background z-10",
-                                isCompleted ? "border-primary bg-primary text-primary-foreground" 
+                                isCompleted ? "border-primary text-primary" 
                                 : isCurrent ? "border-primary text-primary" 
                                 : "border-border text-muted-foreground"
                             )}>
-                            {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
+                                <step.icon className="h-5 w-5" />
                             </div>
                             <p className={cn(
                                 "text-xs font-medium text-center",
-                                isCurrent ? "text-primary" : "text-muted-foreground"
+                                isCurrent ? "text-primary" : isCompleted ? "text-primary" : "text-muted-foreground"
                             )}>{step.name}</p>
                         </NextLink>
 
                         {!isLastStep && (
                             <div className="flex-1 h-px bg-border relative">
                                 {isCompleted && (
-                                    <div className="absolute inset-0 h-px bg-primary"></div>
+                                    <>
+                                        <div className="absolute inset-0 h-px bg-primary"></div>
+                                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card p-0.5 rounded-full">
+                                            <CheckCircle2 className="h-4 w-4 text-primary" />
+                                        </div>
+                                    </>
                                 )}
                                 {isCurrent && (
                                      <div className="absolute -right-3 top-1/2 -translate-y-1/2">
