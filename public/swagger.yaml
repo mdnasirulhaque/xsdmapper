@@ -1,0 +1,83 @@
+openapi: 3.0.0
+info:
+  title: XSD Mapper API
+  version: 1.0.0
+  description: A simple API to demonstrate mapping from a source to a target schema.
+paths:
+  /process-order:
+    post:
+      summary: Process a customer order
+      description: Accepts a customer order and transforms it into a sales invoice.
+      requestBody:
+        description: Customer order payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerOrder'
+      responses:
+        '200':
+          description: Successful transformation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesInvoice'
+components:
+  schemas:
+    CustomerOrder:
+      type: object
+      properties:
+        OrderID:
+          type: string
+          example: "ORD-12345"
+        CustomerInfo:
+          type: object
+          properties:
+            FirstName:
+              type: string
+              example: "John"
+            LastName:
+              type: string
+              example: "Doe"
+            EmailAddress:
+              type: string
+              example: "john.doe@example.com"
+        ShippingAddress:
+          type: object
+          properties:
+            Street:
+              type: string
+              example: "123 Main St"
+            City:
+              type: string
+              example: "Anytown"
+            PostalCode:
+              type: integer
+              example: 12345
+    SalesInvoice:
+      type: object
+      properties:
+        InvoiceNumber:
+          type: string
+          example: "INV-67890"
+        BuyerInformation:
+          type: object
+          properties:
+            FullName:
+              type: string
+              example: "John Doe"
+            ContactEmail:
+              type: string
+              example: "john.doe@example.com"
+        DeliveryLocation:
+          type: object
+          properties:
+            AddressLine1:
+              type: string
+              example: "123 Main St"
+            Town:
+              type: string
+              example: "Anytown"
+            Postcode:
+              type: string
+              example: "12345"
