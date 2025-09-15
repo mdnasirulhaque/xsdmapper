@@ -34,28 +34,33 @@ const initialState: AppState = {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [state, setStateValue] = useState<AppState>(() => {
-     if (typeof window !== 'undefined') {
-      const savedState = localStorage.getItem('appState');
-      if (savedState) {
-        try {
-          const parsed = JSON.parse(savedState);
-          // Basic validation to ensure the parsed state has the expected shape
-          if(parsed && typeof parsed === 'object' && 'sourceSchema' in parsed){
-            return parsed;
-          }
-        } catch (e) {
-          console.error("Failed to parse state from localStorage", e);
-          return initialState;
-        }
-      }
-    }
-    return initialState;
-  });
+  const [state, setStateValue] = useState<AppState>(initialState);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('appState', JSON.stringify(state));
-  }, [state]);
+    // Load state from localStorage only on the client side, after the initial render.
+    const savedState = localStorage.getItem('appState');
+    if (savedState) {
+      try {
+        const parsed = JSON.parse(savedState);
+        // Basic validation to ensure the parsed state has the expected shape
+        if (parsed && typeof parsed === 'object' && 'sourceSchema' in parsed) {
+          setStateValue(parsed);
+        }
+      } catch (e) {
+        console.error("Failed to parse state from localStorage", e);
+        setStateValue(initialState);
+      }
+    }
+    setIsInitialized(true);
+  }, []);
+
+  useEffect(() => {
+    // Save state to localStorage whenever it changes, but only after it has been initialized.
+    if (isInitialized) {
+      localStorage.setItem('appState', JSON.stringify(state));
+    }
+  }, [state, isInitialized]);
 
   const setState = (newState: Partial<AppState>) => {
     setStateValue(prev => ({ ...prev, ...newState }));
