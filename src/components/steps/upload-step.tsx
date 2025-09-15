@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -24,43 +25,37 @@ export default function UploadStep() {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, fileType: 'input' | 'response') => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const content = e.target?.result as string;
-          if (fileType === 'input') {
-            setInputXml(content);
-          } else {
-            setResponseXml(content);
-          }
+    if (!file) return;
 
-          toast({
-            variant: "success",
-            title: "Upload Successful",
-            description: `${file.name} has been processed.`,
-          });
-
-        } catch (error) {
-          console.error("Error processing XML file:", error);
-           if (fileType === 'input') {
-            setInputXml(null);
-          } else {
-            setResponseXml(null);
-          }
-          toast({
-            variant: "destructive",
-            title: "Upload Failed",
-            description: "Could not process the XML file.",
-          });
-        } finally {
-            if(event.target) {
-                event.target.value = "";
-            }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        if (fileType === 'input') {
+          setInputXml(content);
+        } else {
+          setResponseXml(content);
         }
-      };
-      reader.readAsText(file);
-    }
+
+        toast({
+          variant: "success",
+          title: "Upload Successful",
+          description: `${file.name} has been processed.`,
+        });
+
+      } catch (error) {
+        console.error("Error processing XML file:", error);
+        toast({
+          variant: "destructive",
+          title: "Upload Failed",
+          description: "Could not process the XML file.",
+        });
+      }
+    };
+    reader.readAsText(file);
+    
+    // Reset the input value to allow re-uploading the same file
+    event.target.value = '';
   };
 
   const handleUploadInputClick = () => {
@@ -80,9 +75,11 @@ export default function UploadStep() {
       });
       return;
     }
+    // Set the global state before moving to the next step
     setState({ 
         inputXml, 
         responseXml,
+        // Reset subsequent state
         inputXsd: null, 
         responseXsd: null, 
         sourceSchema: null, 
@@ -102,6 +99,8 @@ export default function UploadStep() {
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Input XML Section */}
             <div className="flex flex-col items-center gap-4 rounded-lg border p-6">
               <input
                 type="file"
@@ -123,6 +122,7 @@ export default function UploadStep() {
               )}
             </div>
 
+            {/* Response XML Section */}
             <div className="flex flex-col items-center gap-4 rounded-lg border p-6">
               <input
                 type="file"
