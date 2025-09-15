@@ -24,6 +24,15 @@ export default function UploadStep() {
 
   const [previewing, setPreviewing] = useState<{ content: string; title: string } | null>(null);
 
+  useEffect(() => {
+    // This effect will run when the global state is updated, triggering navigation.
+    if (globalInputXml && globalInputXml === inputXml) {
+        // We compare with local state to ensure we're not navigating on an old state update.
+        router.replace(`/new/preview-xsd`);
+    }
+  }, [globalInputXml, inputXml, router]);
+
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, fileType: 'input' | 'response') => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -80,7 +89,6 @@ export default function UploadStep() {
           set3: [],
         }
     });
-    router.replace(`/new/preview-xsd`);
   }
   
   return (
