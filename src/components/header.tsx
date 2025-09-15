@@ -70,30 +70,33 @@ export default function Header({ onPreview, onDownload, currentStep }: HeaderPro
             </div>
         )}
         <div className={cn(
-            "flex items-center justify-between p-4 sm:px-6 h-20 bg-muted/40 shadow-sm", 
-            isCreationFlow ? "mx-4 sm:mx-6 rounded-b-lg mb-4" : "border-b"
+            "bg-muted/40 shadow-sm", 
+            isCreationFlow ? "mx-4 sm:mx-6 rounded-b-lg mb-4 p-4" : "border-b"
         )}>
-            <div className="flex items-center gap-3">
-                <CodeXml className="h-8 w-8 text-primary" />
-                <h1 className="text-xl font-bold tracking-tight text-foreground">
-                XSD Mapper
-                </h1>
+            <div className="flex items-center justify-between h-16">
+                <div className="flex items-center gap-3">
+                    <CodeXml className="h-8 w-8 text-primary" />
+                    <h1 className="text-xl font-bold tracking-tight text-foreground">
+                    XSD Mapper
+                    </h1>
+                </div>
+                {!isCreationFlow && (
+                    <Button asChild>
+                        <Link href="/new/upload">
+                            <FilePlus className="mr-2 h-4 w-4" />
+                            Create New Request
+                        </Link>
+                    </Button>
+                )}
+                <div className="flex justify-end min-w-[200px]">
+                    <PageHeaderActions onPreview={onPreview} onDownload={onDownload} />
+                </div>
             </div>
-            {isCreationFlow ? (
-                <div className="w-1/3">
+             {isCreationFlow && (
+                <div className="mt-4">
                     <Stepper currentStep={currentStep} />
                 </div>
-            ) : (
-                 <Button asChild>
-                    <Link href="/new/upload">
-                        <FilePlus className="mr-2 h-4 w-4" />
-                        Create New Request
-                    </Link>
-                </Button>
             )}
-            <div className="flex justify-end w-1/3">
-                <PageHeaderActions onPreview={onPreview} onDownload={onDownload} />
-            </div>
         </div>
     </header>
   )

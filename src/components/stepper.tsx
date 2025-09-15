@@ -2,7 +2,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { FileUp, Eye, FileJson, Link, FileDown, Check } from "lucide-react"
+import { FileUp, Eye, FileJson, Link as LinkIcon, FileDown, Check } from "lucide-react"
 import NextLink from 'next/link';
 
 
@@ -10,7 +10,7 @@ const steps = [
   { name: "Upload XML", href: "/new/upload", icon: FileUp },
   { name: "Preview XSD", href: "/new/preview-xsd", icon: Eye },
   { name: "Upload Swagger", href: "/new/swagger", icon: FileJson },
-  { name: "Map Fields", href: "/new/mapper", icon: Link },
+  { name: "Map Fields", href: "/new/mapper", icon: LinkIcon },
   { name: "Generate XSLT", href: "#", icon: FileDown },
 ]
 
@@ -21,21 +21,13 @@ interface StepperProps {
 export default function Stepper({ currentStep }: StepperProps) {
   return (
     <nav aria-label="Progress">
-      <ol role="list" className="flex items-center">
+      <ol role="list" className="grid grid-cols-5 items-start">
         {steps.map((step, stepIdx) => {
             const stepNumber = stepIdx + 1;
             const isCompleted = currentStep > stepNumber;
             const isCurrent = currentStep === stepNumber;
             return (
-                <li key={step.name} className={cn("relative", stepIdx !== steps.length - 1 ? "flex-1" : "")}>
-                   {stepIdx !== steps.length - 1 ? (
-                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                      <div className={cn(
-                        "h-0.5 w-full",
-                         isCompleted ? "bg-primary" : "bg-border"
-                      )} />
-                    </div>
-                  ) : null}
+                <li key={step.name} className="relative flex justify-center">
                   <NextLink 
                     href={step.href} 
                     className={cn(
