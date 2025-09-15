@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from 'react'
@@ -97,9 +98,6 @@ export default function MapperStep() {
     const existingMappings = [...mappings];
     const newMappings: Mapping[] = [];
     
-    const sourceIsParent = draggingNode.children && draggingNode.children.length > 0;
-    const targetIsParent = targetNode.children && targetNode.children.length > 0;
-
     const createMappingIfNotExists = (source: XsdNode, target: XsdNode) => {
         const newMapping: Mapping = {
             id: `${source.id}-${target.id}`,
@@ -110,16 +108,18 @@ export default function MapperStep() {
         if (!existingMappings.some(m => m.id === newMapping.id)) {
             if (existingMappings.some(m => m.targetId === newMapping.targetId)) {
                 toast({
-                    title: "Mapping Conflict",
-                    description: `Target ${target.name} is already mapped. Multiple source fields can be mapped to one target for concatenation.`,
+                    title: "Mapping for Concatenation",
+                    description: `Target ${target.name} is already mapped. Creating an additional mapping for concatenation.`,
                 });
-            } else {
-                newMappings.push(newMapping);
-                existingMappings.push(newMapping); // Add to temp list to check subsequent mappings in this loop
             }
+            newMappings.push(newMapping);
+            existingMappings.push(newMapping); // Add to temp list to check subsequent mappings in this loop
         }
     }
     
+    const sourceIsParent = draggingNode.children && draggingNode.children.length > 0;
+    const targetIsParent = targetNode.children && targetNode.children.length > 0;
+
     if (sourceIsParent && targetIsParent) {
         // Recursive parent-to-parent mapping by name
         const mapRecursive = (sourceParent: XsdNode, targetParent: XsdNode) => {
