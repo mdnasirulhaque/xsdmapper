@@ -37,9 +37,12 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
         <div className="flex min-h-screen w-full bg-muted/40">
         <Sidebar>
             <SidebarHeader>
-                <div className="flex items-center gap-3 p-2">
-                    <CodeXml className="h-6 w-6 text-primary" />
-                    <span className="text-lg font-semibold">XSD Mapper</span>
+                <div className="flex items-center justify-between p-2">
+                    <div className="flex items-center gap-3">
+                        <CodeXml className="h-6 w-6 text-primary" />
+                        <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">XSD Mapper</span>
+                    </div>
+                    <SidebarTrigger />
                 </div>
             </SidebarHeader>
             <SidebarContent className="p-0">
@@ -74,7 +77,7 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
                 )}
             </SidebarContent>
             <SidebarFooter className="p-2">
-                <div className="text-xs text-muted-foreground">Version 1.0.0</div>
+                <div className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">Version 1.0.0</div>
             </SidebarFooter>
         </Sidebar>
         <main className="flex flex-1 flex-col">
