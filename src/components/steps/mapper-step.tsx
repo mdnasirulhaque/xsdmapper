@@ -110,26 +110,7 @@ export default function MapperStep() {
     const sourceIsParent = !!(draggingNode.children && draggingNode.children.length > 0);
     const targetIsParent = !!(targetNode.children && targetNode.children.length > 0);
     let newMappings: Mapping[] = [];
-    const existingMappingIds = new Set(currentMappings.map(m => m.id));
-
-    const createMapping = (sourceNode: XsdNode, targetNode: XsdNode) => {
-        const newMapping: Mapping = {
-            id: `${sourceNode.id}-${targetNode.id}`,
-            sourceId: sourceNode.id,
-            targetId: targetNode.id,
-        };
-        if (existingMappingIds.has(newMapping.id)) return; // Avoid duplicates
-
-        if (currentMappings.some(m => m.targetId === newMapping.targetId)) {
-             toast({
-                title: "Mapping for Concatenation",
-                description: `Target ${targetNode.name} is already mapped. Creating an additional mapping.`,
-            });
-        }
-        newMappings.push(newMapping);
-        existingMappingIds.add(newMapping.id);
-    }
-
+    
     const mapBySequence = (sourceParent: XsdNode, targetParent: XsdNode) => {
         const sourceChildren = sourceParent.children || [];
         const targetChildren = targetParent.children || [];
@@ -142,13 +123,37 @@ export default function MapperStep() {
             const targetChildIsParent = !!(targetChild.children && targetChild.children.length > 0);
 
             if (!sourceChildIsParent && !targetChildIsParent) {
-                createMapping(sourceChild, targetChild);
+                 const newMapping: Mapping = {
+                    id: `${sourceChild.id}-${targetChild.id}`,
+                    sourceId: sourceChild.id,
+                    targetId: targetChild.id,
+                };
+                if (!currentMappings.some(m => m.id === newMapping.id)) {
+                    newMappings.push(newMapping);
+                }
             }
             else if (sourceChildIsParent && targetChildIsParent) {
                 mapBySequence(sourceChild, targetChild);
             }
         }
     };
+
+    const createMapping = (sourceNode: XsdNode, targetNode: XsdNode) => {
+        const newMapping: Mapping = {
+            id: `${sourceNode.id}-${targetNode.id}`,
+            sourceId: sourceNode.id,
+            targetId: targetNode.id,
+        };
+        if (currentMappings.some(m => m.id === newMapping.id)) return;
+
+        if (currentMappings.some(m => m.targetId === newMapping.targetId)) {
+             toast({
+                title: "Mapping for Concatenation",
+                description: `Target ${targetNode.name} is already mapped. Creating an additional mapping.`,
+            });
+        }
+        newMappings.push(newMapping);
+    }
 
     if (sourceIsParent && targetIsParent) {
         mapBySequence(draggingNode, targetNode);
@@ -238,46 +243,27 @@ export default function MapperStep() {
                 <TabsTrigger value="set2">Set 2</TabsTrigger>
                 <TabsTrigger value="set3">Set 3</TabsTrigger>
             </TabsList>
-             {(['set1', 'set2', 'set3'] as MappingSet[]).map((set) => (
-                <TabsContent key={set} value={set} ref={canvasRefs[set]} className="flex-1 flex flex-col m-0 overflow-hidden relative bg-card rounded-b-lg border border-t-0">
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8 overflow-auto">
-                        <XsdPanel
-                            title="Source Schema"
-                            schema={sourceSchema}
-                            type="source"
-                            onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')}
-                            onDragStart={handleDragStart}
-                            onDragEnd={handleDragEnd}
-                            nodeRefs={nodeRefs}
-                            mappings={mappings[activeSet]}
-                            draggingNodeId={draggingNode?.id}
-                            rerenderCanvas={rerenderCanvas}
-                        />
-                        <XsdPanel
-                            title="Target Schema"
-                            schema={targetSchema}
-                            type="target"
-                            onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')}
-                            onDrop={handleDrop}
-                            nodeRefs={nodeRefs}
-                            mappings={mappings[activeSet]}
-                            draggingNodeId={draggingNode?.id}
-                            rerenderCanvas={rerenderCanvas}
-                        />
-                    </div>
-                    
-                    {canvasRefs[set].current && activeSet === set && (
-                    <MappingCanvas
-                        key={`${set}-${canvasKey}`}
-                        mappings={mappings[set]}
-                        nodeRefs={nodeRefs.current}
-                        canvasRef={canvasRefs[set].current!}
-                        onMappingClick={handleOpenTransformationDialog}
-                        onMappingDelete={deleteMapping}
-                    />
-                    )}
-                 </TabsContent>
-            ))}
+            <TabsContent value="set1" ref={canvasRefs.set1} className="flex-1 flex flex-col m-0 overflow-hidden relative bg-card rounded-b-lg border border-t-0">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8 overflow-auto">
+                    <XsdPanel title="Source Schema" schema={sourceSchema} type="source" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')} onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeRefs={nodeRefs} mappings={mappings.set1} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
+                    <XsdPanel title="Target Schema" schema={targetSchema} type="target" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')} onDrop={handleDrop} nodeRefs={nodeRefs} mappings={mappings.set1} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
+                </div>
+                {canvasRefs.set1.current && activeSet === 'set1' && ( <MappingCanvas key={`set1-${canvasKey}`} mappings={mappings.set1} nodeRefs={nodeRefs.current} canvasRef={canvasRefs.set1.current} onMappingClick={handleOpenTransformationDialog} onMappingDelete={deleteMapping}/>)}
+            </TabsContent>
+            <TabsContent value="set2" ref={canvasRefs.set2} className="flex-1 flex flex-col m-0 overflow-hidden relative bg-card rounded-b-lg border border-t-0">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8 overflow-auto">
+                    <XsdPanel title="Source Schema" schema={sourceSchema} type="source" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')} onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeRefs={nodeRefs} mappings={mappings.set2} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
+                    <XsdPanel title="Target Schema" schema={targetSchema} type="target" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')} onDrop={handleDrop} nodeRefs={nodeRefs} mappings={mappings.set2} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
+                </div>
+                {canvasRefs.set2.current && activeSet === 'set2' && (<MappingCanvas key={`set2-${canvasKey}`} mappings={mappings.set2} nodeRefs={nodeRefs.current} canvasRef={canvasRefs.set2.current} onMappingClick={handleOpenTransformationDialog} onMappingDelete={deleteMapping} />)}
+            </TabsContent>
+            <TabsContent value="set3" ref={canvasRefs.set3} className="flex-1 flex flex-col m-0 overflow-hidden relative bg-card rounded-b-lg border border-t-0">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8 overflow-auto">
+                    <XsdPanel title="Source Schema" schema={sourceSchema} type="source" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')} onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeRefs={nodeRefs} mappings={mappings.set3} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas} />
+                    <XsdPanel title="Target Schema" schema={targetSchema} type="target" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')} onDrop={handleDrop} nodeRefs={nodeRefs} mappings={mappings.set3} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
+                </div>
+                {canvasRefs.set3.current && activeSet === 'set3' && (<MappingCanvas key={`set3-${canvasKey}`} mappings={mappings.set3} nodeRefs={nodeRefs.current} canvasRef={canvasRefs.set3.current} onMappingClick={handleOpenTransformationDialog} onMappingDelete={deleteMapping} />)}
+            </TabsContent>
         </Tabs>
 
         <div className="flex items-center justify-between bg-card rounded-lg p-3 border">
