@@ -7,6 +7,7 @@ import AppLayout from '@/components/layout';
 import UploadStep from '@/components/steps/upload-step';
 import PreviewStep from '@/components/steps/preview-step';
 import SwaggerStep from '@/components/steps/swagger-step';
+import PreviewSwaggerStep from '@/components/steps/preview-swagger-step';
 import MapperStep from '@/components/steps/mapper-step';
 import { useAppContext } from '@/context/AppContext';
 
@@ -14,8 +15,9 @@ const steps = [
   { name: 'upload', component: UploadStep, step: 1 },
   { name: 'preview-xsd', component: PreviewStep, step: 2 },
   { name: 'swagger', component: SwaggerStep, step: 3 },
-  { name: 'mapper', component: MapperStep, step: 4 },
-  { name: 'generate-xslt', component: () => <div className="text-center p-8">XSLT Generation not implemented yet.</div>, step: 5 },
+  { name: 'preview-swagger-xsd', component: PreviewSwaggerStep, step: 4},
+  { name: 'mapper', component: MapperStep, step: 5 },
+  { name: 'generate-xslt', component: () => <div className="text-center p-8">XSLT Generation not implemented yet.</div>, step: 6 },
 ];
 
 export default function NewRequestPage() {

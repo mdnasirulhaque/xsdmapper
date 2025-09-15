@@ -101,7 +101,7 @@ export default function MapperStep() {
 
     const currentMappings = mappings[activeSet];
     const newMappings: Mapping[] = [];
-
+    
     const mapBySequence = (sourceParent: XsdNode, targetParent: XsdNode) => {
         const sourceChildren = sourceParent.children || [];
         const targetChildren = targetParent.children || [];
@@ -119,7 +119,7 @@ export default function MapperStep() {
                     sourceId: sourceChild.id,
                     targetId: targetChild.id,
                 };
-                if (!currentMappings.some(m => m.id === newMapping.id)) {
+                if (!currentMappings.some(m => m.id === newMapping.id) && !newMappings.some(m => m.id === newMapping.id)) {
                     newMappings.push(newMapping);
                 }
             }
@@ -300,7 +300,7 @@ export default function MapperStep() {
 
 
         <div className="flex items-center justify-between bg-card rounded-lg p-3 border">
-            <Button variant="outline" onClick={() => router.push('/new/swagger')}>
+            <Button variant="outline" onClick={() => router.push('/new/preview-swagger-xsd')}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back
             </Button>
             <AlertDialog>

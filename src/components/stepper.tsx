@@ -10,6 +10,7 @@ const steps = [
   { name: "Upload XML", href: "/new/upload", icon: FileUp },
   { name: "Preview XSD", href: "/new/preview-xsd", icon: Eye },
   { name: "Upload Swagger", href: "/new/swagger", icon: FileJson },
+  { name: "Preview Swagger XSD", href: "/new/preview-swagger-xsd", icon: Eye },
   { name: "Map XSDs", href: "/new/mapper", icon: LinkIcon },
   { name: "Generate XSLT", href: "/new/generate-xslt", icon: FileDown },
 ]

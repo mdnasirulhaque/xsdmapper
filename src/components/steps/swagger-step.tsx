@@ -87,7 +87,7 @@ export default function SwaggerStep() {
     };
 
     const handleProceed = () => {
-        router.push(`/new/mapper`);
+        router.push(`/new/preview-swagger-xsd`);
     }
 
     return (
@@ -120,7 +120,7 @@ export default function SwaggerStep() {
                     </div>
 
                     <Button onClick={handleProceed} size="lg" className="w-full" disabled={!swaggerFile || !sourceSchema}>
-                        Proceed to Mapper <ArrowRight className="ml-2 h-5 w-5" />
+                        Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                 </CardContent>
             </Card>
