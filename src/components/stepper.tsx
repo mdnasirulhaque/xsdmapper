@@ -61,7 +61,7 @@ export default function Stepper({ currentStep }: StepperProps) {
                                     <>
                                         <div className="absolute inset-0 h-px bg-primary"></div>
                                         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card p-0.5 rounded-full">
-                                            <CheckCircle2 className="h-6 w-6 text-primary" />
+                                            <CheckCircle2 className="h-6 w-6 text-success" />
                                         </div>
                                     </>
                                 )}
