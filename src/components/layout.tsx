@@ -19,6 +19,7 @@ import {
     SidebarRail
 } from "@/components/ui/sidebar"
 import { usePathname } from 'next/navigation'
+import { cn } from "@/lib/utils"
 
 
 interface AppLayoutProps {
@@ -65,7 +66,7 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
                 </SidebarMenu>
                 
                 {isCreationFlow && (
-                    <SidebarGroup>
+                    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
                         <SidebarGroupLabel>Creation Steps</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <Stepper currentStep={currentStep} />
@@ -86,5 +87,3 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
     </SidebarProvider>
   )
 }
-
-    
