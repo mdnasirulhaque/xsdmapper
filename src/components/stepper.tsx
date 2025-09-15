@@ -7,81 +7,45 @@ import NextLink from 'next/link';
 
 
 const steps = [
-  { name: "Upload XML", href: "/new/upload", icon: FileUp },
-  { name: "Preview XSD", href: "/new/preview-xsd", icon: Eye },
-  { name: "Upload Swagger", href: "/new/swagger", icon: FileJson },
-  { name: "Map Fields", href: "/new/mapper", icon: Link },
-  { name: "Generate XSLT", href: "#", icon: FileDown },
+  { name: "Upload XML", href: "/new/upload" },
+  { name: "Preview XSD", href: "/new/preview-xsd" },
+  { name: "Upload Swagger", href: "/new/swagger" },
+  { name: "Map Fields", href: "/new/mapper"},
+  { name: "Generate XSLT", href: "#"},
 ]
 
 interface StepperProps {
   currentStep: number
 }
 
-const StepLink = ({ step, currentStep, stepIdx }: { step: typeof steps[0], currentStep: number, stepIdx: number }) => {
-  const isCompleted = currentStep > stepIdx + 1;
-  const isCurrent = currentStep === stepIdx + 1;
-
-  const content = (
-     <>
-        <span className="relative flex h-5 w-5 flex-shrink-0 items-center justify-center">
-          {isCompleted ? (
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary group-hover:bg-primary/80">
-                <Check className="h-4 w-4 text-white" aria-hidden="true" />
-            </span>
-          ) : isCurrent ? (
-            <>
-                <span className="absolute h-4 w-4 rounded-full bg-primary/30" aria-hidden="true" />
-                <span className="relative block h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
-            </>
-          ) : (
-             <div className="h-2 w-2 rounded-full bg-muted-foreground/30" />
-          )}
-        </span>
-        <span className={cn(
-            "ml-3 text-sm font-medium",
-            isCurrent ? "text-primary" : "text-muted-foreground",
-            isCompleted && "group-hover:text-foreground"
-        )}>
-          {step.name}
-        </span>
-     </>
-  )
-
-  if (isCompleted) {
-    return (
-        <NextLink href={step.href} className="group flex items-start">
-            {content}
-        </NextLink>
-    )
-  }
-
-  if (isCurrent) {
-     return (
-        <NextLink href={step.href} className="flex items-start" aria-current="step">
-            {content}
-        </NextLink>
-     )
-  }
-
-  return (
-    <div className="group flex items-start cursor-default">
-        {content}
-    </div>
-  )
-
-}
-
-
 export default function Stepper({ currentStep }: StepperProps) {
   return (
     <nav aria-label="Progress">
-      <ol role="list" className="space-y-6">
-        {steps.map((step, stepIdx) => (
-          <li key={step.name}>
-             <StepLink step={step} currentStep={currentStep} stepIdx={stepIdx} />
-          </li>
-        ))}
+      <ol role="list" className="flex items-center">
+        {steps.map((step, stepIdx) => {
+            const isCompleted = currentStep > stepIdx + 1;
+            const isCurrent = currentStep === stepIdx + 1;
+            return (
+                <li key={step.name} className={cn("relative", stepIdx !== steps.length - 1 ? "flex-1" : "")}>
+                   {stepIdx !== steps.length - 1 ? (
+                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                      <div className={cn(
+                        "h-0.5 w-full",
+                         isCompleted ? "bg-primary" : "bg-gray-200"
+                      )} />
+                    </div>
+                  ) : null}
+                  <NextLink href={step.href} className={cn(
+                        "relative flex h-8 w-8 items-center justify-center rounded-full",
+                        isCompleted ? "bg-primary hover:bg-primary/80" : "bg-white border-2 border-gray-300",
+                        isCurrent && "border-primary"
+                    )}>
+                     {isCompleted ? <Check className="h-5 w-5 text-white" /> : <span className="sr-only">{step.name}</span>}
+                  </NextLink>
+                  <p className="mt-2 text-xs text-center text-muted-foreground">{step.name}</p>
+                </li>
+            )
+        })}
       </ol>
     </nav>
   )
