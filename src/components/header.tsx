@@ -39,7 +39,10 @@ const Breadcrumbs = () => {
 }
 
 const PageHeaderActions = ({ onPreview, onDownload }: Pick<HeaderProps, 'onPreview' | 'onDownload'>) => {
-    if (!onPreview || !onDownload) return null;
+    const pathname = usePathname();
+    const showActions = pathname.endsWith('/mapper');
+    if (!showActions) return null;
+
     return (
          <div className="flex items-center gap-2">
             <Button variant="outline" onClick={onPreview}>
@@ -62,13 +65,13 @@ export default function Header({ onPreview, onDownload, currentStep }: HeaderPro
   return (
     <header className="sticky top-0 z-10 flex flex-col">
         {isCreationFlow && (
-            <div className="flex h-14 items-center gap-4 px-4 sm:px-6">
+            <div className="flex h-14 items-center gap-4 px-4 sm:px-6 bg-muted/40">
                 <Breadcrumbs />
             </div>
         )}
         <div className={cn(
-            "flex items-center justify-between p-4 sm:px-6 h-20 bg-background shadow-sm", 
-            isCreationFlow ? "mx-4 sm:mx-6 rounded-lg" : "border-b"
+            "flex items-center justify-between p-4 sm:px-6 h-20 bg-muted/40 shadow-sm", 
+            isCreationFlow ? "mx-4 sm:mx-6 rounded-b-lg mb-4" : "border-b"
         )}>
             <div className="flex items-center gap-3">
                 <CodeXml className="h-8 w-8 text-primary" />
@@ -82,14 +85,14 @@ export default function Header({ onPreview, onDownload, currentStep }: HeaderPro
                 </div>
             ) : (
                  <Button asChild>
-                    <Link href="/new/upload?keepState=true">
+                    <Link href="/new/upload">
                         <FilePlus className="mr-2 h-4 w-4" />
                         Create New Request
                     </Link>
                 </Button>
             )}
             <div className="flex justify-end w-1/3">
-                {isCreationFlow && <PageHeaderActions onPreview={onPreview} onDownload={onDownload} />}
+                <PageHeaderActions onPreview={onPreview} onDownload={onDownload} />
             </div>
         </div>
     </header>

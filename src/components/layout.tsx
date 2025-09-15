@@ -66,8 +66,8 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
 
   return (
     <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-muted/40">
-        <Sidebar variant="floating" collapsible="icon">
+        <div className="flex min-h-screen w-full bg-background">
+        <Sidebar defaultOpen={false} variant="floating" collapsible="icon">
             <SidebarHeader>
                 <div className="flex items-center justify-between p-2">
                     <div className="flex items-center gap-3">
@@ -106,8 +106,8 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
         <main className="flex flex-1 flex-col h-screen overflow-y-auto">
               <Header 
                 currentStep={currentStep} 
-                onDownload={showActions ? handleDownloadXslt : undefined}
-                onPreview={showActions ? handlePreview : undefined}
+                onDownload={handleDownloadXslt}
+                onPreview={handlePreview}
               />
             {children}
         </main>
