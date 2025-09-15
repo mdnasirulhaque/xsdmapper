@@ -10,7 +10,6 @@ import { useRef, useState } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
-
 export default function UploadStep() {
   const router = useRouter();
   const { toast } = useToast();
