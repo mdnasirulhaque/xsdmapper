@@ -21,6 +21,7 @@ import { generateXslt } from "@/lib/xslt-generator"
 import { generateXmlPreview } from "@/lib/xml-preview-generator"
 import { useState } from "react"
 import PreviewDialog from "./preview-dialog"
+import Stepper from "./stepper"
 
 
 interface AppLayoutProps {
@@ -66,7 +67,7 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
 
   return (
     <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-background">
+        <div className="flex min-h-screen w-full bg-muted/40">
         <Sidebar variant="floating" collapsible="icon">
             <SidebarHeader>
                 <div className="flex items-center justify-between p-2">
@@ -79,7 +80,7 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
             <SidebarContent className="p-0">
                 <SidebarMenu>
                      <SidebarMenuItem>
-                        <SidebarMenuButton href="/new/upload" tooltip="Create New Request" isActive={isCreationFlow}>
+                        <SidebarMenuButton href="/new/upload?keepState=true" tooltip="Create New Request" isActive={isCreationFlow}>
                             <FilePlus className="size-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Create New Request</span>
                         </SidebarMenuButton>
@@ -105,11 +106,17 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
         </Sidebar>
         <main className="flex flex-1 flex-col h-screen overflow-y-auto">
               <Header 
-                currentStep={currentStep} 
                 onDownload={handleDownloadXslt}
                 onPreview={handlePreview}
               />
-            {children}
+              {isCreationFlow && (
+                 <div className="mx-4 sm:mx-6 my-4 p-4 rounded-lg bg-card shadow-sm">
+                    <Stepper currentStep={currentStep} />
+                </div>
+              )}
+            <div className="flex-1 flex flex-col mx-4 sm:mx-6 mb-4">
+                {children}
+            </div>
         </main>
         <PreviewDialog
           isOpen={isPreviewDialogOpen}

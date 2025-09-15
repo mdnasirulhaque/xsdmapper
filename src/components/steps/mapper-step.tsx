@@ -56,22 +56,25 @@ export default function MapperStep() {
   }, [rerenderCanvas])
 
   const handleFileLoad = (schemaContent: string, type: 'source' | 'target') => {
-    const newSchema = parseXsdToXsdNode(schemaContent, type);
-    if (!newSchema) {
+    try {
+        const newSchema = parseXsdToXsdNode(schemaContent, type);
+        if (!newSchema) {
+            throw new Error("Could not parse the uploaded XSD file.");
+        }
+
+        if (type === 'source') {
+          setState({ sourceSchema: newSchema, inputXsd: schemaContent, mappings: [] });
+        } else {
+          setState({ targetSchema: newSchema, responseXsd: schemaContent, mappings: [] });
+        }
+        rerenderCanvas();
+    } catch(e: any) {
         toast({
             variant: "destructive",
             title: "Parsing Error",
-            description: "Could not parse the uploaded XSD file.",
+            description: e.message || "An unknown error occurred while parsing.",
         });
-        return;
     }
-
-    if (type === 'source') {
-      setState({ sourceSchema: newSchema, inputXsd: schemaContent, mappings: [] });
-    } else {
-      setState({ targetSchema: newSchema, responseXsd: schemaContent, mappings: [] });
-    }
-    rerenderCanvas();
   }
   
   const handleDragStart = (node: XsdNode) => {
@@ -125,8 +128,8 @@ export default function MapperStep() {
   }
 
   return (
-    <div ref={canvasRef} className="flex-1 overflow-auto relative p-4 sm:p-6 md:p-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
+    <div ref={canvasRef} className="flex-1 overflow-auto relative bg-card rounded-lg">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8">
         <XsdPanel
           title="Source Schema"
           schema={sourceSchema}

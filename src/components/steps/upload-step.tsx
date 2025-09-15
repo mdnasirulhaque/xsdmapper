@@ -111,8 +111,8 @@ export default function UploadStep() {
   
 
   return (
-    <div className="flex items-center justify-center flex-1 bg-background p-4 sm:p-6 md:p-8">
-      <Card className="w-full max-w-4xl shadow-2xl">
+    <div className="flex items-center justify-center flex-1">
+      <Card className="w-full max-w-4xl shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Create Your XSLT Mapping</CardTitle>
           <CardDescription>Start by uploading your input and response XML files to generate schemas.</CardDescription>
@@ -143,4 +143,3 @@ export default function UploadStep() {
     </div>
   );
 }
-

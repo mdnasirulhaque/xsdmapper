@@ -2,13 +2,12 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Wand2, Loader } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { sourceSchema as mockSourceNode, targetSchema as mockTargetNode } from '@/lib/mock-data';
 import { useAppContext } from '@/context/AppContext';
 import { parseXsdToXsdNode } from '@/lib/xsd-parser';
 
@@ -117,32 +116,36 @@ export default function PreviewStep() {
 
         // Simulate a network delay
         setTimeout(() => {
-            const parsedSourceSchema = parseXsdToXsdNode(mockInputXsdString, 'source');
-            const parsedTargetSchema = parseXsdToXsdNode(mockResponseXsdString, 'target');
+            try {
+                const parsedSourceSchema = parseXsdToXsdNode(mockInputXsdString, 'source');
+                const parsedTargetSchema = parseXsdToXsdNode(mockResponseXsdString, 'target');
 
-            if (!parsedSourceSchema || !parsedTargetSchema) {
+                if (!parsedSourceSchema || !parsedTargetSchema) {
+                    throw new Error("Could not parse the mock XSDs.");
+                }
+
+                setState({
+                    inputXsd: mockInputXsdString,
+                    responseXsd: mockResponseXsdString,
+                    sourceSchema: parsedSourceSchema,
+                    targetSchema: parsedTargetSchema
+                });
+                
+                toast({
+                    variant: 'success',
+                    title: "Schemas Loaded",
+                    description: "Successfully loaded mock XSDs for both files.",
+                });
+
+            } catch(e: any) {
                  toast({
                     variant: 'destructive',
                     title: "Schema Parsing Failed",
-                    description: "Could not parse the mock XSDs.",
+                    description: e.message || "An unknown error occurred.",
                 });
+            } finally {
                 setIsLoading(false);
-                return;
             }
-
-            setState({
-                inputXsd: mockInputXsdString,
-                responseXsd: mockResponseXsdString,
-                sourceSchema: parsedSourceSchema,
-                targetSchema: parsedTargetSchema
-            });
-
-            setIsLoading(false);
-            toast({
-                variant: 'success',
-                title: "Schemas Loaded",
-                description: "Successfully loaded mock XSDs for both files.",
-            });
         }, 1000);
     }, [inputXml, responseXml, toast, setState]);
 
@@ -160,7 +163,7 @@ export default function PreviewStep() {
 
 
     return (
-        <div className="flex flex-col flex-1 p-4 sm:p-6 md:p-8 gap-6 overflow-auto">
+        <div className="flex flex-col flex-1 gap-6 overflow-auto">
             <Card>
                 <CardHeader>
                     <CardTitle>Preview XSDs</CardTitle>

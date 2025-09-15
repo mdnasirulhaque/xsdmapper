@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import { CodeXml, Eye, FileDown, FilePlus } from "lucide-react"
-import Stepper from "@/components/stepper"
 import { usePathname } from 'next/navigation'
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -19,7 +18,6 @@ import { cn } from "@/lib/utils"
 interface HeaderProps {
   onPreview?: () => void;
   onDownload?: () => void;
-  currentStep: number;
 }
 
 const Breadcrumbs = () => {
@@ -58,7 +56,7 @@ const PageHeaderActions = ({ onPreview, onDownload }: Pick<HeaderProps, 'onPrevi
 }
 
 
-export default function Header({ onPreview, onDownload, currentStep }: HeaderProps) {
+export default function Header({ onPreview, onDownload }: HeaderProps) {
   const pathname = usePathname();
   const isCreationFlow = pathname.startsWith('/new');
 
@@ -70,8 +68,8 @@ export default function Header({ onPreview, onDownload, currentStep }: HeaderPro
             </div>
         )}
         <div className={cn(
-            "bg-muted/40 shadow-sm", 
-            isCreationFlow ? "mx-4 sm:mx-6 rounded-b-lg mb-4 p-4" : "border-b"
+            "bg-card shadow-sm", 
+            isCreationFlow ? "mx-4 sm:mx-6 rounded-b-lg p-4" : "border-b p-4"
         )}>
             <div className="flex items-center justify-between h-16">
                 <div className="flex items-center gap-3">
@@ -81,8 +79,8 @@ export default function Header({ onPreview, onDownload, currentStep }: HeaderPro
                     </h1>
                 </div>
                 {!isCreationFlow && (
-                    <Button asChild>
-                        <Link href="/new/upload">
+                     <Button asChild>
+                        <Link href="/new/upload?keepState=true">
                             <FilePlus className="mr-2 h-4 w-4" />
                             Create New Request
                         </Link>
@@ -92,11 +90,6 @@ export default function Header({ onPreview, onDownload, currentStep }: HeaderPro
                     <PageHeaderActions onPreview={onPreview} onDownload={onDownload} />
                 </div>
             </div>
-             {isCreationFlow && (
-                <div className="mt-4">
-                    <Stepper currentStep={currentStep} />
-                </div>
-            )}
         </div>
     </header>
   )

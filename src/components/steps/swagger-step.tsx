@@ -7,7 +7,7 @@ import type { XsdNode } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import FilePreviewDialog from '@/components/file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
@@ -91,8 +91,8 @@ export default function SwaggerStep() {
     }
 
     return (
-        <div className="flex items-center justify-center flex-1 bg-background p-4 sm:p-6 md:p-8">
-            <Card className="w-full max-w-2xl shadow-2xl">
+        <div className="flex items-center justify-center flex-1">
+            <Card className="w-full max-w-2xl shadow-lg">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold">Upload Swagger/OpenAPI File</CardTitle>
                     <CardDescription>Upload a YAML or JSON file to define the target structure.</CardDescription>
