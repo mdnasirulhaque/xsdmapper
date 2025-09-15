@@ -74,7 +74,11 @@ export default function UploadStep() {
         sourceSchema: null, 
         targetSchema: null,
         swaggerFile: null,
-        mappings: []
+        mappings: {
+          set1: [],
+          set2: [],
+          set3: [],
+        }
     });
     router.replace(`/new/preview-xsd`);
   }
