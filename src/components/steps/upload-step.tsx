@@ -57,7 +57,9 @@ export default function UploadStep() {
       reader.readAsText(file);
     }
     // Reset input to allow re-uploading the same file
-    event.target.value = "";
+    if(event.target) {
+        event.target.value = "";
+    }
   };
 
   const handleProceed = () => {
