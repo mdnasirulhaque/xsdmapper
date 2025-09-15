@@ -60,13 +60,16 @@ export default function Header({ onPreview, onDownload, currentStep }: HeaderPro
   const isCreationFlow = pathname.startsWith('/new');
 
   return (
-    <header className="sticky top-0 z-10 flex flex-col border-b bg-background shadow-sm">
+    <header className="sticky top-0 z-10 flex flex-col">
         {isCreationFlow && (
-            <div className="flex h-14 items-center gap-4 border-b px-4 sm:px-6">
+            <div className="flex h-14 items-center gap-4 px-4 sm:px-6">
                 <Breadcrumbs />
             </div>
         )}
-        <div className={cn("flex items-center justify-between p-4 sm:px-6 h-20", !isCreationFlow && "border-b")}>
+        <div className={cn(
+            "flex items-center justify-between p-4 sm:px-6 h-20 bg-background shadow-sm", 
+            isCreationFlow ? "mx-4 sm:mx-6 rounded-lg" : "border-b"
+        )}>
             <div className="flex items-center gap-3">
                 <CodeXml className="h-8 w-8 text-primary" />
                 <h1 className="text-xl font-bold tracking-tight text-foreground">
