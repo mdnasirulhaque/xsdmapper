@@ -4,13 +4,10 @@
 import { useRef } from 'react'
 import { FileUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import type { XsdNode } from '@/types'
 import { useToast } from '@/hooks/use-toast'
-import { parseXsdToXsdNode } from '@/lib/xsd-parser';
-
 
 interface FileUploadButtonProps {
-  onFileLoad: (schema: XsdNode) => void;
+  onFileLoad: (schemaContent: string) => void;
   type: 'source' | 'target'
 }
 
@@ -26,22 +23,21 @@ export default function FileUploadButton({ onFileLoad, type }: FileUploadButtonP
       reader.onload = (e) => {
         try {
           const content = e.target?.result as string;
-          const schema = parseXsdToXsdNode(content, type);
-          if (!schema) {
-            throw new Error(`Failed to parse ${file.name}. Ensure it's a valid XSD file with a root element.`);
+          if (!content) {
+            throw new Error(`File ${file.name} is empty.`);
           }
-          onFileLoad(schema);
+          onFileLoad(content);
           toast({
             variant: "success",
             title: "Schema Loaded",
-            description: `Successfully parsed and loaded ${file.name}.`,
+            description: `Successfully loaded ${file.name}.`,
           });
         } catch (error: any) {
-          console.error("Failed to parse XSD", error);
+          console.error("Failed to load file", error);
           toast({
             variant: "destructive",
-            title: "Parsing Error",
-            description: error.message || `Could not parse ${file.name}. Please ensure it's a valid XSD file.`,
+            title: "Loading Error",
+            description: error.message || `Could not load ${file.name}.`,
           });
         }
       };

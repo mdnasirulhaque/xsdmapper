@@ -1,15 +1,16 @@
 
 "use client";
 
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
-import AppLayout from '@/components/layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Wand2, Loader } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { sourceSchema as mockSourceNode, targetSchema as mockTargetNode } from '@/lib/mock-data';
+import { useAppContext } from '@/context/AppContext';
+import { parseXsdToXsdNode } from '@/lib/xsd-parser';
 
 // A mock XSD string for preview purposes.
 const mockInputXsdString = `<?xml version="1.0" encoding="UTF-8"?>
@@ -92,25 +93,11 @@ const CodePreview = ({ title, content, language, isLoading = false }: { title: s
     </Card>
 );
 
-export default function PreviewXsdPage() {
-    const searchParams = useSearchParams();
+export default function PreviewStep() {
     const router = useRouter();
     const { toast } = useToast();
-
-    const [inputXml, setInputXml] = useState<string | null>(null);
-    const [responseXml, setResponseXml] = useState<string | null>(null);
-    const [inputXsd, setInputXsd] = useState<string | null>(null);
-    const [responseXsd, setResponseXsd] = useState<string | null>(null);
+    const { inputXml, responseXml, inputXsd, responseXsd, setState, sourceSchema, targetSchema } = useAppContext();
     const [isLoading, setIsLoading] = useState(false);
-
-    useEffect(() => {
-        const input = searchParams.get('inputXml');
-        if (input) setInputXml(decodeURIComponent(input));
-
-        const response = searchParams.get('responseXml');
-        if (response) setResponseXml(decodeURIComponent(response));
-    }, [searchParams]);
-    
 
     const handleGenerateXsds = useCallback(async () => {
         if (!inputXml || !responseXml) {
@@ -130,8 +117,26 @@ export default function PreviewXsdPage() {
 
         // Simulate a network delay
         setTimeout(() => {
-            setInputXsd(mockInputXsdString);
-            setResponseXsd(mockResponseXsdString);
+            const parsedSourceSchema = parseXsdToXsdNode(mockInputXsdString, 'source');
+            const parsedTargetSchema = parseXsdToXsdNode(mockResponseXsdString, 'target');
+
+            if (!parsedSourceSchema || !parsedTargetSchema) {
+                 toast({
+                    variant: 'destructive',
+                    title: "Schema Parsing Failed",
+                    description: "Could not parse the mock XSDs.",
+                });
+                setIsLoading(false);
+                return;
+            }
+
+            setState({
+                inputXsd: mockInputXsdString,
+                responseXsd: mockResponseXsdString,
+                sourceSchema: parsedSourceSchema,
+                targetSchema: parsedTargetSchema
+            });
+
             setIsLoading(false);
             toast({
                 variant: 'success',
@@ -139,10 +144,10 @@ export default function PreviewXsdPage() {
                 description: "Successfully loaded mock XSDs for both files.",
             });
         }, 1000);
-    }, [inputXml, responseXml, toast]);
+    }, [inputXml, responseXml, toast, setState]);
 
     const handleProceed = () => {
-        if (!inputXsd || !responseXsd) {
+        if (!sourceSchema || !targetSchema) {
              toast({
                 variant: 'destructive',
                 title: "XSDs not available",
@@ -150,61 +155,38 @@ export default function PreviewXsdPage() {
             });
             return;
         }
-        
-        // In a real app, you'd parse, but here we can use the pre-parsed mock nodes
-        const sourceSchema = mockSourceNode;
-        const targetSchema = mockTargetNode;
-
-        if(!sourceSchema || !targetSchema) {
-            toast({
-                variant: 'destructive',
-                title: "Schema Parsing Failed",
-                description: "Could not parse the generated XSDs. Check the console for errors.",
-            });
-            return;
-        }
-
-        const queryParams = new URLSearchParams();
-        queryParams.set('sourceSchema', encodeURIComponent(JSON.stringify(sourceSchema)));
-        queryParams.set('targetSchema', encodeURIComponent(JSON.stringify(targetSchema)));
-        // We'll also pass the raw XSDs for potential use/display
-        if(inputXsd) queryParams.set('sourceXsd', encodeURIComponent(inputXsd));
-        if(responseXsd) queryParams.set('targetXsd', encodeURIComponent(responseXsd));
-
-        router.push(`/swagger?${queryParams.toString()}`);
+        router.push(`/new/swagger`);
     };
 
 
     return (
-        <AppLayout currentStep={2}>
-            <div className="flex flex-col flex-1 p-4 sm:p-6 md:p-8 gap-6 overflow-auto">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Preview XSDs</CardTitle>
-                        <CardDescription>
-                            Click the button below to load mock XSD schemas based on your uploaded XML files.
-                            Review the schemas before proceeding to the next step.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-6">
-                         <Button onClick={handleGenerateXsds} size="lg" disabled={isLoading || (!!inputXsd && !!responseXsd)}>
-                            {isLoading ? <Loader className="mr-2 h-5 w-5 animate-spin" /> : <Wand2 className="mr-2 h-5 w-5" />}
-                            {isLoading ? 'Loading...' : (!!inputXsd && !!responseXsd ? 'Loaded' : 'Load Mock XSDs')}
-                        </Button>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                           <CodePreview title="Input XML" content={inputXml} language="xml" />
-                           <CodePreview title="Generated Input XSD" content={inputXsd} language="xml" isLoading={isLoading && !inputXsd} />
-                        </div>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                           <CodePreview title="Response XML" content={responseXml} language="xml" />
-                           <CodePreview title="Generated Response XSD" content={responseXsd} language="xml" isLoading={isLoading && !responseXsd} />
-                        </div>
-                         <Button onClick={handleProceed} size="lg" className="w-full" disabled={!inputXsd || !responseXsd}>
-                            Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
-        </AppLayout>
+        <div className="flex flex-col flex-1 p-4 sm:p-6 md:p-8 gap-6 overflow-auto">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Preview XSDs</CardTitle>
+                    <CardDescription>
+                        Click the button below to load mock XSD schemas based on your uploaded XML files.
+                        Review the schemas before proceeding to the next step.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-6">
+                     <Button onClick={handleGenerateXsds} size="lg" disabled={isLoading || (!!inputXsd && !!responseXsd)}>
+                        {isLoading ? <Loader className="mr-2 h-5 w-5 animate-spin" /> : <Wand2 className="mr-2 h-5 w-5" />}
+                        {isLoading ? 'Loading...' : (!!inputXsd && !!responseXsd ? 'Loaded' : 'Load Mock XSDs')}
+                    </Button>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                       <CodePreview title="Input XML" content={inputXml} language="xml" />
+                       <CodePreview title="Generated Input XSD" content={inputXsd} language="xml" isLoading={isLoading && !inputXsd} />
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                       <CodePreview title="Response XML" content={responseXml} language="xml" />
+                       <CodePreview title="Generated Response XSD" content={responseXsd} language="xml" isLoading={isLoading && !responseXsd} />
+                    </div>
+                     <Button onClick={handleProceed} size="lg" className="w-full" disabled={!inputXsd || !responseXsd}>
+                        Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
     );
 }

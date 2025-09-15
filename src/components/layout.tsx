@@ -28,7 +28,7 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children, currentStep }: AppLayoutProps) {
   const pathname = usePathname();
-  const isCreationFlow = ['/', '/preview-xsd', '/swagger', '/mapper'].includes(pathname);
+  const isCreationFlow = pathname.startsWith('/new');
 
   return (
     <SidebarProvider>
@@ -45,7 +45,7 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
             <SidebarContent className="p-0">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton href="/" tooltip="Create New Request" isActive={isCreationFlow}>
+                        <SidebarMenuButton href="/new/upload" tooltip="Create New Request" isActive={isCreationFlow}>
                             <FilePlus className="size-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Create New Request</span>
                         </SidebarMenuButton>

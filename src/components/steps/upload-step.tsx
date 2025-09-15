@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
 import { useRef, useState } from 'react';
-import FilePreviewDialog from './file-preview-dialog';
+import FilePreviewDialog from '../file-preview-dialog';
+import { useAppContext } from '@/context/AppContext';
 
 
 const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, fileType }: {
@@ -92,29 +93,20 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, f
     )
 }
 
-export default function Welcome() {
+export default function UploadStep() {
   const router = useRouter();
-  const [inputXml, setInputXml] = useState<string | null>(null);
-  const [responseXml, setResponseXml] = useState<string | null>(null);
+  const { inputXml, responseXml, setState } = useAppContext();
 
   const handleFileUpload = (content: string, fileType: 'input' | 'response') => {
     if (fileType === 'input') {
-        setInputXml(content);
+        setState({ inputXml: content });
     } else {
-        setResponseXml(content);
+        setState({ responseXml: content });
     }
   }
 
   const handleProceed = () => {
-    // We will now pass the raw XML content to the next page
-    const queryParams = new URLSearchParams();
-    if (inputXml) {
-        queryParams.set('inputXml', encodeURIComponent(inputXml));
-    }
-    if (responseXml) {
-        queryParams.set('responseXml', encodeURIComponent(responseXml));
-    }
-    router.push(`/preview-xsd?${queryParams.toString()}`);
+    router.push(`/new/preview-xsd`);
   }
   
 
@@ -151,3 +143,4 @@ export default function Welcome() {
     </div>
   );
 }
+
