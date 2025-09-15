@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -5,14 +6,17 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
 export default function UploadStep() {
   const router = useRouter();
   const { toast } = useToast();
-  const { inputXml, responseXml, setState } = useAppContext();
+  const { setState, inputXml: contextInputXml, responseXml: contextResponseXml } = useAppContext();
+
+  const [inputXml, setInputXml] = useState<string | null>(contextInputXml);
+  const [responseXml, setResponseXml] = useState<string | null>(contextResponseXml);
 
   const inputXmlRef = useRef<HTMLInputElement>(null);
   const responseXmlRef = useRef<HTMLInputElement>(null);
@@ -27,9 +31,9 @@ export default function UploadStep() {
         try {
           const content = e.target?.result as string;
           if (fileType === 'input') {
-            setState({ inputXml: content, inputXsd: null, sourceSchema: null, mappings: [] });
+            setInputXml(content);
           } else {
-            setState({ responseXml: content, responseXsd: null, targetSchema: null, mappings: [] });
+            setResponseXml(content);
           }
 
           toast({
@@ -40,23 +44,24 @@ export default function UploadStep() {
 
         } catch (error) {
           console.error("Error processing XML file:", error);
-          if (fileType === 'input') {
-            setState({ inputXml: null });
+           if (fileType === 'input') {
+            setInputXml(null);
           } else {
-            setState({ responseXml: null });
+            setResponseXml(null);
           }
           toast({
             variant: "destructive",
             title: "Upload Failed",
             description: "Could not process the XML file.",
           });
+        } finally {
+            // Reset input value to allow re-uploading the same file
+            if(event.target) {
+                event.target.value = "";
+            }
         }
       };
       reader.readAsText(file);
-    }
-    // Reset input to allow re-uploading the same file
-    if(event.target) {
-        event.target.value = "";
     }
   };
 
@@ -69,6 +74,18 @@ export default function UploadStep() {
       });
       return;
     }
+    // Update global state before proceeding
+    setState({ 
+        inputXml, 
+        responseXml,
+        // Reset subsequent state if files are re-uploaded
+        inputXsd: null, 
+        responseXsd: null, 
+        sourceSchema: null, 
+        targetSchema: null,
+        swaggerFile: null,
+        mappings: []
+    });
     router.push(`/new/preview-xsd`);
   }
   
@@ -77,7 +94,7 @@ export default function UploadStep() {
       <Card className="w-full max-w-4xl shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Create Your XSLT Mapping</CardTitle>
-          <CardDescription>Start by uploading your input and response XML files to generate schemas.</CardDescription>
+          <CardDescription>Start by uploading your input and response XML files to generate XSD.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -91,7 +108,7 @@ export default function UploadStep() {
                 accept=".xml"
               />
               <h3 className="font-semibold">Input XML</h3>
-              <p className="text-sm text-muted-foreground text-center">This will be used to generate the source schema.</p>
+              <p className="text-sm text-muted-foreground text-center">This will be used to generate the context and request XSD.</p>
               <Button onClick={() => inputXmlRef.current?.click()} size="lg" className="w-full" variant={inputXml ? "secondary" : "default"}>
                 {inputXml ? <CheckCircle className="mr-2 h-5 w-5" /> : <FileUp className="mr-2 h-5 w-5" />}
                 {inputXml ? "Uploaded" : "Upload Input XML"}
@@ -113,7 +130,7 @@ export default function UploadStep() {
                 accept=".xml"
               />
               <h3 className="font-semibold">Response XML</h3>
-              <p className="text-sm text-muted-foreground text-center">This will be used to generate the target schema.</p>
+              <p className="text-sm text-muted-foreground text-center">This will be used to generate the response XSD.</p>
               <Button onClick={() => responseXmlRef.current?.click()} size="lg" className="w-full" variant={responseXml ? "secondary" : "default"}>
                 {responseXml ? <CheckCircle className="mr-2 h-5 w-5" /> : <FileUp className="mr-2 h-5 w-5" />}
                 {responseXml ? "Uploaded" : "Upload Response XML"}
