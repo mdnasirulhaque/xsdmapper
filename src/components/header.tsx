@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { CodeXml, Eye, FileDown } from "lucide-react"
 
-interface PageHeaderProps {
+interface HeaderProps {
   onPreview: () => void;
   onDownload: () => void;
 }
@@ -34,7 +34,7 @@ const Breadcrumbs = () => {
     )
 }
 
-const PageHeaderActions = ({ onPreview, onDownload }: PageHeaderProps) => {
+const PageHeaderActions = ({ onPreview, onDownload }: HeaderProps) => {
     return (
          <div className="flex items-center gap-2">
             <Button variant="outline" onClick={onPreview}>
@@ -50,7 +50,7 @@ const PageHeaderActions = ({ onPreview, onDownload }: PageHeaderProps) => {
 }
 
 
-export default function PageHeader(props: PageHeaderProps) {
+export default function Header(props: HeaderProps) {
   return (
     <>
         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">

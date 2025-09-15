@@ -2,10 +2,7 @@
 "use client"
 
 import Stepper from "@/components/stepper"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { CodeXml, LayoutGrid, Folder, FileCheck, FilePlus } from "lucide-react"
-import Link from "next/link"
+import { CodeXml, Folder, FileCheck, FilePlus } from "lucide-react"
 import { 
     Sidebar, 
     SidebarProvider, 
@@ -18,7 +15,8 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupLabel,
-    SidebarGroupContent
+    SidebarGroupContent,
+    SidebarRail
 } from "@/components/ui/sidebar"
 import { usePathname } from 'next/navigation'
 
@@ -35,14 +33,13 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
   return (
     <SidebarProvider>
         <div className="flex min-h-screen w-full bg-muted/40">
-        <Sidebar>
+        <Sidebar variant="floating" collapsible="icon">
             <SidebarHeader>
                 <div className="flex items-center justify-between p-2">
                     <div className="flex items-center gap-3">
                         <CodeXml className="h-6 w-6 text-primary" />
                         <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">XSD Mapper</span>
                     </div>
-                    <SidebarTrigger />
                 </div>
             </SidebarHeader>
             <SidebarContent className="p-0">
@@ -76,14 +73,18 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
                     </SidebarGroup>
                 )}
             </SidebarContent>
-            <SidebarFooter className="p-2">
-                <div className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">Version 1.0.0</div>
+            <SidebarFooter className="p-2 justify-between flex flex-row items-center">
+                 <div className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">Version 1.0.0</div>
+                 <SidebarTrigger />
             </SidebarFooter>
+            <SidebarRail />
         </Sidebar>
-        <main className="flex flex-1 flex-col">
+        <main className="flex flex-1 flex-col h-screen overflow-y-auto">
             {children}
         </main>
         </div>
     </SidebarProvider>
   )
 }
+
+    

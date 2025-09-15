@@ -1,7 +1,8 @@
+
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import type { XsdNode, Mapping, Transformation, TransformationType } from '@/types'
+import type { XsdNode, Mapping } from '@/types'
 import { generateXslt } from '@/lib/xslt-generator'
 import { generateXmlPreview } from '@/lib/xml-preview-generator'
 import PageHeader from '@/components/page-header'
@@ -11,6 +12,7 @@ import TransformationDialog from '@/components/transformation-dialog'
 import PreviewDialog from '@/components/preview-dialog'
 import { useSearchParams } from 'next/navigation'
 import AppLayout from '@/components/layout'
+import Header from '@/components/header'
 
 const MAPPINGS_STORAGE_KEY = 'xsd-mapper-mappings';
 
@@ -183,8 +185,8 @@ export default function MapperPage() {
 
   return (
     <AppLayout currentStep={4}>
-      <div className="flex flex-col h-screen bg-background text-foreground">
-        <PageHeader onDownload={handleDownloadXslt} onPreview={handlePreview} />
+      <div className="flex flex-col bg-background text-foreground h-full">
+        <Header onDownload={handleDownloadXslt} onPreview={handlePreview} />
         <main ref={canvasRef} className="flex-1 overflow-auto relative p-4 sm:p-6 md:p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
             <XsdPanel
@@ -242,3 +244,5 @@ export default function MapperPage() {
     </AppLayout>
   )
 }
+
+    
