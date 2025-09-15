@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from 'react'
@@ -25,6 +26,7 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
   const [hoveredLine, setHoveredLine] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!canvasRef) return;
     const canvasRect = canvasRef.getBoundingClientRect()
     const scrollTop = canvasRef.scrollTop;
 
@@ -126,15 +128,17 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.5 }}
-                    className="flex items-center gap-2"
                   >
                     <g transform="translate(-40, -20)">
                        <rect x="0" y="0" width="80" height="40" rx="20" fill="hsl(var(--card))" stroke="hsl(var(--border))" />
-                       <g onClick={() => onMappingClick(mapping)} transform="translate(12, 10)">
-                         <Wand2 className="text-muted-foreground hover:text-primary" size={20} />
+                       <line x1="40" y1="5" x2="40" y2="35" stroke="hsl(var(--border))" />
+                       <g onClick={() => onMappingClick(mapping)} >
+                          <rect x="0" y="0" width="40" height="40" fill="transparent" />
+                          <Wand2 className="text-muted-foreground hover:text-primary" size={20} x="10" y="10" />
                        </g>
-                       <g onClick={() => onMappingDelete(id)} transform="translate(48, 10)">
-                         <X className="text-muted-foreground hover:text-destructive" size={20} />
+                       <g onClick={() => onMappingDelete(id)}>
+                          <rect x="40" y="0" width="40" height="40" fill="transparent" />
+                          <X className="text-muted-foreground hover:text-destructive" size={20} x="50" y="10" />
                        </g>
                     </g>
                   </motion.g>
