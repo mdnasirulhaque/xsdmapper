@@ -11,27 +11,27 @@ import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
 
-const FileUploadSection = ({ title, description, onFileUpload, fileContent, uploadComplete, fileType }: {
+const FileUploadSection = ({ title, description, onFileUpload, fileContent, fileType }: {
     title: string;
     description: string;
     onFileUpload: (content: string, fileType: 'input' | 'response') => void;
     fileContent: string | null;
-    uploadComplete: boolean;
     fileType: 'input' | 'response';
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
-    
+
+    const uploadComplete = !!fileContent;
+
     useEffect(() => {
-        if (fileContent && !fileName) {
+        if (uploadComplete && !fileName) {
             setFileName(`sample-${fileType}.xml`);
-        }
-        if (!fileContent && fileName) {
+        } else if (!uploadComplete && fileName) {
             setFileName(null);
         }
-    }, [fileContent, fileType, fileName]);
+    }, [uploadComplete, fileType, fileName]);
 
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -184,7 +184,6 @@ export default function UploadStep() {
                     description="This will be used to generate the source schema."
                     onFileUpload={handleFileUpload}
                     fileContent={inputXml}
-                    uploadComplete={!!inputXml}
                     fileType="input"
                 />
                  <FileUploadSection 
@@ -192,7 +191,6 @@ export default function UploadStep() {
                     description="This will be used to generate the target schema."
                     onFileUpload={handleFileUpload}
                     fileContent={responseXml}
-                    uploadComplete={!!responseXml}
                     fileType="response"
                 />
             </div>
