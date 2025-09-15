@@ -6,7 +6,7 @@ import { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Wand2, Loader } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Wand2, Loader } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAppContext } from '@/context/AppContext';
 import { parseXsdToXsdNode } from '@/lib/xsd-parser';
@@ -73,7 +73,7 @@ const mockResponseXsdString = `<?xml version="1.0" encoding="UTF-8"?>
 
 
 const CodePreview = ({ title, content, language, isLoading = false }: { title: string; content: string | null; language: string; isLoading?: boolean }) => (
-    <Card className="flex-1 flex flex-col">
+    <Card className="flex-1 flex flex-col min-w-[300px]">
         <CardHeader>
             <CardTitle className="text-lg">{title}</CardTitle>
         </CardHeader>
@@ -163,8 +163,8 @@ export default function PreviewStep() {
 
 
     return (
-        <div className="flex flex-col flex-1 gap-6 overflow-auto">
-            <Card>
+        <div className="flex items-center justify-center flex-1">
+            <Card className="w-full max-w-6xl shadow-lg">
                 <CardHeader>
                     <CardTitle>Preview XSDs</CardTitle>
                     <CardDescription>
@@ -177,17 +177,22 @@ export default function PreviewStep() {
                         {isLoading ? <Loader className="mr-2 h-5 w-5 animate-spin" /> : <Wand2 className="mr-2 h-5 w-5" />}
                         {isLoading ? 'Loading...' : (!!inputXsd && !!responseXsd ? 'Loaded' : 'Load Mock XSDs')}
                     </Button>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="flex flex-col lg:flex-row gap-6">
                        <CodePreview title="Input XML" content={inputXml} language="xml" />
                        <CodePreview title="Generated Input XSD" content={inputXsd} language="xml" isLoading={isLoading && !inputXsd} />
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="flex flex-col lg:flex-row gap-6">
                        <CodePreview title="Response XML" content={responseXml} language="xml" />
                        <CodePreview title="Generated Response XSD" content={responseXsd} language="xml" isLoading={isLoading && !responseXsd} />
                     </div>
-                     <Button onClick={handleProceed} size="lg" className="w-full" disabled={!inputXsd || !responseXsd}>
-                        Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
+                     <div className="flex items-center justify-between border-t pt-6">
+                        <Button variant="outline" onClick={() => router.push('/new/upload')}>
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                        </Button>
+                        <Button onClick={handleProceed} disabled={!inputXsd || !responseXsd}>
+                            Next <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
         </div>

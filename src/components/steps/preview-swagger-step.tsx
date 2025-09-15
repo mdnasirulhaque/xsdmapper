@@ -17,8 +17,8 @@ export default function PreviewSwaggerStep() {
     const router = useRouter();
 
     return (
-        <div className="flex flex-col flex-1 gap-6 overflow-auto">
-            <Card>
+        <div className="flex items-center justify-center flex-1">
+            <Card className="w-full max-w-2xl shadow-lg">
                 <CardHeader>
                     <CardTitle>Preview Swagger XSD</CardTitle>
                     <CardDescription>
@@ -26,11 +26,11 @@ export default function PreviewSwaggerStep() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-6">
-                    <div className="text-center text-muted-foreground py-12">
+                    <div className="text-center text-muted-foreground py-12 border rounded-lg bg-muted/50">
                         <p>Swagger XSD preview functionality is not yet implemented.</p>
                     </div>
 
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between border-t pt-6">
                          <Button variant="outline" onClick={() => router.push('/new/swagger')}>
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back
                         </Button>

@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { XsdNode } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
+import { FileUp, ArrowRight, CheckCircle, Eye, ArrowLeft } from 'lucide-react';
 import { useRef, useState } from 'react';
 import FilePreviewDialog from '@/components/file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
@@ -119,9 +119,14 @@ export default function SwaggerStep() {
                         )}
                     </div>
 
-                    <Button onClick={handleProceed} size="lg" className="w-full" disabled={!swaggerFile || !sourceSchema}>
-                        Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
+                    <div className="flex items-center justify-between border-t pt-6">
+                        <Button variant="outline" onClick={() => router.push('/new/preview-xsd')}>
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                        </Button>
+                        <Button onClick={handleProceed} disabled={!swaggerFile || !sourceSchema}>
+                            Next <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
              {swaggerFile && (
