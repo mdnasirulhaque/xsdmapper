@@ -5,16 +5,10 @@ import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import FileUploadButton from "@/components/file-upload-button"
 import type { XsdNode, Mapping } from "@/types"
-import { Folder, File, Trash2 } from "lucide-react"
+import { Folder, File } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "./ui/button"
 import { useToast } from "@/hooks/use-toast"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 const XsdNodeRecursive = ({
   node,
@@ -26,7 +20,6 @@ const XsdNodeRecursive = ({
   mappings,
   draggingNodeId,
   rerenderCanvas,
-  onClearMapping,
 }: {
   node: XsdNode,
   type: 'source' | 'target',
@@ -37,7 +30,6 @@ const XsdNodeRecursive = ({
   mappings: Mapping[],
   draggingNodeId?: string | null,
   rerenderCanvas: () => void,
-  onClearMapping: (nodeId: string) => void;
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null)
   const [isDragOver, setIsDragOver] = useState(false)
@@ -106,66 +98,53 @@ const XsdNodeRecursive = ({
   
   return (
     <div className="ml-4">
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <div
-                    ref={nodeRef}
-                    draggable={isDraggable}
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    className={cn(
-                        "relative flex items-center p-2 rounded-md transition-all duration-150 group",
-                        isDraggable && "cursor-grab",
-                        isDragging && "opacity-50 ring-2 ring-accent ring-offset-2 ring-offset-background",
-                        isDroppable && "cursor-crosshair",
-                        isDragOver && "bg-accent/20 ring-2 ring-accent"
-                    )}
-                    >
-                    <div
-                        className={cn(
-                            "absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 bg-card transition-colors",
-                            type === 'source' ? "-right-1.5 translate-x-1/2" : "-left-1.5 -translate-x-1/2",
-                            isMapped ? "bg-primary border-primary" : "border-muted-foreground/50 group-hover:border-primary"
-                        )}
-                    />
-                    
-                    {hasChildren ? <Folder className="w-4 h-4 mr-2 text-muted-foreground" /> : <File className="w-4 h-4 mr-2 text-muted-foreground" />}
-                    <span className="font-medium text-sm flex-1">{node.name}</span>
-                    <span className="text-xs text-muted-foreground ml-2">{node.type}</span>
-                </div>
-            </DropdownMenuTrigger>
-            {isMapped && (
-                <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => onClearMapping(node.id)}>
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Clear Mapping
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            )}
-        </DropdownMenu>
-        
-        {hasChildren && (
-            <div className="pl-6 space-y-1 border-l border-dashed border-muted-foreground/30">
-            {node.children?.map(child => (
-                <XsdNodeRecursive
-                key={child.id}
-                node={child}
-                type={type}
-                onDragStart={onDragStart}
-                onDragEnd={onDragEnd}
-                onDrop={onDrop}
-                nodeRefs={nodeRefs}
-                mappings={mappings}
-                draggingNodeId={draggingNodeId}
-                rerenderCanvas={rerenderCanvas}
-                onClearMapping={onClearMapping}
-                />
-            ))}
-            </div>
+      <div
+        ref={nodeRef}
+        draggable={isDraggable}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={cn(
+            "relative flex items-center p-2 rounded-md transition-all duration-150 group",
+            isDraggable && "cursor-grab",
+            isDragging && "opacity-50 ring-2 ring-accent ring-offset-2 ring-offset-background",
+            isDroppable && "cursor-crosshair",
+            isDragOver && "bg-accent/20 ring-2 ring-accent"
         )}
+        >
+        <div
+            className={cn(
+                "absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 bg-card transition-colors",
+                type === 'source' ? "-right-1.5 translate-x-1/2" : "-left-1.5 -translate-x-1/2",
+                isMapped ? "bg-primary border-primary" : "border-muted-foreground/50 group-hover:border-primary"
+            )}
+        />
+        
+        {hasChildren ? <Folder className="w-4 h-4 mr-2 text-muted-foreground" /> : <File className="w-4 h-4 mr-2 text-muted-foreground" />}
+        <span className="font-medium text-sm flex-1">{node.name}</span>
+        <span className="text-xs text-muted-foreground ml-2">{node.type}</span>
+      </div>
+        
+      {hasChildren && (
+          <div className="pl-6 space-y-1 border-l border-dashed border-muted-foreground/30">
+          {node.children?.map(child => (
+              <XsdNodeRecursive
+              key={child.id}
+              node={child}
+              type={type}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+              onDrop={onDrop}
+              nodeRefs={nodeRefs}
+              mappings={mappings}
+              draggingNodeId={draggingNodeId}
+              rerenderCanvas={rerenderCanvas}
+              />
+          ))}
+          </div>
+      )}
     </div>
   )
 }
@@ -180,23 +159,19 @@ const renderSchemaTree = (
     mappings: Mapping[],
     draggingNodeId: string | null | undefined,
     rerenderCanvas: () => void,
-    onClearMapping: (nodeId: string) => void
 ) => {
     return (
-        <div>
-            <XsdNodeRecursive
-                node={schema}
-                type={type}
-                onDragStart={onDragStart}
-                onDragEnd={onDragEnd}
-                onDrop={onDrop}
-                nodeRefs={nodeRefs}
-                mappings={mappings}
-                draggingNodeId={draggingNodeId}
-                rerenderCanvas={rerenderCanvas}
-                onClearMapping={onClearMapping}
-            />
-        </div>
+      <XsdNodeRecursive
+        node={schema}
+        type={type}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        onDrop={onDrop}
+        nodeRefs={nodeRefs}
+        mappings={mappings}
+        draggingNodeId={draggingNodeId}
+        rerenderCanvas={rerenderCanvas}
+      />
     )
 }
 
@@ -213,7 +188,6 @@ interface XsdPanelProps {
   mappings: Mapping[]
   draggingNodeId?: string | null
   rerenderCanvas: () => void
-  onClearMapping: (nodeId: string) => void;
 }
 
 export default function XsdPanel({
@@ -228,7 +202,6 @@ export default function XsdPanel({
   mappings,
   draggingNodeId,
   rerenderCanvas,
-  onClearMapping
 }: XsdPanelProps) {
   const panelId = `${type}-panel-content`;
   const { toast } = useToast();
@@ -278,8 +251,7 @@ export default function XsdPanel({
             nodeRefs,
             mappings,
             draggingNodeId,
-            rerenderCanvas,
-            onClearMapping)
+            rerenderCanvas)
         ) : (
           <div className="flex items-center justify-center h-full text-muted-foreground">
             <p>Upload an XSD file or load the default.</p>

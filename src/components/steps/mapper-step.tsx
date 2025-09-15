@@ -178,53 +178,6 @@ export default function MapperStep() {
   const deleteMapping = (mappingId: string) => {
     setState({ mappings: mappings.filter(m => m.id !== mappingId) });
   }
-  
-  const deleteMappingByNode = (nodeId: string) => {
-    const node = findNodeById(sourceSchema, nodeId) || findNodeById(targetSchema, nodeId);
-    if (!node) return;
-
-    let mappingsToDelete = new Set<string>();
-
-    const getDescendantIds = (currentNode: XsdNode): string[] => {
-      let ids = [currentNode.id];
-      if (currentNode.children) {
-        currentNode.children.forEach(child => {
-          ids = [...ids, ...getDescendantIds(child)];
-        });
-      }
-      return ids;
-    };
-
-    const nodeAndDescendantIds = getDescendantIds(node);
-
-    mappings.forEach(m => {
-      if (nodeAndDescendantIds.includes(m.sourceId) || nodeAndDescendantIds.includes(m.targetId)) {
-        mappingsToDelete.add(m.id);
-      }
-    });
-
-    if (mappingsToDelete.size > 0) {
-      setState({ mappings: mappings.filter(m => !mappingsToDelete.has(m.id)) });
-      toast({
-        variant: "success",
-        title: "Mappings Cleared",
-        description: `Removed ${mappingsToDelete.size} mapping(s).`,
-      });
-    }
-  };
-
-  const findNodeById = (schema: XsdNode | null, id: string): XsdNode | null => {
-    if (!schema) return null;
-    if (schema.id === id) return schema;
-    if (schema.children) {
-      for (const child of schema.children) {
-        const found = findNodeById(child, id);
-        if (found) return found;
-      }
-    }
-    return null;
-  };
-
 
   const handleOpenTransformationDialog = (mapping: Mapping) => {
     setSelectedMapping(mapping)
@@ -295,7 +248,6 @@ export default function MapperStep() {
             mappings={mappings}
             draggingNodeId={draggingNode?.id}
             rerenderCanvas={rerenderCanvas}
-            onClearMapping={deleteMappingByNode}
           />
           <XsdPanel
             title="Target Schema"
@@ -307,7 +259,6 @@ export default function MapperStep() {
             mappings={mappings}
             draggingNodeId={draggingNode?.id}
             rerenderCanvas={rerenderCanvas}
-            onClearMapping={deleteMappingByNode}
           />
         </div>
         
