@@ -71,7 +71,7 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
                 <div className="flex items-center justify-between p-2">
                     <div className="flex items-center gap-3">
                         <CodeXml className="h-6 w-6 text-primary" />
-                        <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">XSD Mapper</span>
+                        <span className="text-lg font-semibold text-primary-foreground group-data-[collapsible=icon]:hidden">XSD Mapper</span>
                     </div>
                 </div>
             </SidebarHeader>
