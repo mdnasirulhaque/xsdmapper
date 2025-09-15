@@ -95,83 +95,78 @@ export default function MapperStep() {
   const handleDrop = (targetNode: XsdNode) => {
     if (!draggingNode) return;
 
-    const sourceIsParent = draggingNode.children && draggingNode.children.length > 0;
-    const targetIsParent = targetNode.children && targetNode.children.length > 0;
+    const sourceIsParent = !!(draggingNode.children && draggingNode.children.length > 0);
+    const targetIsParent = !!(targetNode.children && targetNode.children.length > 0);
 
-    let newMappings: Mapping[] = [];
     const existingMappingIds = new Set(mappings.map(m => m.id));
+    let newMappings: Mapping[] = [];
 
-    // Case 1: Parent-to-Parent recursive mapping
+    // Case 1: Parent-to-Parent mapping (1-level deep for leaves only)
     if (sourceIsParent && targetIsParent) {
-        const mapRecursive = (sourceParent: XsdNode, targetParent: XsdNode) => {
-            const sourceChildren = sourceParent.children || [];
-            const targetChildren = targetParent.children || [];
+      const sourceChildren = draggingNode.children || [];
+      const targetChildren = targetNode.children || [];
 
-            sourceChildren.forEach(sourceChild => {
-                const targetChild = targetChildren.find(tc => tc.name === sourceChild.name);
-                if (targetChild) {
-                    const sourceHasChildren = sourceChild.children && sourceChild.children.length > 0;
-                    const targetHasChildren = targetChild.children && targetChild.children.length > 0;
+      sourceChildren.forEach(sourceChild => {
+        // Find a target child with the same name
+        const targetChild = targetChildren.find(tc => tc.name === sourceChild.name);
 
-                    if (sourceHasChildren && targetHasChildren) {
-                        // If both are parents, recurse
-                        mapRecursive(sourceChild, targetChild);
-                    } else if (!sourceHasChildren && !targetHasChildren) {
-                        // If both are leaves, create mapping
-                        const newMapping: Mapping = {
-                            id: `${sourceChild.id}-${targetChild.id}`,
-                            sourceId: sourceChild.id,
-                            targetId: targetChild.id,
-                        };
-                        if (!existingMappingIds.has(newMapping.id)) {
-                            newMappings.push(newMapping);
-                            existingMappingIds.add(newMapping.id);
-                        }
-                    }
-                }
-            });
-        };
-        
-        mapRecursive(draggingNode, targetNode);
-
-        if (newMappings.length > 0) {
-           toast({
-                variant: 'success',
-                title: 'Auto-Mapped Children',
-                description: `Created ${newMappings.length} new mappings between child nodes.`
-            })
+        // Map only if both are leaf nodes (no children)
+        if (targetChild && !sourceChild.children && !targetChild.children) {
+          const newMapping: Mapping = {
+            id: `${sourceChild.id}-${targetChild.id}`,
+            sourceId: sourceChild.id,
+            targetId: targetChild.id,
+          };
+          if (!existingMappingIds.has(newMapping.id)) {
+            newMappings.push(newMapping);
+            existingMappingIds.add(newMapping.id);
+          }
         }
-    
+      });
+      
+      if (newMappings.length > 0) {
+        toast({
+          variant: 'success',
+          title: 'Auto-Mapped Child Fields',
+          description: `Created ${newMappings.length} new mappings for matching child fields.`
+        });
+      }
+
     // Case 2: Leaf-to-Leaf mapping
     } else if (!sourceIsParent && !targetIsParent) {
-        const newMapping: Mapping = {
-            id: `${draggingNode.id}-${targetNode.id}`,
-            sourceId: draggingNode.id,
-            targetId: targetNode.id,
-        };
+      const newMapping: Mapping = {
+        id: `${draggingNode.id}-${targetNode.id}`,
+        sourceId: draggingNode.id,
+        targetId: targetNode.id,
+      };
 
-        if (!existingMappingIds.has(newMapping.id)) {
-            if (mappings.some(m => m.targetId === newMapping.targetId)) {
-                toast({
-                    title: "Mapping for Concatenation",
-                    description: `Target ${targetNode.name} is already mapped. Creating an additional mapping.`,
-                });
-            }
-            newMappings.push(newMapping);
-        }
-    // Case 3: Invalid mapping
-    } else {
-        toast({
-            variant: 'destructive',
-            title: 'Invalid Mapping',
-            description: 'Cannot map a parent node to a child node, or vice-versa.'
-        });
+      if (existingMappingIds.has(newMapping.id)) {
+        // Mapping already exists, do nothing.
         return;
+      }
+
+      if (mappings.some(m => m.targetId === newMapping.targetId)) {
+        toast({
+          title: "Mapping for Concatenation",
+          description: `Target ${targetNode.name} is already mapped. Creating an additional mapping.`,
+        });
+      }
+      newMappings.push(newMapping);
+
+    // Case 3: Invalid mapping (Parent to Leaf or vice-versa)
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid Mapping',
+        description: 'Cannot map a parent node to a child node, or vice-versa.'
+      });
+      return;
     }
 
+    // Add any newly created mappings to the state
     if (newMappings.length > 0) {
-        setState({ mappings: [...mappings, ...newMappings] });
-        rerenderCanvas();
+      setState({ mappings: [...mappings, ...newMappings] });
+      rerenderCanvas();
     }
   }
   
@@ -285,5 +280,3 @@ export default function MapperStep() {
     </div>
   )
 }
-
-    
