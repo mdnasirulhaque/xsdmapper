@@ -95,31 +95,33 @@ export default function MapperStep() {
   const handleDrop = (targetNode: XsdNode) => {
     if (!draggingNode) return;
 
-    const existingMappings = [...mappings];
     const newMappings: Mapping[] = [];
     
-    const createMappingIfNotExists = (source: XsdNode, target: XsdNode) => {
+    const sourceIsParent = draggingNode.children && draggingNode.children.length > 0;
+    const targetIsParent = targetNode.children && targetNode.children.length > 0;
+
+    const existingMappingIds = new Set(mappings.map(m => m.id));
+
+    // Helper to create a single mapping
+    const createMapping = (source: XsdNode, target: XsdNode) => {
         const newMapping: Mapping = {
             id: `${source.id}-${target.id}`,
             sourceId: source.id,
             targetId: target.id,
         };
 
-        if (!existingMappings.some(m => m.id === newMapping.id)) {
-            if (existingMappings.some(m => m.targetId === newMapping.targetId)) {
-                toast({
-                    title: "Mapping for Concatenation",
-                    description: `Target ${target.name} is already mapped. Creating an additional mapping for concatenation.`,
-                });
-            }
-            newMappings.push(newMapping);
-            existingMappings.push(newMapping); // Add to temp list to check subsequent mappings in this loop
+        if (existingMappingIds.has(newMapping.id)) return; // Already exists
+
+        if (mappings.some(m => m.targetId === newMapping.targetId)) {
+            toast({
+                title: "Mapping for Concatenation",
+                description: `Target ${target.name} is already mapped. Creating an additional mapping.`,
+            });
         }
+        newMappings.push(newMapping);
+        existingMappingIds.add(newMapping.id);
     }
     
-    const sourceIsParent = draggingNode.children && draggingNode.children.length > 0;
-    const targetIsParent = targetNode.children && targetNode.children.length > 0;
-
     if (sourceIsParent && targetIsParent) {
         // Recursive parent-to-parent mapping by name
         const mapRecursive = (sourceParent: XsdNode, targetParent: XsdNode) => {
@@ -137,7 +139,7 @@ export default function MapperStep() {
                         mapRecursive(sourceChild, targetChild);
                     } else if (!sourceHasChildren && !targetHasChildren) {
                         // If both are leaves, create mapping
-                        createMappingIfNotExists(sourceChild, targetChild);
+                        createMapping(sourceChild, targetChild);
                     }
                 }
             });
@@ -155,7 +157,7 @@ export default function MapperStep() {
 
     } else if (!sourceIsParent && !targetIsParent) {
         // Single node to single node mapping
-        createMappingIfNotExists(draggingNode, targetNode);
+        createMapping(draggingNode, targetNode);
 
     } else {
         // Invalid mapping (parent to child or child to parent)
