@@ -22,6 +22,8 @@ export default function MapperStep() {
     targetSchema, 
     mappings, 
     setState, 
+    inputXsd,
+    responseXsd,
   } = useAppContext();
   const { toast } = useToast();
   
@@ -70,21 +72,14 @@ export default function MapperStep() {
     const mainContainer = canvasRef.current;
     if (!mainContainer) return;
 
-    window.addEventListener('resize', rerenderCanvas)
-    mainContainer.addEventListener('scroll', rerenderCanvas)
+    const resizeObserver = new ResizeObserver(rerenderCanvas);
+    resizeObserver.observe(mainContainer);
 
-    const sourcePanel = document.getElementById('source-panel-content');
-    const targetPanel = document.getElementById('target-panel-content');
-    sourcePanel?.addEventListener('scroll', rerenderCanvas);
-    targetPanel?.addEventListener('scroll', rerenderCanvas);
-
+    // Initial render
     rerenderCanvas();
 
     return () => {
-      window.removeEventListener('resize', rerenderCanvas)
-      mainContainer.removeEventListener('scroll', rerenderCanvas)
-      sourcePanel?.removeEventListener('scroll', rerenderCanvas);
-      targetPanel?.removeEventListener('scroll', rerenderCanvas);
+      resizeObserver.disconnect();
     }
   }, [rerenderCanvas])
 
@@ -123,6 +118,11 @@ export default function MapperStep() {
   const handleDrop = (targetNode: XsdNode) => {
     if (draggingNode && (!targetNode.children || targetNode.children.length === 0)) {
       if (draggingNode.children || targetNode.children) {
+        toast({
+          variant: 'destructive',
+          title: 'Invalid Mapping',
+          description: 'Cannot map a parent node to a child node.'
+        })
         return;
       }
       
@@ -133,7 +133,19 @@ export default function MapperStep() {
       }
       
       if(mappings.some(m => m.id === newMapping.id)) {
+        toast({
+            title: "Mapping Exists",
+            description: "This mapping has already been created.",
+        })
         return;
+      }
+      
+      if(mappings.some(m => m.targetId === newMapping.targetId)) {
+        toast({
+            variant: 'destructive',
+            title: "Mapping Conflict",
+            description: `Target ${targetNode.name} is already mapped. Multiple source fields can be mapped to one target for concatenation.`,
+        })
       }
 
       setState({ mappings: [...mappings, newMapping] });
