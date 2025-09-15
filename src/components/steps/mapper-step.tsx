@@ -10,11 +10,6 @@ import PreviewDialog from '@/components/preview-dialog'
 import { useAppContext } from '@/context/AppContext'
 import { useToast } from '@/hooks/use-toast'
 import { parseXsdToXsdNode } from '@/lib/xsd-parser'
-import { Button } from '@/components/ui/button'
-import { Eye, FileDown } from 'lucide-react'
-import { generateXslt } from '@/lib/xslt-generator'
-import { generateXmlPreview } from '@/lib/xml-preview-generator'
-
 
 export default function MapperStep() {
   const { 
@@ -22,8 +17,6 @@ export default function MapperStep() {
     targetSchema, 
     mappings, 
     setState, 
-    inputXsd,
-    responseXsd,
   } = useAppContext();
   const { toast } = useToast();
   
@@ -38,31 +31,6 @@ export default function MapperStep() {
 
   const [isPreviewDialogOpen, setPreviewDialogOpen] = useState(false)
   const [previewContent, setPreviewContent] = useState('')
-
-  const handleDownloadXslt = () => {
-    if (!sourceSchema || !targetSchema) {
-      toast({ variant: 'destructive', title: "Missing Schemas", description: "Please load both source and target schemas." });
-      return;
-    }
-    const xsltContent = generateXslt(mappings, sourceSchema, targetSchema)
-    const blob = new Blob([xsltContent], { type: 'application/xml;charset=utf-8' })
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.download = 'transformation.xslt'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-
-  const handlePreview = () => {
-    if (!targetSchema) {
-      toast({ variant: 'destructive', title: "Missing Target Schema", description: "Please load a target schema to generate a preview." });
-      return;
-    }
-    const preview = generateXmlPreview(mappings, targetSchema)
-    setPreviewContent(preview)
-    setPreviewDialogOpen(true)
-  }
 
   const rerenderCanvas = useCallback(() => {
      setTimeout(() => setCanvasKey(prev => prev + 1), 50)
@@ -91,9 +59,9 @@ export default function MapperStep() {
         }
 
         if (type === 'source') {
-          setState({ sourceSchema: newSchema, inputXsd: schemaContent, mappings: [] });
+          setState({ sourceSchema: newSchema, mappings: [] });
         } else {
-          setState({ targetSchema: newSchema, responseXsd: schemaContent, mappings: [] });
+          setState({ targetSchema: newSchema, mappings: [] });
         }
         rerenderCanvas();
     } catch(e: any) {
@@ -174,7 +142,7 @@ export default function MapperStep() {
 
   return (
     <div className="flex-1 flex flex-col gap-4">
-      <div ref={canvasRef} className="flex-1 overflow-auto relative bg-card rounded-lg">
+      <div ref={canvasRef} className="flex-1 relative bg-card rounded-lg">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8">
           <XsdPanel
             title="Source Schema"

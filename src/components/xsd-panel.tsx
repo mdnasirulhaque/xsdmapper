@@ -232,7 +232,7 @@ export default function XsdPanel({
   }
   
   return (
-    <Card className="shadow-lg h-full flex flex-col max-h-[calc(100vh-20rem)]">
+    <Card className="shadow-lg flex flex-col h-full min-h-[300px]">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{title}</CardTitle>
         <div className="flex items-center gap-2">
