@@ -201,53 +201,29 @@ export default function MapperStep() {
 
   return (
     <div className="flex-1 flex flex-col gap-4 overflow-hidden">
-       <div className="flex items-center justify-between bg-card rounded-lg p-3 border">
-        <Button variant="outline" onClick={() => router.push('/new/swagger')}>
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back
-        </Button>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-              <Button variant="destructive">
-                  <RotateCcw className="mr-2 h-4 w-4" /> Reset all mappings
-              </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-              <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                      This action will permanently delete all your current mappings across all sets. You cannot undo this action.
-                  </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleResetMappings}>
-                      Continue
-                  </AlertDialogAction>
-              </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button disabled={!areAllSetsMapped}>
-                Next <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Confirm Mappings</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you are finished with the mappings and want to proceed to the XSLT generation step?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => router.push('/new/generate-xslt')}>
-                Confirm
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
+        <div className="flex items-center justify-center bg-card rounded-lg p-3 border">
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="destructive">
+                        <RotateCcw className="mr-2 h-4 w-4" /> Reset all mappings
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action will permanently delete all your current mappings across all sets. You cannot undo this action.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleResetMappings}>
+                            Continue
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
 
         <Tabs value={activeSet} onValueChange={(value) => setActiveSet(value as MappingSet)} className="flex-1 flex flex-col gap-4">
             <TabsList className="grid w-full grid-cols-3">
@@ -298,6 +274,33 @@ export default function MapperStep() {
                  </TabsContent>
             ))}
         </Tabs>
+
+        <div className="flex items-center justify-between bg-card rounded-lg p-3 border">
+            <Button variant="outline" onClick={() => router.push('/new/swagger')}>
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button disabled={!areAllSetsMapped}>
+                    Next <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm Mappings</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you are finished with the mappings and want to proceed to the XSLT generation step?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => router.push('/new/generate-xslt')}>
+                    Confirm
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+        </div>
       
        {selectedMapping && (
         <TransformationDialog
@@ -309,4 +312,4 @@ export default function MapperStep() {
       )}
     </div>
   )
-}
+ 
