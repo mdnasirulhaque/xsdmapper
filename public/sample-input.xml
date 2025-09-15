@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:PurchaseOrder xmlns:ns0="http://www.tibco.com/schemas/examples/po">
+    <Header>
+        <OrderID>PO-1999-22</OrderID>
+        <OrderDate>2023-11-20</OrderDate>
+        <Status>Submitted</Status>
+    </Header>
+    <Customer>
+        <CustomerID>CUST-101</CustomerID>
+        <Name>
+            <FirstName>John</FirstName>
+            <LastName>Doe</LastName>
+        </Name>
+        <Contact>
+            <Email>john.doe@email.com</Email>
+            <Phone>123-456-7890</Phone>
+        </Contact>
+    </Customer>
+    <ShippingAddress>
+        <Street>123 Maple Street</Street>
+        <City>Mill Valley</City>
+        <State>CA</State>
+        <Zip>94941</Zip>
+        <Country>USA</Country>
+    </ShippingAddress>
+    <Items>
+        <Item>
+            <SKU>SKU-123</SKU>
+            <ProductName>Laptop</ProductName>
+            <Quantity>1</Quantity>
+            <Price>1200.00</Price>
+        </Item>
+        <Item>
+            <SKU>SKU-456</SKU>
+            <ProductName>Mouse</ProductName>
+            <Quantity>1</Quantity>
+            <Price>25.00</Price>
+        </Item>
+    </Items>
+</ns0:PurchaseOrder>

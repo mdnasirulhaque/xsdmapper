@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:SalesOrder xmlns:ns1="http://www.tibco.com/schemas/examples/so">
+    <InvoiceInfo>
+        <InvoiceNumber>INV-2023-45</InvoiceNumber>
+        <InvoiceDate>2023-11-21</InvoiceDate>
+        <SourceOrderID>PO-1999-22</SourceOrderID>
+    </InvoiceInfo>
+    <Buyer>
+        <BuyerID>CUST-101</BuyerID>
+        <FullName>John Doe</FullName>
+        <EmailAddress>john.doe@email.com</EmailAddress>
+    </Buyer>
+    <Delivery>
+        <Address>
+            <Line1>123 Maple Street</Line1>
+            <CityName>Mill Valley</CityName>
+            <PostalCode>94941</PostalCode>
+            <CountryCode>US</CountryCode>
+        </Address>
+    </Delivery>
+    <OrderLines>
+        <Line>
+            <ProductCode>SKU-123</ProductCode>
+            <Amount>1</Amount>
+            <UnitPrice>1200.00</UnitPrice>
+        </Line>
+        <Line>
+            <ProductCode>SKU-456</ProductCode>
+            <Amount>1</Amount>
+            <UnitPrice>25.00</UnitPrice>
+        </Line>
+    </OrderLines>
+</ns1:SalesOrder>

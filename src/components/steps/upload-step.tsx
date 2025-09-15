@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { FileUp, ArrowRight, CheckCircle, Eye, FileText } from 'lucide-react';
+import { useRef, useState, useCallback } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
@@ -95,6 +95,7 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, f
 
 export default function UploadStep() {
   const router = useRouter();
+  const { toast } = useToast();
   const { inputXml, responseXml, setState } = useAppContext();
 
   const handleFileUpload = (content: string, fileType: 'input' | 'response') => {
@@ -104,6 +105,43 @@ export default function UploadStep() {
         setState({ responseXml: content });
     }
   }
+
+  const loadDefaults = useCallback(async () => {
+    try {
+        const [inputRes, responseRes] = await Promise.all([
+            fetch('/sample-input.xml'),
+            fetch('/sample-response.xml'),
+        ]);
+
+        if (!inputRes.ok || !responseRes.ok) {
+            throw new Error("Failed to fetch default files.");
+        }
+
+        const [inputContent, responseContent] = await Promise.all([
+            inputRes.text(),
+            responseRes.text(),
+        ]);
+
+        setState({
+            inputXml: inputContent,
+            responseXml: responseContent
+        });
+
+        toast({
+            variant: "success",
+            title: "Defaults Loaded",
+            description: "Sample XML files have been loaded.",
+        });
+
+    } catch (e) {
+        console.error("Failed to load default files:", e);
+        toast({
+            variant: "destructive",
+            title: "Loading Failed",
+            description: "Could not load the default sample files.",
+        });
+    }
+  }, [setState, toast]);
 
   const handleProceed = () => {
     router.push(`/new/preview-xsd`);
@@ -134,10 +172,14 @@ export default function UploadStep() {
                     fileType="response"
                 />
             </div>
-
-            <Button onClick={handleProceed} size="lg" className="w-full" disabled={!inputXml || !responseXml}>
-                Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <div className="flex flex-col gap-2">
+                <Button onClick={handleProceed} size="lg" className="w-full" disabled={!inputXml || !responseXml}>
+                    Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+                <Button onClick={loadDefaults} size="lg" variant="outline" className="w-full">
+                    <FileText className="mr-2 h-5 w-5" /> Load Defaults
+                </Button>
+            </div>
         </CardContent>
       </Card>
     </div>
