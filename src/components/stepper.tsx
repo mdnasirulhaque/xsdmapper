@@ -42,10 +42,10 @@ export default function Stepper({ currentStep }: StepperProps) {
                             }}
                         >
                             <div className={cn(
-                                "flex h-10 w-10 items-center justify-center rounded-full border-2 bg-background z-10",
-                                isCompleted ? "border-primary text-primary" 
-                                : isCurrent ? "border-primary text-primary" 
-                                : "border-border text-muted-foreground"
+                                "flex h-10 w-10 items-center justify-center rounded-full border-2 z-10",
+                                isCompleted ? "bg-primary border-primary text-primary-foreground" 
+                                : isCurrent ? "bg-background border-primary text-primary" 
+                                : "bg-background border-border text-muted-foreground"
                             )}>
                                 <step.icon className="h-5 w-5" />
                             </div>
