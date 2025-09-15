@@ -10,8 +10,11 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
-import { CodeXml, Eye, FileDown } from "lucide-react"
+import { CodeXml, Eye, FileDown, FilePlus } from "lucide-react"
 import Stepper from "@/components/stepper"
+import { usePathname } from 'next/navigation'
+import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 interface HeaderProps {
   onPreview?: () => void;
@@ -53,25 +56,39 @@ const PageHeaderActions = ({ onPreview, onDownload }: Pick<HeaderProps, 'onPrevi
 
 
 export default function Header({ onPreview, onDownload, currentStep }: HeaderProps) {
+  const pathname = usePathname();
+  const isCreationFlow = pathname.startsWith('/new');
+
   return (
     <header className="sticky top-0 z-10 flex flex-col border-b bg-background shadow-sm">
-        <div className="flex h-14 items-center gap-4  px-4 sm:px-6">
-            <Breadcrumbs />
-        </div>
-        <div className="flex items-center justify-between p-4 sm:px-6 border-t h-20">
+        <div className={cn("flex items-center justify-between p-4 sm:px-6 h-20", !isCreationFlow && "border-b")}>
             <div className="flex items-center gap-3">
                 <CodeXml className="h-8 w-8 text-primary" />
                 <h1 className="text-xl font-bold tracking-tight text-foreground">
                 XSD Mapper
                 </h1>
             </div>
-            <div className="w-1/3">
-                 <Stepper currentStep={currentStep} />
-            </div>
+            {isCreationFlow ? (
+                <div className="w-1/3">
+                    <Stepper currentStep={currentStep} />
+                </div>
+            ) : (
+                 <Button asChild>
+                    <Link href="/new/upload">
+                        <FilePlus className="mr-2 h-4 w-4" />
+                        Create New Request
+                    </Link>
+                </Button>
+            )}
             <div className="flex justify-end w-1/3">
-                <PageHeaderActions onPreview={onPreview} onDownload={onDownload} />
+                {isCreationFlow && <PageHeaderActions onPreview={onPreview} onDownload={onDownload} />}
             </div>
         </div>
+         {isCreationFlow && (
+            <div className="flex h-14 items-center gap-4 border-t px-4 sm:px-6">
+                <Breadcrumbs />
+            </div>
+        )}
     </header>
   )
 }

@@ -2,7 +2,7 @@
 "use client"
 
 import Header from "@/components/header"
-import { CodeXml, Folder, FileCheck, FilePlus } from "lucide-react"
+import { CodeXml, Folder, FileCheck } from "lucide-react"
 import { 
     Sidebar, 
     SidebarProvider, 
@@ -32,7 +32,7 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
   const pathname = usePathname();
   const isCreationFlow = pathname.startsWith('/new');
 
-  const { mappings, sourceSchema, targetSchema } = useAppContext();
+  const { mappings, sourceSchema, targetSchema, resetState } = useAppContext();
   const { toast } = useToast();
   const [isPreviewDialogOpen, setPreviewDialogOpen] = useState(false)
   const [previewContent, setPreviewContent] = useState('')
@@ -78,12 +78,6 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
             </SidebarHeader>
             <SidebarContent className="p-0">
                 <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton href="/new/upload" tooltip="Create New Request" isActive={isCreationFlow}>
-                            <FilePlus className="size-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Create New Request</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
                      <SidebarMenuItem>
                         <SidebarMenuButton href="/requests" tooltip="Check Requests" isActive={pathname === '/requests'}>
                             <FileCheck className="size-5" />
@@ -104,13 +98,11 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
             </SidebarFooter>
         </Sidebar>
         <main className="flex flex-1 flex-col h-screen overflow-y-auto">
-            {isCreationFlow && (
               <Header 
                 currentStep={currentStep} 
                 onDownload={showActions ? handleDownloadXslt : undefined}
                 onPreview={showActions ? handlePreview : undefined}
               />
-            )}
             {children}
         </main>
         <PreviewDialog

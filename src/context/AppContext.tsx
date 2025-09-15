@@ -39,7 +39,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const savedState = localStorage.getItem('appState');
       if (savedState) {
         try {
-          return JSON.parse(savedState);
+          const parsed = JSON.parse(savedState);
+          // Basic validation to ensure the parsed state has the expected shape
+          if(parsed && typeof parsed === 'object' && 'sourceSchema' in parsed){
+            return parsed;
+          }
         } catch (e) {
           console.error("Failed to parse state from localStorage", e);
           return initialState;
@@ -59,7 +63,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const resetState = () => {
     setStateValue(initialState);
-    localStorage.removeItem('appState');
   };
   
   const contextValue = {
