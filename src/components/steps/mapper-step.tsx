@@ -9,12 +9,23 @@ import TransformationDialog from '@/components/transformation-dialog'
 import { useAppContext } from '@/context/AppContext'
 import { useToast } from '@/hooks/use-toast'
 import { parseXsdToXsdNode } from '@/lib/xsd-parser'
-import { generateXmlPreview } from '@/lib/xml-preview-generator'
-import { generateXslt } from '@/lib/xslt-generator'
 import { Button } from '@/components/ui/button'
-import { Download, Eye } from 'lucide-react'
+import { ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function MapperStep() {
+  const router = useRouter();
   const { 
     sourceSchema, 
     targetSchema, 
@@ -230,8 +241,47 @@ export default function MapperStep() {
     setSelectedMapping(null)
   }
 
+  const handleResetMappings = () => {
+    setState({ mappings: [] });
+    toast({
+      variant: "success",
+      title: "Mappings Reset",
+      description: "All mappings have been cleared.",
+    });
+  }
+
   return (
     <div className="flex-1 flex flex-col gap-4 overflow-hidden">
+       <div className="flex items-center justify-between bg-card rounded-lg p-3 border">
+        <Button variant="outline" onClick={() => router.push('/new/swagger')}>
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+              <Button variant="destructive">
+                  <RotateCcw className="mr-2 h-4 w-4" /> Reset all mappings
+              </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+              <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                      This action will permanently delete all your current mappings. You cannot undo this action.
+                  </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleResetMappings}>
+                      Continue
+                  </AlertDialogAction>
+              </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        <Button onClick={() => router.push('/new/generate-xslt')}>
+            Next <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+
       <div ref={canvasRef} className="flex-1 relative bg-card rounded-lg overflow-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8">
           <XsdPanel

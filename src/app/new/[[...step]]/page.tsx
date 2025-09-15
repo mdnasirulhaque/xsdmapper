@@ -15,6 +15,7 @@ const steps = [
   { name: 'preview-xsd', component: PreviewStep, step: 2 },
   { name: 'swagger', component: SwaggerStep, step: 3 },
   { name: 'mapper', component: MapperStep, step: 4 },
+  { name: 'generate-xslt', component: () => <div className="text-center p-8">XSLT Generation not implemented yet.</div>, step: 5 },
 ];
 
 export default function NewRequestPage() {

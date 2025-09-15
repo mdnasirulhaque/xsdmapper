@@ -11,7 +11,7 @@ const steps = [
   { name: "Preview XSD", href: "/new/preview-xsd", icon: Eye },
   { name: "Upload Swagger", href: "/new/swagger", icon: FileJson },
   { name: "Map Fields", href: "/new/mapper", icon: LinkIcon },
-  { name: "Generate XSLT", href: "#", icon: FileDown },
+  { name: "Generate XSLT", href: "/new/generate-xslt", icon: FileDown },
 ]
 
 interface StepperProps {
