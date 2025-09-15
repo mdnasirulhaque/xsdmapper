@@ -63,13 +63,13 @@ export default function Header({ onPreview, onDownload }: HeaderProps) {
   return (
     <header className="sticky top-0 z-10 flex flex-col">
         {isCreationFlow && (
-            <div className="flex h-14 items-center gap-4 px-4 sm:px-6 bg-muted/40">
+            <div className="flex h-14 items-center gap-4 px-4 sm:px-6 bg-muted/40 mx-4 sm:mx-6 mt-4 rounded-t-lg">
                 <Breadcrumbs />
             </div>
         )}
         <div className={cn(
             "bg-card shadow-sm", 
-            isCreationFlow ? "mx-4 sm:mx-6 rounded-b-lg p-4" : "border-b p-4"
+            isCreationFlow ? "mx-4 sm:mx-6 rounded-b-lg p-4" : "border-b p-4 rounded-lg"
         )}>
             <div className="flex items-center justify-between h-16">
                 <div className="flex items-center gap-3">

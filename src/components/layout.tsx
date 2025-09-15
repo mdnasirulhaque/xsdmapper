@@ -26,10 +26,10 @@ import Stepper from "./stepper"
 
 interface AppLayoutProps {
   children: React.ReactNode
-  currentStep: number
+  currentStep?: number
 }
 
-export default function AppLayout({ children, currentStep }: AppLayoutProps) {
+export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps) {
   const pathname = usePathname();
   const isCreationFlow = pathname.startsWith('/new');
 
@@ -66,7 +66,7 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
   const showActions = pathname.endsWith('/mapper');
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
         <div className="flex min-h-screen w-full bg-muted/40">
         <Sidebar variant="floating" collapsible="icon">
             <SidebarHeader>
