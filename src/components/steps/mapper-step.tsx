@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { cn } from '@/lib/utils'
 
 export default function MapperStep() {
   const router = useRouter();
@@ -42,14 +42,8 @@ export default function MapperStep() {
   const [isTransformationDialogOpen, setTransformationDialogOpen] = useState(false)
   
   const nodeRefs = useRef<Map<string, HTMLElement | null>>(new Map())
-  const set1Ref = useRef<HTMLDivElement>(null);
-  const set2Ref = useRef<HTMLDivElement>(null);
-  const set3Ref = useRef<HTMLDivElement>(null);
-  const canvasRefs: Record<MappingSet, React.RefObject<HTMLDivElement>> = {
-    set1: set1Ref,
-    set2: set2Ref,
-    set3: set3Ref,
-  };
+  const canvasRef = useRef<HTMLDivElement>(null);
+
   const [canvasKey, setCanvasKey] = useState(0)
 
   const rerenderCanvas = useCallback(() => {
@@ -57,13 +51,12 @@ export default function MapperStep() {
   }, [])
 
   useEffect(() => {
-    const mainContainer = canvasRefs[activeSet].current;
+    const mainContainer = canvasRef.current;
     if (!mainContainer) return;
 
     const resizeObserver = new ResizeObserver(rerenderCanvas);
     resizeObserver.observe(mainContainer);
-
-    // Initial render
+    
     rerenderCanvas();
 
     return () => {
@@ -107,10 +100,8 @@ export default function MapperStep() {
     if (!draggingNode || !sourceSchema || !targetSchema) return;
 
     const currentMappings = mappings[activeSet];
-    const sourceIsParent = !!(draggingNode.children && draggingNode.children.length > 0);
-    const targetIsParent = !!(targetNode.children && targetNode.children.length > 0);
-    let newMappings: Mapping[] = [];
-    
+    const newMappings: Mapping[] = [];
+
     const mapBySequence = (sourceParent: XsdNode, targetParent: XsdNode) => {
         const sourceChildren = sourceParent.children || [];
         const targetChildren = targetParent.children || [];
@@ -144,6 +135,7 @@ export default function MapperStep() {
             sourceId: sourceNode.id,
             targetId: targetNode.id,
         };
+
         if (currentMappings.some(m => m.id === newMapping.id)) return;
 
         if (currentMappings.some(m => m.targetId === newMapping.targetId)) {
@@ -154,10 +146,13 @@ export default function MapperStep() {
         }
         newMappings.push(newMapping);
     }
-
+    
+    const sourceIsParent = !!(draggingNode.children && draggingNode.children.length > 0);
+    const targetIsParent = !!(targetNode.children && targetNode.children.length > 0);
+    
     if (sourceIsParent && targetIsParent) {
         mapBySequence(draggingNode, targetNode);
-        if (newMappings.length > 0) {
+         if (newMappings.length > 0) {
             toast({
                 variant: 'success',
                 title: 'Auto-Mapped Child Fields',
@@ -174,6 +169,7 @@ export default function MapperStep() {
         });
         return;
     }
+
 
     if (newMappings.length > 0) {
         setState({ mappings: { ...mappings, [activeSet]: [...currentMappings, ...newMappings] } });
@@ -210,6 +206,8 @@ export default function MapperStep() {
   }
 
   const areAllSetsMapped = mappings.set1.length > 0 && mappings.set2.length > 0 && mappings.set3.length > 0;
+  
+  const sets: MappingSet[] = ['set1', 'set2', 'set3'];
 
   return (
     <div className="flex-1 flex flex-col gap-4 overflow-hidden h-full">
@@ -237,34 +235,39 @@ export default function MapperStep() {
             </AlertDialog>
         </div>
 
-        <Tabs value={activeSet} onValueChange={(value) => setActiveSet(value as MappingSet)} className="flex-1 flex flex-col overflow-hidden">
-            <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="set1">Set 1</TabsTrigger>
-                <TabsTrigger value="set2">Set 2</TabsTrigger>
-                <TabsTrigger value="set3">Set 3</TabsTrigger>
-            </TabsList>
-            <TabsContent value="set1" ref={canvasRefs.set1} className="flex-1 flex flex-col m-0 overflow-hidden relative bg-card rounded-b-lg border border-t-0">
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8 overflow-auto">
-                    <XsdPanel title="Source Schema" schema={sourceSchema} type="source" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')} onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeRefs={nodeRefs} mappings={mappings.set1} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
-                    <XsdPanel title="Target Schema" schema={targetSchema} type="target" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')} onDrop={handleDrop} nodeRefs={nodeRefs} mappings={mappings.set1} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
+        <div className="flex-1 flex flex-col overflow-hidden bg-card border rounded-lg">
+             <div className="flex-shrink-0 p-2 bg-muted/50 rounded-t-lg border-b">
+                <div className="flex items-center justify-center gap-2">
+                    {sets.map((set) => (
+                        <Button
+                            key={set}
+                            variant={activeSet === set ? 'default' : 'secondary'}
+                            onClick={() => setActiveSet(set)}
+                            className="flex-1"
+                        >
+                            Set {set.slice(-1)}
+                        </Button>
+                    ))}
                 </div>
-                {canvasRefs.set1.current && activeSet === 'set1' && ( <MappingCanvas key={`set1-${canvasKey}`} mappings={mappings.set1} nodeRefs={nodeRefs.current} canvasRef={canvasRefs.set1.current} onMappingClick={handleOpenTransformationDialog} onMappingDelete={deleteMapping}/>)}
-            </TabsContent>
-            <TabsContent value="set2" ref={canvasRefs.set2} className="flex-1 flex flex-col m-0 overflow-hidden relative bg-card rounded-b-lg border border-t-0">
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8 overflow-auto">
-                    <XsdPanel title="Source Schema" schema={sourceSchema} type="source" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')} onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeRefs={nodeRefs} mappings={mappings.set2} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
-                    <XsdPanel title="Target Schema" schema={targetSchema} type="target" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')} onDrop={handleDrop} nodeRefs={nodeRefs} mappings={mappings.set2} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
+            </div>
+            <div ref={canvasRef} className="flex-1 relative overflow-hidden">
+                <div className="absolute inset-0 grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8 overflow-auto">
+                    <XsdPanel title="Source Schema" schema={sourceSchema} type="source" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')} onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeRefs={nodeRefs} mappings={mappings[activeSet]} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
+                    <XsdPanel title="Target Schema" schema={targetSchema} type="target" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')} onDrop={handleDrop} nodeRefs={nodeRefs} mappings={mappings[activeSet]} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
                 </div>
-                {canvasRefs.set2.current && activeSet === 'set2' && (<MappingCanvas key={`set2-${canvasKey}`} mappings={mappings.set2} nodeRefs={nodeRefs.current} canvasRef={canvasRefs.set2.current} onMappingClick={handleOpenTransformationDialog} onMappingDelete={deleteMapping} />)}
-            </TabsContent>
-            <TabsContent value="set3" ref={canvasRefs.set3} className="flex-1 flex flex-col m-0 overflow-hidden relative bg-card rounded-b-lg border border-t-0">
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8 overflow-auto">
-                    <XsdPanel title="Source Schema" schema={sourceSchema} type="source" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')} onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeRefs={nodeRefs} mappings={mappings.set3} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas} />
-                    <XsdPanel title="Target Schema" schema={targetSchema} type="target" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')} onDrop={handleDrop} nodeRefs={nodeRefs} mappings={mappings.set3} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
-                </div>
-                {canvasRefs.set3.current && activeSet === 'set3' && (<MappingCanvas key={`set3-${canvasKey}`} mappings={mappings.set3} nodeRefs={nodeRefs.current} canvasRef={canvasRefs.set3.current} onMappingClick={handleOpenTransformationDialog} onMappingDelete={deleteMapping} />)}
-            </TabsContent>
-        </Tabs>
+                {canvasRef.current && (
+                    <MappingCanvas
+                        key={`${activeSet}-${canvasKey}`}
+                        mappings={mappings[activeSet]}
+                        nodeRefs={nodeRefs.current}
+                        canvasRef={canvasRef.current}
+                        onMappingClick={handleOpenTransformationDialog}
+                        onMappingDelete={deleteMapping}
+                    />
+                )}
+            </div>
+        </div>
+
 
         <div className="flex items-center justify-between bg-card rounded-lg p-3 border">
             <Button variant="outline" onClick={() => router.push('/new/swagger')}>
