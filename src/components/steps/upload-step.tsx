@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileUp, ArrowRight, CheckCircle, Eye, FileText } from 'lucide-react';
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
+import { useRef, useState } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
@@ -24,15 +24,6 @@ const FileUploadSection = ({ title, description, onFileUpload, fileContent, file
     const [fileName, setFileName] = useState<string | null>(null);
 
     const uploadComplete = !!fileContent;
-
-    useEffect(() => {
-        if (uploadComplete && !fileName) {
-            setFileName(`sample-${fileType}.xml`);
-        } else if (!uploadComplete && fileName) {
-            setFileName(null);
-        }
-    }, [uploadComplete, fileType, fileName]);
-
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -84,13 +75,13 @@ const FileUploadSection = ({ title, description, onFileUpload, fileContent, file
                     {uploadComplete ? <CheckCircle className="mr-2 h-5 w-5" /> : <FileUp className="mr-2 h-5 w-5" />}
                     {uploadComplete ? "Uploaded" : `Upload ${title}`}
                 </Button>
-                {fileContent && (
+                {uploadComplete && (
                     <Button variant="ghost" className="w-full text-sm" onClick={() => setIsPreviewOpen(true)}>
                         <Eye className="mr-2 h-4 w-4" /> Preview File
                     </Button>
                 )}
             </div>
-            {fileContent && (
+            {uploadComplete && (
                 <FilePreviewDialog
                     isOpen={isPreviewOpen}
                     onOpenChange={setIsPreviewOpen}
@@ -115,48 +106,6 @@ export default function UploadStep() {
     }
   }
 
-  const loadDefaults = useCallback(async () => {
-    try {
-        const [inputRes, responseRes] = await Promise.all([
-            fetch('/sample-input.xml'),
-            fetch('/sample-response.xml'),
-        ]);
-
-        if (!inputRes.ok || !responseRes.ok) {
-            throw new Error("Failed to fetch default files.");
-        }
-
-        const [inputContent, responseContent] = await Promise.all([
-            inputRes.text(),
-            responseRes.text(),
-        ]);
-
-        setState({
-            inputXml: inputContent,
-            responseXml: responseContent,
-            inputXsd: null,
-            sourceSchema: null,
-            responseXsd: null,
-            targetSchema: null,
-            mappings: [],
-        });
-
-        toast({
-            variant: "success",
-            title: "Defaults Loaded",
-            description: "Sample XML files have been loaded.",
-        });
-
-    } catch (e) {
-        console.error("Failed to load default files:", e);
-        toast({
-            variant: "destructive",
-            title: "Loading Failed",
-            description: "Could not load the default sample files.",
-        });
-    }
-  }, [setState, toast]);
-
   const handleProceed = () => {
     if (!inputXml || !responseXml) {
         toast({
@@ -169,7 +118,6 @@ export default function UploadStep() {
     router.push(`/new/preview-xsd`);
   }
   
-
   return (
     <div className="flex items-center justify-center flex-1">
       <Card className="w-full max-w-4xl shadow-lg">
@@ -197,9 +145,6 @@ export default function UploadStep() {
             <div className="flex flex-col gap-2">
                 <Button onClick={handleProceed} size="lg" className="w-full" disabled={!inputXml || !responseXml}>
                     Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button onClick={loadDefaults} size="lg" variant="outline" className="w-full">
-                    <FileText className="mr-2 h-5 w-5" /> Load Defaults
                 </Button>
             </div>
         </CardContent>
