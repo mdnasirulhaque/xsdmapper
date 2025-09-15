@@ -61,7 +61,7 @@ export default function Stepper({ currentStep }: StepperProps) {
                                     <div className="absolute inset-0 h-px bg-primary"></div>
                                 )}
                                 {isCurrent && (
-                                     <div className="absolute -left-3 top-1/2 -translate-y-1/2">
+                                     <div className="absolute -right-3 top-1/2 -translate-y-1/2">
                                         <ChevronRight className="h-6 w-6 text-primary" />
                                     </div>
                                 )}
