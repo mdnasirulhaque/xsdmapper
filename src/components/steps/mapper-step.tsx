@@ -9,7 +9,6 @@ import TransformationDialog from '@/components/transformation-dialog'
 import { useAppContext } from '@/context/AppContext'
 import { useToast } from '@/hooks/use-toast'
 import { parseXsdToXsdNode } from '@/lib/xsd-parser'
-import PreviewDialog from '@/components/preview-dialog'
 import { generateXmlPreview } from '@/lib/xml-preview-generator'
 import { generateXslt } from '@/lib/xslt-generator'
 import { Button } from '@/components/ui/button'
@@ -32,9 +31,6 @@ export default function MapperStep() {
   const nodeRefs = useRef<Map<string, HTMLElement | null>>(new Map())
   const canvasRef = useRef<HTMLDivElement>(null)
   const [canvasKey, setCanvasKey] = useState(0)
-
-  const [isPreviewOpen, setPreviewOpen] = useState(false);
-  const [xmlPreview, setXmlPreview] = useState('');
 
   const rerenderCanvas = useCallback(() => {
      setTimeout(() => setCanvasKey(prev => prev + 1), 50)
@@ -94,39 +90,51 @@ export default function MapperStep() {
     const sourceIsParent = draggingNode.children && draggingNode.children.length > 0;
     const targetIsParent = targetNode.children && targetNode.children.length > 0;
 
-    if (sourceIsParent && targetIsParent) {
-        // Parent-to-parent mapping: map children sequentially
-        const sourceChildren = draggingNode.children || [];
-        const targetChildren = targetNode.children || [];
-        const minChildren = Math.min(sourceChildren.length, targetChildren.length);
+    const createMappingIfNotExists = (source: XsdNode, target: XsdNode, matchType: 'manual' | 'auto') => {
+        const newMapping: Mapping = {
+            id: `${source.id}-${target.id}`,
+            sourceId: source.id,
+            targetId: target.id,
+            matchType: matchType,
+        };
 
-        for(let i = 0; i < minChildren; i++) {
-            const sourceChild = sourceChildren[i];
-            const targetChild = targetChildren[i];
-
-            // Can't map a parent to a child within this auto-mapping
-            if((sourceChild.children && !targetChild.children) || (!sourceChild.children && targetChild.children)) {
-                continue;
-            }
-
-             const newMapping: Mapping = {
-                id: `${sourceChild.id}-${targetChild.id}`,
-                sourceId: sourceChild.id,
-                targetId: targetChild.id,
-            };
-
-            if (!existingMappings.some(m => m.id === newMapping.id)) {
-                if (existingMappings.some(m => m.targetId === newMapping.targetId)) {
-                     toast({
-                        title: "Mapping Conflict",
-                        description: `Target ${targetChild.name} is already mapped.`,
-                    })
-                } else {
-                    newMappings.push(newMapping);
-                    existingMappings.push(newMapping); // Add to temp list to check subsequent mappings in this loop
-                }
+        if (!existingMappings.some(m => m.id === newMapping.id)) {
+            if (existingMappings.some(m => m.targetId === newMapping.targetId)) {
+                toast({
+                    title: "Mapping Conflict",
+                    description: `Target ${target.name} is already mapped. Multiple source fields can be mapped to one target for concatenation.`,
+                });
+            } else {
+                newMappings.push(newMapping);
+                existingMappings.push(newMapping); // Add to temp list to check subsequent mappings in this loop
             }
         }
+    }
+    
+    if (sourceIsParent && targetIsParent) {
+        // Recursive parent-to-parent mapping by name
+        const mapRecursive = (sourceParent: XsdNode, targetParent: XsdNode) => {
+            const sourceChildren = sourceParent.children || [];
+            const targetChildren = targetParent.children || [];
+
+            sourceChildren.forEach(sourceChild => {
+                const targetChild = targetChildren.find(tc => tc.name === sourceChild.name);
+                if (targetChild) {
+                    const sourceHasChildren = sourceChild.children && sourceChild.children.length > 0;
+                    const targetHasChildren = targetChild.children && targetChild.children.length > 0;
+
+                    if (sourceHasChildren && targetHasChildren) {
+                        // If both are parents, recurse
+                        mapRecursive(sourceChild, targetChild);
+                    } else if (!sourceHasChildren && !targetHasChildren) {
+                        // If both are leaves, create mapping
+                        createMappingIfNotExists(sourceChild, targetChild, 'auto');
+                    }
+                }
+            });
+        };
+        
+        mapRecursive(draggingNode, targetNode);
 
         if (newMappings.length > 0) {
            toast({
@@ -138,27 +146,7 @@ export default function MapperStep() {
 
     } else if (!sourceIsParent && !targetIsParent) {
         // Single node to single node mapping
-        const newMapping: Mapping = {
-            id: `${draggingNode.id}-${targetNode.id}`,
-            sourceId: draggingNode.id,
-            targetId: targetNode.id,
-        }
-        
-        if(mappings.some(m => m.id === newMapping.id)) {
-            toast({
-                title: "Mapping Exists",
-                description: "This mapping has already been created.",
-            })
-            return;
-        }
-        
-        if(mappings.some(m => m.targetId === newMapping.targetId)) {
-            toast({
-                title: "Mapping Conflict",
-                description: `Target ${targetNode.name} is already mapped. Multiple source fields can be mapped to one target for concatenation.`,
-            })
-        }
-        newMappings.push(newMapping);
+        createMappingIfNotExists(draggingNode, targetNode, 'manual');
 
     } else {
         // Invalid mapping (parent to child or child to parent)
@@ -179,6 +167,53 @@ export default function MapperStep() {
   const deleteMapping = (mappingId: string) => {
     setState({ mappings: mappings.filter(m => m.id !== mappingId) });
   }
+  
+  const deleteMappingByNode = (nodeId: string) => {
+    const node = findNodeById(sourceSchema, nodeId) || findNodeById(targetSchema, nodeId);
+    if (!node) return;
+
+    let mappingsToDelete = new Set<string>();
+
+    const getDescendantIds = (currentNode: XsdNode): string[] => {
+      let ids = [currentNode.id];
+      if (currentNode.children) {
+        currentNode.children.forEach(child => {
+          ids = [...ids, ...getDescendantIds(child)];
+        });
+      }
+      return ids;
+    };
+
+    const nodeAndDescendantIds = getDescendantIds(node);
+
+    mappings.forEach(m => {
+      if (nodeAndDescendantIds.includes(m.sourceId) || nodeAndDescendantIds.includes(m.targetId)) {
+        mappingsToDelete.add(m.id);
+      }
+    });
+
+    if (mappingsToDelete.size > 0) {
+      setState({ mappings: mappings.filter(m => !mappingsToDelete.has(m.id)) });
+      toast({
+        variant: "success",
+        title: "Mappings Cleared",
+        description: `Removed ${mappingsToDelete.size} mapping(s).`,
+      });
+    }
+  };
+
+  const findNodeById = (schema: XsdNode | null, id: string): XsdNode | null => {
+    if (!schema) return null;
+    if (schema.id === id) return schema;
+    if (schema.children) {
+      for (const child of schema.children) {
+        const found = findNodeById(child, id);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
 
   const handleOpenTransformationDialog = (mapping: Mapping) => {
     setSelectedMapping(mapping)
@@ -194,25 +229,6 @@ export default function MapperStep() {
     setTransformationDialogOpen(false)
     setSelectedMapping(null)
   }
-  
-  const handlePreview = () => {
-    const preview = generateXmlPreview(mappings, targetSchema);
-    setXmlPreview(preview);
-    setPreviewOpen(true);
-  };
-
-  const handleDownload = () => {
-    const xsltContent = generateXslt(mappings, sourceSchema, targetSchema);
-    const blob = new Blob([xsltContent], { type: 'application/xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'transformation.xslt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <div className="flex-1 flex flex-col gap-4 overflow-hidden">
@@ -229,6 +245,7 @@ export default function MapperStep() {
             mappings={mappings}
             draggingNodeId={draggingNode?.id}
             rerenderCanvas={rerenderCanvas}
+            onClearMapping={deleteMappingByNode}
           />
           <XsdPanel
             title="Target Schema"
@@ -240,6 +257,7 @@ export default function MapperStep() {
             mappings={mappings}
             draggingNodeId={draggingNode?.id}
             rerenderCanvas={rerenderCanvas}
+            onClearMapping={deleteMappingByNode}
           />
         </div>
         
@@ -263,12 +281,6 @@ export default function MapperStep() {
           onSave={handleSaveTransformation}
         />
       )}
-
-      <PreviewDialog
-        isOpen={isPreviewOpen}
-        onOpenChange={setPreviewOpen}
-        content={xmlPreview}
-      />
     </div>
   )
 }

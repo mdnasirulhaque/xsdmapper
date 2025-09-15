@@ -18,6 +18,7 @@ interface LinePath {
   id: string;
   path: string;
   midPoint: { x: number; y: number };
+  matchType?: 'auto' | 'manual';
 }
 
 export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMappingClick, onMappingDelete }: MappingCanvasProps) {
@@ -55,7 +56,7 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
           y: (startY + endY) / 2
         }
 
-        newLines.push({ id: mapping.id, path, midPoint })
+        newLines.push({ id: mapping.id, path, midPoint, matchType: mapping.matchType })
       }
     })
     setLines(newLines)
@@ -76,6 +77,17 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
           >
             <path d="M 0 0 L 10 5 L 0 10 z" fill="hsl(var(--primary))" />
           </marker>
+          <marker
+            id="arrowhead-warning"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="hsl(var(--warning))" />
+          </marker>
            <marker
             id="arrowhead-accent"
             viewBox="0 0 10 10"
@@ -89,7 +101,7 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
           </marker>
         </defs>
         <AnimatePresence>
-          {lines.map(({ id, path }) => (
+          {lines.map(({ id, path, matchType }) => (
             <motion.path
               key={id}
               d={path}
@@ -100,14 +112,18 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
               strokeWidth="2"
               fill="none"
               className={cn(
-                "stroke-primary/70 transition-all",
-                hoveredLine === id && "stroke-accent"
+                "transition-all",
+                hoveredLine === id ? "stroke-accent" :
+                matchType === 'auto' ? "stroke-warning/70" : "stroke-primary/70"
               )}
-              markerEnd={hoveredLine === id ? "url(#arrowhead-accent)" : "url(#arrowhead)"}
+              markerEnd={
+                hoveredLine === id ? "url(#arrowhead-accent)" :
+                matchType === 'auto' ? "url(#arrowhead-warning)" : "url(#arrowhead)"
+              }
             />
           ))}
         </AnimatePresence>
-        {lines.map(({ id, midPoint }) => {
+        {lines.map(({ id, midPoint, matchType }) => {
           const mapping = mappings.find(m => m.id === id);
           if (!mapping) return null;
           return (
@@ -142,8 +158,11 @@ export default function MappingCanvas({ mappings, nodeRefs, canvasRef, onMapping
                  {hoveredLine !== id && (
                     <motion.circle 
                         r={mapping.transformation ? 6 : 4}
-                        fill={mapping.transformation ? "hsl(var(--primary))" : "hsl(var(--card))"}
-                        stroke="hsl(var(--primary))" 
+                        fill={mapping.transformation ? 
+                            (matchType === 'auto' ? "hsl(var(--warning))" : "hsl(var(--primary))") : 
+                            "hsl(var(--card))"
+                        }
+                        stroke={matchType === 'auto' ? "hsl(var(--warning))" : "hsl(var(--primary))"} 
                         strokeWidth="2"
                         initial={{ opacity: 0, scale: 0 }}
                         animate={{ opacity: 1, scale: 1 }}
