@@ -6,23 +6,32 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye, FileText } from 'lucide-react';
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
 
-const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, fileType }: {
+const FileUploadSection = ({ title, description, onFileUpload, fileContent, uploadComplete, fileType }: {
     title: string;
     description: string;
     onFileUpload: (content: string, fileType: 'input' | 'response') => void;
+    fileContent: string | null;
     uploadComplete: boolean;
     fileType: 'input' | 'response';
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
-    const [fileContent, setFileContent] = useState<string | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
+    const [internalFileContent, setInternalFileContent] = useState<string | null>(fileContent);
+
+    useEffect(() => {
+        setInternalFileContent(fileContent);
+        if (fileContent && !fileName) {
+            setFileName(`sample-${fileType}.xml`);
+        }
+    }, [fileContent, fileType, fileName]);
+
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -32,7 +41,7 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, f
             reader.onload = (e) => {
                 try {
                     const content = e.target?.result as string;
-                    setFileContent(content);
+                    setInternalFileContent(content);
                     onFileUpload(content, fileType);
                     toast({
                         variant: "success",
@@ -42,7 +51,7 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, f
 
                 } catch (error) {
                     console.error("Error processing XML file:", error);
-                    setFileContent(null);
+                    setInternalFileContent(null);
                     setFileName(null);
                     toast({
                         variant: "destructive",
@@ -75,17 +84,17 @@ const FileUploadSection = ({ title, description, onFileUpload, uploadComplete, f
                     {uploadComplete ? <CheckCircle className="mr-2 h-5 w-5" /> : <FileUp className="mr-2 h-5 w-5" />}
                     {uploadComplete ? "Uploaded" : `Upload ${title}`}
                 </Button>
-                {fileContent && (
+                {internalFileContent && (
                     <Button variant="ghost" className="w-full text-sm" onClick={() => setIsPreviewOpen(true)}>
                         <Eye className="mr-2 h-4 w-4" /> Preview File
                     </Button>
                 )}
             </div>
-            {fileContent && (
+            {internalFileContent && (
                 <FilePreviewDialog
                     isOpen={isPreviewOpen}
                     onOpenChange={setIsPreviewOpen}
-                    content={fileContent}
+                    content={internalFileContent}
                     title={fileName || 'File Preview'}
                 />
             )}
@@ -161,6 +170,7 @@ export default function UploadStep() {
                     title="Input XML"
                     description="This will be used to generate the source schema."
                     onFileUpload={handleFileUpload}
+                    fileContent={inputXml}
                     uploadComplete={!!inputXml}
                     fileType="input"
                 />
@@ -168,6 +178,7 @@ export default function UploadStep() {
                     title="Response XML"
                     description="This will be used to generate the target schema."
                     onFileUpload={handleFileUpload}
+                    fileContent={responseXml}
                     uploadComplete={!!responseXml}
                     fileType="response"
                 />
