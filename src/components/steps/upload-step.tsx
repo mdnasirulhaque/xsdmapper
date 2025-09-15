@@ -6,15 +6,16 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
 export default function UploadStep() {
   const router = useRouter();
   const { toast } = useToast();
-  const { setState } = useAppContext();
+  const { setState, inputXml: globalInputXml } = useAppContext();
 
+  // Local state for handling file content within this component
   const [inputXml, setInputXml] = useState<string | null>(null);
   const [responseXml, setResponseXml] = useState<string | null>(null);
 
@@ -23,39 +24,37 @@ export default function UploadStep() {
 
   const [previewing, setPreviewing] = useState<{ content: string; title: string } | null>(null);
 
+  // Effect to navigate only after the global state has been updated
+  useEffect(() => {
+    // We only navigate if globalInputXml has a value and matches our local state.
+    // This ensures this effect doesn't run on initial load or irrelevant updates.
+    if (globalInputXml && globalInputXml === inputXml) {
+      router.push(`/new/preview-xsd`);
+    }
+  }, [globalInputXml, inputXml, router]);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, fileType: 'input' | 'response') => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      try {
-        const content = e.target?.result as string;
-        if (fileType === 'input') {
-          setInputXml(content);
-        } else {
-          setResponseXml(content);
-        }
-
-        toast({
-          variant: "success",
-          title: "Upload Successful",
-          description: `${file.name} has been processed.`,
-        });
-
-      } catch (error) {
-        console.error("Error processing XML file:", error);
-        toast({
-          variant: "destructive",
-          title: "Upload Failed",
-          description: "Could not process the XML file.",
-        });
+      const content = e.target?.result as string;
+      if (fileType === 'input') {
+        setInputXml(content);
+      } else {
+        setResponseXml(content);
       }
+      toast({
+        variant: "success",
+        title: "Upload Successful",
+        description: `${file.name} has been processed.`,
+      });
     };
     reader.readAsText(file);
     
     // Reset the input value to allow re-uploading the same file
-    event.target.value = '';
+    if(event.target) event.target.value = '';
   };
 
   const handleUploadInputClick = () => {
@@ -75,11 +74,10 @@ export default function UploadStep() {
       });
       return;
     }
-    // Set the global state before moving to the next step
+    // Set the global state. The useEffect will handle navigation once this is done.
     setState({ 
         inputXml, 
         responseXml,
-        // Reset subsequent state
         inputXsd: null, 
         responseXsd: null, 
         sourceSchema: null, 
@@ -87,7 +85,6 @@ export default function UploadStep() {
         swaggerFile: null,
         mappings: []
     });
-    router.push(`/new/preview-xsd`);
   }
   
   return (
