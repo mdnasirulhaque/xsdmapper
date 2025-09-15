@@ -42,7 +42,14 @@ export default function MapperStep() {
   const [isTransformationDialogOpen, setTransformationDialogOpen] = useState(false)
   
   const nodeRefs = useRef<Map<string, HTMLElement | null>>(new Map())
-  const canvasRef = useRef<HTMLDivElement>(null)
+  const set1Ref = useRef<HTMLDivElement>(null);
+  const set2Ref = useRef<HTMLDivElement>(null);
+  const set3Ref = useRef<HTMLDivElement>(null);
+  const canvasRefs: Record<MappingSet, React.RefObject<HTMLDivElement>> = {
+    set1: set1Ref,
+    set2: set2Ref,
+    set3: set3Ref,
+  };
   const [canvasKey, setCanvasKey] = useState(0)
 
   const rerenderCanvas = useCallback(() => {
@@ -50,7 +57,7 @@ export default function MapperStep() {
   }, [])
 
   useEffect(() => {
-    const mainContainer = canvasRef.current;
+    const mainContainer = canvasRefs[activeSet].current;
     if (!mainContainer) return;
 
     const resizeObserver = new ResizeObserver(rerenderCanvas);
@@ -225,52 +232,50 @@ export default function MapperStep() {
             </AlertDialog>
         </div>
 
-        <Tabs value={activeSet} onValueChange={(value) => setActiveSet(value as MappingSet)} className="flex-1 flex flex-col gap-4 overflow-hidden">
+        <Tabs value={activeSet} onValueChange={(value) => setActiveSet(value as MappingSet)} className="flex-1 flex flex-col overflow-hidden">
             <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="set1">Set 1</TabsTrigger>
                 <TabsTrigger value="set2">Set 2</TabsTrigger>
                 <TabsTrigger value="set3">Set 3</TabsTrigger>
             </TabsList>
              {(['set1', 'set2', 'set3'] as MappingSet[]).map((set) => (
-                <TabsContent key={set} value={set} className="flex-1 flex flex-col m-0 overflow-hidden">
-                    <div ref={canvasRef} className="flex-1 relative bg-card rounded-lg overflow-auto">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8">
-                            <XsdPanel
-                                title="Source Schema"
-                                schema={sourceSchema}
-                                type="source"
-                                onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')}
-                                onDragStart={handleDragStart}
-                                onDragEnd={handleDragEnd}
-                                nodeRefs={nodeRefs}
-                                mappings={mappings[activeSet]}
-                                draggingNodeId={draggingNode?.id}
-                                rerenderCanvas={rerenderCanvas}
-                            />
-                            <XsdPanel
-                                title="Target Schema"
-                                schema={targetSchema}
-                                type="target"
-                                onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')}
-                                onDrop={handleDrop}
-                                nodeRefs={nodeRefs}
-                                mappings={mappings[activeSet]}
-                                draggingNodeId={draggingNode?.id}
-                                rerenderCanvas={rerenderCanvas}
-                            />
-                        </div>
-                        
-                        {canvasRef.current && activeSet === set && (
-                        <MappingCanvas
-                            key={`${set}-${canvasKey}`}
-                            mappings={mappings[set]}
-                            nodeRefs={nodeRefs.current}
-                            canvasRef={canvasRef.current}
-                            onMappingClick={handleOpenTransformationDialog}
-                            onMappingDelete={deleteMapping}
+                <TabsContent key={set} value={set} ref={canvasRefs[set]} className="flex-1 flex flex-col m-0 overflow-hidden relative bg-card rounded-b-lg border border-t-0">
+                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8 overflow-auto">
+                        <XsdPanel
+                            title="Source Schema"
+                            schema={sourceSchema}
+                            type="source"
+                            onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')}
+                            onDragStart={handleDragStart}
+                            onDragEnd={handleDragEnd}
+                            nodeRefs={nodeRefs}
+                            mappings={mappings[activeSet]}
+                            draggingNodeId={draggingNode?.id}
+                            rerenderCanvas={rerenderCanvas}
                         />
-                        )}
+                        <XsdPanel
+                            title="Target Schema"
+                            schema={targetSchema}
+                            type="target"
+                            onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')}
+                            onDrop={handleDrop}
+                            nodeRefs={nodeRefs}
+                            mappings={mappings[activeSet]}
+                            draggingNodeId={draggingNode?.id}
+                            rerenderCanvas={rerenderCanvas}
+                        />
                     </div>
+                    
+                    {canvasRefs[set].current && activeSet === set && (
+                    <MappingCanvas
+                        key={`${set}-${canvasKey}`}
+                        mappings={mappings[set]}
+                        nodeRefs={nodeRefs.current}
+                        canvasRef={canvasRefs[set].current!}
+                        onMappingClick={handleOpenTransformationDialog}
+                        onMappingDelete={deleteMapping}
+                    />
+                    )}
                  </TabsContent>
             ))}
         </Tabs>
@@ -313,3 +318,5 @@ export default function MapperStep() {
     </div>
   )
 }
+
+    
