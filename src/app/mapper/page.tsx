@@ -2,10 +2,9 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import type { XsdNode, Mapping } from '@/types'
+import type { XsdNode, Mapping, Transformation } from '@/types'
 import { generateXslt } from '@/lib/xslt-generator'
 import { generateXmlPreview } from '@/lib/xml-preview-generator'
-import PageHeader from '@/components/page-header'
 import XsdPanel from '@/components/xsd-panel'
 import MappingCanvas from '@/components/mapping-canvas'
 import TransformationDialog from '@/components/transformation-dialog'
@@ -167,6 +166,10 @@ export default function MapperPage() {
   }
   
   const handleDownloadXslt = () => {
+    if (!sourceSchema || !targetSchema) {
+      alert("Please load both source and target schemas.");
+      return;
+    }
     const xsltContent = generateXslt(mappings, sourceSchema, targetSchema)
     const blob = new Blob([xsltContent], { type: 'application/xml;charset=utf-8' })
     const link = document.createElement('a')
@@ -178,6 +181,10 @@ export default function MapperPage() {
   }
 
   const handlePreview = () => {
+    if (!targetSchema) {
+      alert("Please load a target schema to generate a preview.");
+      return;
+    }
     const preview = generateXmlPreview(mappings, targetSchema)
     setPreviewContent(preview)
     setPreviewDialogOpen(true)
@@ -244,5 +251,3 @@ export default function MapperPage() {
     </AppLayout>
   )
 }
-
-    

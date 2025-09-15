@@ -17,7 +17,6 @@ interface HeaderProps {
   onDownload: () => void;
 }
 
-
 const Breadcrumbs = () => {
     return (
         <Breadcrumb>
@@ -68,5 +67,3 @@ export default function Header(props: HeaderProps) {
     </>
   )
 }
-
-    
