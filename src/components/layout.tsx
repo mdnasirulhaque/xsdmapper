@@ -67,7 +67,7 @@ export default function AppLayout({ children, currentStep }: AppLayoutProps) {
   return (
     <SidebarProvider>
         <div className="flex min-h-screen w-full bg-background">
-        <Sidebar defaultOpen={false} variant="floating" collapsible="icon">
+        <Sidebar variant="floating" collapsible="icon">
             <SidebarHeader>
                 <div className="flex items-center justify-between p-2">
                     <div className="flex items-center gap-3">
