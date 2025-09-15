@@ -9,7 +9,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Wand2, Loader } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { parseXsdToXsdNode } from '@/lib/xsd-parser';
 import { sourceSchema as mockSourceNode, targetSchema as mockTargetNode } from '@/lib/mock-data';
 
 // A mock XSD string for preview purposes.
