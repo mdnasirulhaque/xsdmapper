@@ -228,9 +228,27 @@ export default function MapperStep() {
               </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-        <Button onClick={() => router.push('/new/generate-xslt')}>
-            Next <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button>
+                Next <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirm Mappings</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you are finished with the mappings and want to proceed to the XSLT generation step?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => router.push('/new/generate-xslt')}>
+                Confirm
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       <div ref={canvasRef} className="flex-1 relative bg-card rounded-lg overflow-auto">
