@@ -5,8 +5,10 @@ import { useState, useRef, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import FileUploadButton from "@/components/file-upload-button"
 import type { XsdNode, Mapping } from "@/types"
-import { Braces, FileCode } from "lucide-react"
+import { Braces, FileCode, Star } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Button } from "./ui/button"
+import { useToast } from "@/hooks/use-toast"
 
 const XsdNodeRecursive = ({
   node,
@@ -204,12 +206,42 @@ export default function XsdPanel({
   rerenderCanvas
 }: XsdPanelProps) {
   const panelId = `${type}-panel-content`;
+  const { toast } = useToast();
+
+  const handleLoadDefault = async () => {
+    const fileName = type === 'source' ? 'default-source.xsd' : 'default-target.xsd';
+    try {
+      const response = await fetch(`/${fileName}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch default schema: ${response.statusText}`);
+      }
+      const xsdContent = await response.text();
+      onFileLoad(xsdContent);
+       toast({
+        variant: "success",
+        title: "Default Schema Loaded",
+        description: `Successfully loaded ${fileName}.`,
+      });
+    } catch(e: any) {
+       toast({
+        variant: "destructive",
+        title: "Loading Error",
+        description: e.message || `Could not load ${fileName}.`,
+      });
+    }
+  }
   
   return (
     <Card className="shadow-lg h-full flex flex-col max-h-[calc(100vh-20rem)]">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{title}</CardTitle>
-        <FileUploadButton onFileLoad={onFileLoad} type={type} />
+        <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={handleLoadDefault}>
+              <Star className="mr-2 h-4 w-4" />
+              Load Default
+            </Button>
+            <FileUploadButton onFileLoad={onFileLoad} type={type} />
+        </div>
       </CardHeader>
       <CardContent id={panelId} className="flex-1 overflow-y-auto py-6">
         {schema ? (
@@ -225,7 +257,7 @@ export default function XsdPanel({
             rerenderCanvas)
         ) : (
           <div className="flex items-center justify-center h-full text-muted-foreground">
-            <p>Upload an XSD file to begin.</p>
+            <p>Upload an XSD file or load the default.</p>
           </div>
         )}
       </CardContent>

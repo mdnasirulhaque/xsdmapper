@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="SalesInvoice">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="InvoiceNumber" type="xs:string" />
+                <xs:element name="BuyerInformation">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="FullName" type="xs:string" />
+                            <xs:element name="ContactEmail" type="xs:string" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="DeliveryLocation">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="AddressLine1" type="xs:string" />
+                            <xs:element name="Town" type="xs:string" />
+                            <xs:element name="Postcode" type="xs:string" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
