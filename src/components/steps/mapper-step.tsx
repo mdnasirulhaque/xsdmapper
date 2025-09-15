@@ -97,7 +97,7 @@ export default function MapperStep() {
   }
   
   const handleDrop = (targetNode: XsdNode) => {
-    if (!draggingNode) return;
+    if (!draggingNode || !sourceSchema || !targetSchema) return;
 
     const currentMappings = mappings[activeSet];
     const sourceIsParent = !!(draggingNode.children && draggingNode.children.length > 0);
@@ -200,7 +200,7 @@ export default function MapperStep() {
   const areAllSetsMapped = mappings.set1.length > 0 && mappings.set2.length > 0 && mappings.set3.length > 0;
 
   return (
-    <div className="flex-1 flex flex-col gap-4 overflow-hidden">
+    <div className="flex-1 flex flex-col gap-4 overflow-hidden h-full">
         <div className="flex items-center justify-center bg-card rounded-lg p-3 border">
             <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -225,14 +225,14 @@ export default function MapperStep() {
             </AlertDialog>
         </div>
 
-        <Tabs value={activeSet} onValueChange={(value) => setActiveSet(value as MappingSet)} className="flex-1 flex flex-col gap-4">
+        <Tabs value={activeSet} onValueChange={(value) => setActiveSet(value as MappingSet)} className="flex-1 flex flex-col gap-4 overflow-hidden">
             <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="set1">Set 1</TabsTrigger>
                 <TabsTrigger value="set2">Set 2</TabsTrigger>
                 <TabsTrigger value="set3">Set 3</TabsTrigger>
             </TabsList>
              {(['set1', 'set2', 'set3'] as MappingSet[]).map((set) => (
-                <TabsContent key={set} value={set} className="flex-1 flex flex-col m-0">
+                <TabsContent key={set} value={set} className="flex-1 flex flex-col m-0 overflow-hidden">
                     <div ref={canvasRef} className="flex-1 relative bg-card rounded-lg overflow-auto">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8">
                             <XsdPanel
@@ -312,4 +312,4 @@ export default function MapperStep() {
       )}
     </div>
   )
- 
+}
