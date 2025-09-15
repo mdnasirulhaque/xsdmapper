@@ -66,14 +66,14 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
                  <SidebarTrigger />
             </SidebarFooter>
         </Sidebar>
-        <main className="flex flex-1 flex-col h-screen overflow-y-auto">
+        <main className="flex flex-1 flex-col h-screen">
               <Header />
               {isCreationFlow && (
                  <div className="mx-4 sm:mx-6 my-4 p-4 rounded-lg bg-card shadow-sm">
                     <Stepper currentStep={currentStep} />
                 </div>
               )}
-            <div className="flex-1 flex flex-col mx-4 sm:mx-6 mb-4">
+            <div className="flex-1 flex flex-col mx-4 sm:mx-6 mb-4 overflow-y-auto">
                 {children}
             </div>
         </main>
