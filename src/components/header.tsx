@@ -61,6 +61,11 @@ export default function Header({ onPreview, onDownload, currentStep }: HeaderPro
 
   return (
     <header className="sticky top-0 z-10 flex flex-col border-b bg-background shadow-sm">
+        {isCreationFlow && (
+            <div className="flex h-14 items-center gap-4 border-b px-4 sm:px-6">
+                <Breadcrumbs />
+            </div>
+        )}
         <div className={cn("flex items-center justify-between p-4 sm:px-6 h-20", !isCreationFlow && "border-b")}>
             <div className="flex items-center gap-3">
                 <CodeXml className="h-8 w-8 text-primary" />
@@ -74,7 +79,7 @@ export default function Header({ onPreview, onDownload, currentStep }: HeaderPro
                 </div>
             ) : (
                  <Button asChild>
-                    <Link href="/new/upload">
+                    <Link href="/new/upload?keepState=true">
                         <FilePlus className="mr-2 h-4 w-4" />
                         Create New Request
                     </Link>
@@ -84,11 +89,6 @@ export default function Header({ onPreview, onDownload, currentStep }: HeaderPro
                 {isCreationFlow && <PageHeaderActions onPreview={onPreview} onDownload={onDownload} />}
             </div>
         </div>
-         {isCreationFlow && (
-            <div className="flex h-14 items-center gap-4 border-t px-4 sm:px-6">
-                <Breadcrumbs />
-            </div>
-        )}
     </header>
   )
 }
