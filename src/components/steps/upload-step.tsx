@@ -6,14 +6,14 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
 export default function UploadStep() {
   const router = useRouter();
   const { toast } = useToast();
-  const { setState } = useAppContext();
+  const { setState, inputXml: globalInputXml } = useAppContext();
 
   // Local state for handling file content within this component
   const [inputXml, setInputXml] = useState<string | null>(null);
@@ -80,12 +80,11 @@ export default function UploadStep() {
           set3: [],
         }
     });
-    // Navigate to the next step directly.
-    router.push(`/new/preview-xsd`);
+    router.push('/new/preview-xsd');
   }
   
   return (
-    <div className="flex items-center justify-center flex-1">
+    <div className="flex-1 flex items-center justify-center">
       <Card className="w-full max-w-4xl shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Create Your XSLT Mapping</CardTitle>
@@ -139,7 +138,7 @@ export default function UploadStep() {
             </div>
           </div>
           
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 border-t pt-6">
             <Button onClick={handleProceed} size="lg" className="w-full" disabled={!inputXml || !responseXml}>
               Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
@@ -153,6 +152,7 @@ export default function UploadStep() {
           onOpenChange={() => setPreviewing(null)}
           content={previewing.content}
           title={previewing.title}
+          language="xml"
         />
       )}
     </div>

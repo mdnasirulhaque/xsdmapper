@@ -2,7 +2,7 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { ArrowRight, ArrowLeft, Wand2, Loader } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAppContext } from '@/context/AppContext';
 import { parseXsdToXsdNode } from '@/lib/xsd-parser';
+import CodeBlock from '../code-block';
 
 // A mock XSD string for preview purposes.
 const mockInputXsdString = `<?xml version="1.0" encoding="UTF-8"?>
@@ -79,14 +80,18 @@ const CodePreview = ({ title, content, language, isLoading = false }: { title: s
         </CardHeader>
         <CardContent className="flex-1 flex">
             <ScrollArea className="w-full h-96 rounded-md border bg-muted/50">
-                <pre className="p-4 text-xs relative">
+                <div className="p-4 text-xs relative">
                     {isLoading && (
-                        <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
                             <Loader className="h-8 w-8 animate-spin text-primary" />
                         </div>
                     )}
-                    <code>{content || `No content provided.`}</code>
-                </pre>
+                    {content ? (
+                        <CodeBlock code={content} language={language} />
+                    ) : (
+                        <pre><code>No content provided.</code></pre>
+                    )}
+                </div>
             </ScrollArea>
         </CardContent>
     </Card>
@@ -161,9 +166,8 @@ export default function PreviewStep() {
         router.push(`/new/swagger`);
     };
 
-
     return (
-        <div className="flex items-center justify-center flex-1">
+        <div className="flex-1 flex items-center justify-center">
             <Card className="w-full max-w-6xl shadow-lg">
                 <CardHeader>
                     <CardTitle>Preview XSDs</CardTitle>

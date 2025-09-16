@@ -90,6 +90,10 @@ export default function SwaggerStep() {
         router.push(`/new/preview-swagger-xsd`);
     }
 
+    const fileExtension = fileName?.split('.').pop()?.toLowerCase();
+    const language = fileExtension === 'yaml' || fileExtension === 'yml' ? 'yaml' : 'json';
+
+
     return (
         <div className="flex items-center justify-center flex-1">
             <Card className="w-full max-w-2xl shadow-lg">
@@ -135,6 +139,7 @@ export default function SwaggerStep() {
                     onOpenChange={setIsPreviewOpen}
                     content={swaggerFile}
                     title={fileName || 'File Preview'}
+                    language={language === 'yaml' ? 'yaml' : 'json'}
                 />
             )}
         </div>
