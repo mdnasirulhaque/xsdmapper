@@ -43,15 +43,15 @@ export default function UploadStep() {
       });
     };
     reader.readAsText(file);
-    
+
     // Reset the input value to allow re-uploading the same file
-    if(event.target) event.target.value = '';
+    if (event.target) event.target.value = '';
   };
 
   const handleUploadInputClick = () => {
     inputXmlRef.current?.click();
   };
-  
+
   const handleUploadResponseClick = () => {
     responseXmlRef.current?.click();
   };
@@ -65,26 +65,30 @@ export default function UploadStep() {
       });
       return;
     }
-    // Set the global state. 
-    setState({ 
-        inputXml, 
-        responseXml,
-        inputXsd: null, 
-        responseXsd: null, 
-        sourceSchema: null, 
-        targetSchema: null,
-        swaggerFile: null,
-        mappings: {
-          set1: [],
-          set2: [],
-          set3: [],
-        }
+    // Set the global state with the content from the local state.
+    setState({
+      inputXml: inputXml,
+      responseXml: responseXml,
+      inputXsd: null,
+      responseXsd: null,
+      sourceSchema: null,
+      targetSchema: null,
+      swaggerFile: null,
+      mappings: {
+        set1: [],
+        set2: [],
+        set3: [],
+      }
     });
-    router.push('/new/preview-xsd');
+
+    // Use a short timeout to allow the state to propagate before navigating.
+    setTimeout(() => {
+      router.push('/new/preview-xsd');
+    }, 100)
   }
-  
+
   return (
-    <div className="flex-1 flex items-center justify-center">
+    <div className="flex-1 flex flex-col items-center justify-center">
       <Card className="w-full max-w-4xl shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Create Your XSLT Mapping</CardTitle>
@@ -92,7 +96,7 @@ export default function UploadStep() {
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
+
             {/* Input XML Section */}
             <div className="flex flex-col items-center gap-4 rounded-lg border p-6">
               <input
@@ -109,7 +113,7 @@ export default function UploadStep() {
                 {inputXml ? "Uploaded" : "Upload Input XML"}
               </Button>
               {inputXml && (
-                <Button variant="ghost" className="w-full text-sm" onClick={() => setPreviewing({ content: inputXml, title: "Input XML Preview"})}>
+                <Button variant="ghost" className="w-full text-sm" onClick={() => setPreviewing({ content: inputXml, title: "Input XML Preview" })}>
                   <Eye className="mr-2 h-4 w-4" /> Preview File
                 </Button>
               )}
@@ -131,13 +135,13 @@ export default function UploadStep() {
                 {responseXml ? "Uploaded" : "Upload Response XML"}
               </Button>
               {responseXml && (
-                <Button variant="ghost" className="w-full text-sm" onClick={() => setPreviewing({ content: responseXml, title: "Response XML Preview"})}>
+                <Button variant="ghost" className="w-full text-sm" onClick={() => setPreviewing({ content: responseXml, title: "Response XML Preview" })}>
                   <Eye className="mr-2 h-4 w-4" /> Preview File
                 </Button>
               )}
             </div>
           </div>
-          
+
           <div className="flex flex-col gap-2 border-t pt-6">
             <Button onClick={handleProceed} size="lg" className="w-full" disabled={!inputXml || !responseXml}>
               Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
@@ -145,7 +149,7 @@ export default function UploadStep() {
           </div>
         </CardContent>
       </Card>
-      
+
       {previewing && (
         <FilePreviewDialog
           isOpen={!!previewing}
