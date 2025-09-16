@@ -7,47 +7,75 @@ import type { XsdNode } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye, ArrowLeft } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import FilePreviewDialog from '@/components/file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 
-// Basic YAML parsing to find paths and schemas.
-// In a real app, you'd use a robust library like 'js-yaml'.
-const parseSwaggerToXsdNode = (yamlContent: string): XsdNode | null => {
-    // This is a very simplified parser for demonstration.
-    // It looks for a 'paths' section and extracts a schema from the first post operation.
+const parseSwaggerForEndpoints = (yamlContent: string): string[] => {
     try {
         const lines = yamlContent.split('\n');
         const pathsIndex = lines.findIndex(line => line.trim().startsWith('paths:'));
-        if (pathsIndex === -1) throw new Error("No 'paths' found in Swagger/OpenAPI file.");
+        if (pathsIndex === -1) return [];
 
-        // A simple way to get a schema-like object. We'll simulate a schema.
-        return {
-            id: 'target-swagger-root',
-            name: 'Swagger API',
-            type: 'complexType',
-            children: [
-                { id: 'target-swagger-endpoint1', name: '/example-endpoint', type: 'complexType', children: [
-                    { id: 'target-swagger-field1', name: 'id', type: 'string' },
-                    { id: 'target-swagger-field2', name: 'name', type: 'string' },
-                    { id: 'target-swagger-field3', name: 'value', type: 'number' },
-                ]}
-            ]
-        };
+        const endpoints: string[] = [];
+        for (let i = pathsIndex + 1; i < lines.length; i++) {
+            const line = lines[i];
+            // Stop if we hit the next top-level key
+            if (line.trim() !== '' && !line.startsWith('  ')) break;
+
+            if (line.trim().startsWith('/') && line.trim().endsWith(':')) {
+                endpoints.push(line.trim().slice(0, -1));
+            }
+        }
+        return endpoints;
     } catch (e) {
-        console.error("Failed to parse swagger file", e);
-        return null;
+        console.error("Failed to parse endpoints from swagger", e);
+        return [];
     }
+};
+
+const generateSchemaFromEndpoint = (endpoint: string): XsdNode => {
+     // This is a very simplified parser for demonstration.
+    return {
+        id: 'target-swagger-root',
+        name: 'Swagger API',
+        type: 'complexType',
+        children: [
+            { id: `target-swagger-${endpoint}`, name: endpoint, type: 'complexType', children: [
+                { id: `target-swagger-field1-${endpoint}`, name: 'id', type: 'string' },
+                { id: `target-swagger-field2-${endpoint}`, name: 'name', type: 'string' },
+                { id: `target-swagger-field3-${endpoint}`, name: 'value', type: 'number' },
+            ]}
+        ]
+    };
 }
+
+const restMethods = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"];
 
 
 export default function SwaggerStep() {
     const router = useRouter();
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { sourceSchema, swaggerFile, setState } = useAppContext();
+    const { sourceSchema, swaggerFile, endpoint, method, setState } = useAppContext();
+    
     const [fileName, setFileName] = useState<string | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [availableEndpoints, setAvailableEndpoints] = useState<string[]>([]);
+    const [isCustomEndpoint, setIsCustomEndpoint] = useState(false);
+
+    useEffect(() => {
+        if (swaggerFile) {
+            const endpoints = parseSwaggerForEndpoints(swaggerFile);
+            setAvailableEndpoints(endpoints);
+            if (endpoint && !endpoints.includes(endpoint)) {
+                setIsCustomEndpoint(true);
+            }
+        }
+    }, [swaggerFile, endpoint]);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -57,11 +85,7 @@ export default function SwaggerStep() {
             reader.onload = (e) => {
                 try {
                     const content = e.target?.result as string;
-                    const schema = parseSwaggerToXsdNode(content);
-                    if(!schema) {
-                         throw new Error("Could not derive a schema from the file.");
-                    }
-                    setState({ swaggerFile: content, targetSchema: schema });
+                    setState({ swaggerFile: content, endpoint: null, method: null, targetSchema: null });
                     toast({
                         variant: "success",
                         title: "Upload Successful",
@@ -69,7 +93,7 @@ export default function SwaggerStep() {
                     })
                 } catch (error) {
                     console.error("Error processing YAML/JSON file:", error);
-                    setState({ swaggerFile: null, targetSchema: null });
+                    setState({ swaggerFile: null, targetSchema: null, endpoint: null, method: null });
                     setFileName(null);
                     toast({
                         variant: "destructive",
@@ -82,27 +106,58 @@ export default function SwaggerStep() {
         }
     };
 
-    const handleClick = () => {
+    const handleEndpointChange = (value: string) => {
+        if (value === 'custom') {
+            setIsCustomEndpoint(true);
+            setState({ endpoint: '' });
+        } else {
+            setIsCustomEndpoint(false);
+            const schema = generateSchemaFromEndpoint(value);
+            setState({ endpoint: value, targetSchema: schema });
+        }
+    }
+
+    const handleCustomEndpointChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const schema = generateSchemaFromEndpoint(value);
+        setState({ endpoint: value, targetSchema: schema });
+    }
+
+    const handleMethodChange = (value: string) => {
+        setState({ method: value });
+    }
+
+    const handleUploadClick = () => {
         fileInputRef.current?.click();
     };
 
     const handleProceed = () => {
+        if (!swaggerFile || !endpoint || !method) {
+             toast({
+                variant: 'destructive',
+                title: 'Missing Information',
+                description: 'Please provide a swagger file, select an endpoint, and choose a method.',
+            });
+            return;
+        }
         router.push(`/new/preview-swagger-xsd`);
     }
 
     const fileExtension = fileName?.split('.').pop()?.toLowerCase();
     const language = fileExtension === 'yaml' || fileExtension === 'yml' ? 'yaml' : 'json';
+    
+    const isNextDisabled = !swaggerFile || !endpoint || !method || !sourceSchema;
 
 
     return (
         <div className="flex items-center justify-center flex-1">
             <Card className="w-full max-w-2xl shadow-lg">
                 <CardHeader className="text-center">
-                    <CardTitle className="text-2xl font-bold">Upload Swagger/OpenAPI File</CardTitle>
-                    <CardDescription>Upload a YAML or JSON file to define the target structure.</CardDescription>
+                    <CardTitle className="text-2xl font-bold">Configure Target API</CardTitle>
+                    <CardDescription>Upload a Swagger/OpenAPI file and select the endpoint to define the target structure.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-6">
-                    <div className="flex flex-col items-center gap-4 rounded-lg border p-6">
+                    <div className="flex flex-col gap-4 rounded-lg border p-6">
                         <input
                             type="file"
                             ref={fileInputRef}
@@ -110,11 +165,11 @@ export default function SwaggerStep() {
                             className="hidden"
                             accept=".yaml,.yml,.json"
                         />
-                        <h3 className="font-semibold">Swagger/OpenAPI File</h3>
-                        <p className="text-sm text-muted-foreground text-center">This will be used as the target schema.</p>
-                        <Button onClick={handleClick} size="lg" className="w-full" variant={swaggerFile ? "secondary" : "default"}>
+                        <Label className="font-semibold text-lg">1. Swagger File</Label>
+                        <p className="text-sm text-muted-foreground">This will be used to generate the target schema.</p>
+                        <Button onClick={handleUploadClick} size="lg" className="w-full" variant={swaggerFile ? "secondary" : "default"}>
                             {swaggerFile ? <CheckCircle className="mr-2 h-5 w-5" /> : <FileUp className="mr-2 h-5 w-5" />}
-                            {swaggerFile ? "Uploaded" : 'Upload File'}
+                            {swaggerFile ? (fileName || "Uploaded") : 'Upload File'}
                         </Button>
                          {swaggerFile && (
                             <Button variant="ghost" className="w-full text-sm" onClick={() => setIsPreviewOpen(true)}>
@@ -123,11 +178,49 @@ export default function SwaggerStep() {
                         )}
                     </div>
 
+                    <div className="flex flex-col gap-4 rounded-lg border p-6">
+                         <Label className="font-semibold text-lg">2. Endpoint</Label>
+                         <Select onValueChange={handleEndpointChange} value={isCustomEndpoint ? 'custom' : endpoint || ''} disabled={!swaggerFile}>
+                            <SelectTrigger className="w-full h-12">
+                                <SelectValue placeholder="Select an endpoint..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {availableEndpoints.map(ep => (
+                                    <SelectItem key={ep} value={ep}>{ep}</SelectItem>
+                                ))}
+                                <SelectItem value="custom">Add Custom Endpoint</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        {isCustomEndpoint && (
+                            <Input 
+                                placeholder="/your/custom/endpoint" 
+                                value={endpoint || ''}
+                                onChange={handleCustomEndpointChange}
+                                className="h-12"
+                            />
+                        )}
+                    </div>
+                    
+                    <div className="flex flex-col gap-4 rounded-lg border p-6">
+                        <Label className="font-semibold text-lg">3. Method</Label>
+                         <Select onValueChange={handleMethodChange} value={method || ''} disabled={!endpoint}>
+                            <SelectTrigger className="w-full h-12">
+                                <SelectValue placeholder="Select a method..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {restMethods.map(m => (
+                                    <SelectItem key={m} value={m}>{m}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+
                     <div className="flex items-center justify-between border-t pt-6">
                         <Button variant="outline" onClick={() => router.push('/new/preview-xsd')}>
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back
                         </Button>
-                        <Button onClick={handleProceed} disabled={!swaggerFile || !sourceSchema}>
+                        <Button onClick={handleProceed} disabled={isNextDisabled}>
                             Next <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
@@ -145,3 +238,5 @@ export default function SwaggerStep() {
         </div>
     );
 }
+
+    

@@ -10,6 +10,8 @@ interface AppState {
   inputXsd: string | null;
   responseXsd: string | null;
   swaggerFile: string | null;
+  endpoint: string | null;
+  method: string | null;
   sourceSchema: XsdNode | null;
   targetSchema: XsdNode | null;
   mappings: MappingSets;
@@ -26,6 +28,8 @@ const initialState: AppState = {
   inputXsd: null,
   responseXsd: null,
   swaggerFile: null,
+  endpoint: null,
+  method: null,
   sourceSchema: null,
   targetSchema: null,
   mappings: {
@@ -98,3 +102,5 @@ export function useAppContext() {
   }
   return context;
 }
+
+    
