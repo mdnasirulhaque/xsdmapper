@@ -36,7 +36,7 @@ export default function Header() {
   const isCreationFlow = pathname.startsWith('/new');
 
   return (
-    <header className="sticky top-0 z-30 flex flex-col gap-4 px-4 sm:px-6 pt-4">
+    <header className="relative flex flex-col gap-4 px-4 sm:px-6 pt-4">
         {isCreationFlow && (
             <div className="h-14 flex items-center px-4 sm:px-6 bg-secondary rounded-lg">
                 <Breadcrumbs />
