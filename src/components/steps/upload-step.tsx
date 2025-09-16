@@ -13,11 +13,7 @@ import { useAppContext } from '@/context/AppContext';
 export default function UploadStep() {
   const router = useRouter();
   const { toast } = useToast();
-  const { setState, inputXml: globalInputXml } = useAppContext();
-
-  // Local state for handling file content within this component
-  const [inputXml, setInputXml] = useState<string | null>(null);
-  const [responseXml, setResponseXml] = useState<string | null>(null);
+  const { setState, inputXml, responseXml } = useAppContext();
 
   const inputXmlRef = useRef<HTMLInputElement>(null);
   const responseXmlRef = useRef<HTMLInputElement>(null);
@@ -32,9 +28,9 @@ export default function UploadStep() {
     reader.onload = (e) => {
       const content = e.target?.result as string;
       if (fileType === 'input') {
-        setInputXml(content);
+        setState({ inputXml: content });
       } else {
-        setResponseXml(content);
+        setState({ responseXml: content });
       }
       toast({
         variant: "success",
@@ -65,26 +61,22 @@ export default function UploadStep() {
       });
       return;
     }
-    // Set the global state with the content from the local state.
+    // Since state is already global, we can just navigate.
+    // Reset other parts of the state that depend on these files.
     setState({
-      inputXml: inputXml,
-      responseXml: responseXml,
-      inputXsd: null,
-      responseXsd: null,
-      sourceSchema: null,
-      targetSchema: null,
-      swaggerFile: null,
-      mappings: {
-        set1: [],
-        set2: [],
-        set3: [],
-      }
+        inputXsd: null,
+        responseXsd: null,
+        sourceSchema: null,
+        targetSchema: null,
+        swaggerFile: null,
+        mappings: {
+          set1: [],
+          set2: [],
+          set3: [],
+        }
     });
 
-    // Use a short timeout to allow the state to propagate before navigating.
-    setTimeout(() => {
-      router.push('/new/preview-xsd');
-    }, 100)
+    router.push('/new/preview-xsd');
   }
 
   return (
