@@ -60,7 +60,7 @@ export default function SwaggerStep() {
     const router = useRouter();
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { sourceSchema, swaggerFile, endpoint, method, setState } = useAppContext();
+    const { swaggerFile, endpoint, method, setState } = useAppContext();
     
     const [fileName, setFileName] = useState<string | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -140,13 +140,13 @@ export default function SwaggerStep() {
             });
             return;
         }
-        router.push(`/new/preview-swagger-xsd`);
+        router.push(`/new/mapper`);
     }
 
     const fileExtension = fileName?.split('.').pop()?.toLowerCase();
     const language = fileExtension === 'yaml' || fileExtension === 'yml' ? 'yaml' : 'json';
     
-    const isNextDisabled = !swaggerFile || !endpoint || !method || !sourceSchema;
+    const isNextDisabled = !swaggerFile || !endpoint || !method;
 
 
     return (
@@ -238,5 +238,3 @@ export default function SwaggerStep() {
         </div>
     );
 }
-
-    
