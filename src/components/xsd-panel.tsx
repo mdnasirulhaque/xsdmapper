@@ -230,7 +230,7 @@ export default function XsdPanel({
   }
   
   return (
-    <Card className="shadow-lg flex flex-col h-full min-h-[300px]">
+    <Card className="shadow-lg flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{title}</CardTitle>
         <div className="flex items-center gap-2">
@@ -240,7 +240,7 @@ export default function XsdPanel({
             <FileUploadButton onFileLoad={onFileLoad} type={type} />
         </div>
       </CardHeader>
-      <CardContent id={panelId} className="flex-1 overflow-y-auto py-6">
+      <CardContent id={panelId} className="flex-1 py-6">
         {schema ? (
           renderSchemaTree(
             schema, 

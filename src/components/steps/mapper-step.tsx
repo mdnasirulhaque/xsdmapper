@@ -219,7 +219,7 @@ export default function MapperStep() {
   const sets: MappingSet[] = ['set1', 'set2', 'set3'];
 
   return (
-    <div className="flex-1 flex flex-col gap-4 overflow-hidden h-full">
+    <div className="flex-1 flex flex-col gap-4">
         <div className="flex items-center justify-center bg-card rounded-lg p-3 border gap-4">
             <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -265,7 +265,7 @@ export default function MapperStep() {
             </AlertDialog>
         </div>
 
-        <div className="flex-1 flex flex-col overflow-hidden bg-card border rounded-lg">
+        <div className="flex-1 flex flex-col bg-card border rounded-lg">
              <div className="flex-shrink-0 p-2 bg-muted/50 rounded-t-lg border-b">
                 <div className="flex items-center justify-center gap-2">
                     {sets.map((set) => (
@@ -280,8 +280,8 @@ export default function MapperStep() {
                     ))}
                 </div>
             </div>
-            <div ref={canvasRef} className="flex-1 relative overflow-hidden">
-                <div className="absolute inset-0 grid grid-cols-1 md:grid-cols-2 gap-8 h-full p-4 sm:p-6 md:p-8 overflow-auto">
+            <div ref={canvasRef} className="relative">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-4 sm:p-6 md:p-8">
                     <XsdPanel title="Source XSD" schema={sourceSchema} type="source" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')} onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeRefs={nodeRefs} mappings={mappings[activeSet]} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
                     <XsdPanel title="Target XSD" schema={targetSchema} type="target" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')} onDrop={handleDrop} nodeRefs={nodeRefs} mappings={mappings[activeSet]} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
                 </div>
