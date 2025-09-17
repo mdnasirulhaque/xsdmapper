@@ -23,7 +23,7 @@ export default function Header() {
   const isCreationFlow = pathname.startsWith('/new');
 
   return (
-    <header className="flex items-center justify-between h-16 px-6 bg-card text-card-foreground rounded-lg shadow-sm border">
+    <header className="flex items-center justify-between h-16 px-6 bg-header text-header-foreground rounded-lg shadow-sm">
         <div className="flex items-center gap-3">
             <CodeXml className="h-8 w-8 text-primary" />
             <h1 className="text-xl font-bold tracking-tight">
@@ -31,11 +31,6 @@ export default function Header() {
             </h1>
         </div>
         <div className="flex items-center gap-4">
-            {soeid && (
-              <div className="bg-muted text-muted-foreground px-4 py-1.5 rounded-lg shadow-inner">
-                <span className="text-sm font-semibold">{soeid}</span>
-              </div>
-            )}
             {isCreationFlow && (
                  <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -59,6 +54,11 @@ export default function Header() {
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
+            )}
+            {soeid && (
+              <div className="bg-muted text-muted-foreground px-4 py-1.5 rounded-lg shadow-inner">
+                <span className="text-sm font-semibold">{soeid}</span>
+              </div>
             )}
         </div>
     </header>
