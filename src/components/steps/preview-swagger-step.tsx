@@ -134,10 +134,10 @@ export default function PreviewSwaggerStep() {
 
                     <div className="flex items-center justify-between border-t pt-6">
                          <Button variant="outline" onClick={() => router.push('/new/swagger')}>
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to API Config
                         </Button>
                         <Button onClick={() => router.push('/new/mapper')} disabled={!swaggerFile}>
-                            Next <ArrowRight className="ml-2 h-4 w-4" />
+                            Next: Start Mapping <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
 

@@ -128,7 +128,7 @@ export default function UploadStep() {
 
           <div className="flex flex-col gap-2 border-t pt-6">
             <Button onClick={handleProceed} size="lg" className="w-full" disabled={!inputXml || !responseXml}>
-              Proceed to Next Step <ArrowRight className="ml-2 h-5 w-5" />
+              Proceed to XSD Preview <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </CardContent>

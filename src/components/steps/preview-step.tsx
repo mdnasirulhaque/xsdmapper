@@ -226,10 +226,10 @@ export default function PreviewStep() {
                     </div>
                      <div className="flex items-center justify-between border-t pt-6">
                         <Button variant="outline" onClick={() => router.push('/new/upload')}>
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Upload
                         </Button>
                         <Button onClick={handleProceed} disabled={!inputXsd || !responseXsd}>
-                            Next <ArrowRight className="ml-2 h-4 w-4" />
+                            Next: Configure API <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
                 </CardContent>

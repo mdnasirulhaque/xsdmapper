@@ -315,12 +315,12 @@ export default function MapperStep() {
 
         <div className="flex items-center justify-between bg-card rounded-lg p-3 border">
             <Button variant="outline" onClick={() => router.push('/new/preview-swagger-xsd')}>
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Swagger Preview
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button disabled={!areRequiredSetsMapped}>
-                    Next <ArrowRight className="ml-2 h-4 w-4" />
+                    Next: Generate XSLT <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>

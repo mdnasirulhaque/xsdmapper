@@ -270,10 +270,10 @@ export default function SwaggerStep() {
 
                     <div className="flex items-center justify-between border-t pt-6">
                         <Button variant="outline" onClick={() => router.push('/new/preview-xsd')}>
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to XSD Preview
                         </Button>
                         <Button onClick={handleProceed} disabled={isNextDisabled}>
-                            Next <ArrowRight className="ml-2 h-4 w-4" />
+                            Next: Preview Swagger <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
                 </CardContent>

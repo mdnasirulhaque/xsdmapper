@@ -159,7 +159,7 @@ export default function PreviewXsltStep() {
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Mapper
         </Button>
         <Button onClick={() => router.push('/new/create-request')}>
-            Next <ArrowRight className="ml-2 h-4 w-4" />
+            Next: Final Review <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
     </div>
