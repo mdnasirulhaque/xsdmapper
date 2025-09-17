@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import CodeBlock from "./code-block"
@@ -43,27 +44,28 @@ export default function FilePreviewDialog({ isOpen, onOpenChange, content, title
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
-        <DialogHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <DialogTitle>{title}</DialogTitle>
-              <DialogDescription>
-                This is a preview of the file content.
-              </DialogDescription>
-            </div>
-            <Button variant="outline" size="sm" onClick={handleCopy}>
+      <DialogContent className="max-w-6xl h-[90vh] flex flex-col p-0">
+        <DialogHeader className="p-6 border-b">
+          <div>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription>
+              This is a preview of the file content.
+            </DialogDescription>
+          </div>
+        </DialogHeader>
+        <div className="flex-1 min-h-0">
+          <ScrollArea className="h-full bg-muted/50">
+              <CodeBlock code={content} language={language} />
+          </ScrollArea>
+        </div>
+        <DialogFooter className="p-4 border-t flex-row justify-between">
+           <Button variant="secondary" onClick={() => onOpenChange(false)}>Close</Button>
+           <Button variant="outline" size="sm" onClick={handleCopy}>
               <Copy className="mr-2 h-4 w-4" />
               Copy
             </Button>
-          </div>
-        </DialogHeader>
-        <ScrollArea className="flex-1 mt-4 rounded-md bg-muted/50">
-            <CodeBlock code={content} language={language} />
-        </ScrollArea>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
 }
-
-    
