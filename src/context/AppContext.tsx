@@ -106,7 +106,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return (
         <div className="flex h-screen w-full items-center justify-center bg-background">
           <div className="flex flex-col items-center gap-4">
-            <Loader className="h-8 w-8 animate-spin text-primary" />
+            <Loader className="h-12 w-12 animate-spin text-primary" />
             <p className="text-muted-foreground">Initializing...</p>
           </div>
         </div>
