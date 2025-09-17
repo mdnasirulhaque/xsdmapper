@@ -81,8 +81,8 @@ interface CodePreviewProps {
 }
 
 const CodePreview = ({ title, content, language, isLoading = false, onPreviewClick }: CodePreviewProps) => {
-    const snippet = content ? content.split('\n').slice(0, 15).join('\n') : 'No content provided.';
-    const canShowMore = content && content.split('\n').length > 15;
+    const snippet = content ? content.split('\n').slice(0, 7).join('\n') : 'No content provided.';
+    const canShowMore = content && content.split('\n').length > 7;
 
     return (
         <Card className="flex-1 flex flex-col min-w-[300px]">
@@ -245,5 +245,7 @@ export default function PreviewStep() {
         </div>
     );
 }
+
+    
 
     
