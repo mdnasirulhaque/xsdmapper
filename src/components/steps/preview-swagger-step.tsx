@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useState } from 'react';
 import {
     Card,
     CardContent,
@@ -9,16 +10,54 @@ import {
     CardDescription,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Eye, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
-import { ScrollArea } from '../ui/scroll-area';
 import CodeBlock from '../code-block';
+import FilePreviewDialog from '../file-preview-dialog';
+
+
+interface CodePreviewProps {
+    title: string;
+    content: string | null;
+    language: 'xml' | 'json' | 'yaml';
+    isLoading?: boolean;
+    onPreviewClick: () => void;
+}
+
+const CodePreview = ({ title, content, language, isLoading = false, onPreviewClick }: CodePreviewProps) => {
+    const snippet = content ? content.split('\n').slice(0, 15).join('\n') : 'No content available.';
+    const canShowMore = content && content.split('\n').length > 15;
+
+    return (
+        <Card className="flex-1 flex flex-col min-w-[300px]">
+            <CardHeader>
+                <CardTitle className="text-lg">{title}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col">
+                <div className="relative flex-1 p-4 text-xs rounded-md border bg-muted/50">
+                    {isLoading && (
+                        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
+                            <Loader className="h-8 w-8 animate-spin text-primary" />
+                        </div>
+                    )}
+                    <CodeBlock code={isLoading ? '' : snippet} language={language} />
+                </div>
+                {canShowMore && (
+                    <Button variant="ghost" className="mt-2" onClick={onPreviewClick}>
+                        <Eye className="mr-2 h-4 w-4" /> Show full preview
+                    </Button>
+                )}
+            </CardContent>
+        </Card>
+    );
+};
 
 
 export default function PreviewSwaggerStep() {
     const router = useRouter();
     const { swaggerFile } = useAppContext();
+    const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
     // A placeholder for the generated XSD from swagger for demonstration
     const swaggerXsdPreview = swaggerFile 
@@ -42,21 +81,41 @@ export default function PreviewSwaggerStep() {
 </xs:schema>
 `
         : 'Upload a Swagger/OpenAPI file in the previous step to see a preview.';
+    
+    const swaggerFileLanguage = swaggerFile?.trim().startsWith('{') ? 'json' : 'yaml';
+
+    const openPreview = (content: string | null, title: string, language: 'xml' | 'json' | 'yaml') => {
+        if (content) {
+            setPreviewing({ content, title, language });
+        }
+    };
 
 
     return (
-        <div className="flex items-center justify-center flex-1">
+        <div className="flex-1 flex items-center justify-center">
             <Card className="w-full shadow-lg">
                 <CardHeader>
-                    <CardTitle>Preview Swagger XSD</CardTitle>
+                    <CardTitle>Preview Swagger and Generated XSD</CardTitle>
                     <CardDescription>
-                        This is a preview of the simulated XSD generated from the Swagger/OpenAPI file.
+                        Review the uploaded Swagger/OpenAPI file and the simulated XSD generated from it.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-6">
-                    <ScrollArea className="h-96 rounded-md border bg-muted/50">
-                       <CodeBlock code={swaggerXsdPreview} language="xml" />
-                    </ScrollArea>
+
+                    <div className="flex flex-col lg:flex-row gap-6">
+                       <CodePreview 
+                            title="Uploaded Swagger/OpenAPI" 
+                            content={swaggerFile} 
+                            language={swaggerFileLanguage}
+                            onPreviewClick={() => openPreview(swaggerFile, 'Uploaded Swagger/OpenAPI', swaggerFileLanguage)}
+                        />
+                       <CodePreview 
+                            title="Generated Swagger XSD" 
+                            content={swaggerXsdPreview} 
+                            language="xml" 
+                            onPreviewClick={() => openPreview(swaggerXsdPreview, 'Generated Swagger XSD Preview', 'xml')}
+                        />
+                    </div>
 
                     <div className="flex items-center justify-between border-t pt-6">
                          <Button variant="outline" onClick={() => router.push('/new/swagger')}>
@@ -69,6 +128,16 @@ export default function PreviewSwaggerStep() {
 
                 </CardContent>
             </Card>
+
+             {previewing && (
+                 <FilePreviewDialog
+                    isOpen={!!previewing}
+                    onOpenChange={() => setPreviewing(null)}
+                    content={previewing.content}
+                    title={previewing.title}
+                    language={previewing.language}
+                />
+            )}
         </div>
     );
 }
