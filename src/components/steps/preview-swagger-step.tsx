@@ -103,10 +103,15 @@ export default function PreviewSwaggerStep() {
                 <CardContent className="flex flex-col gap-6">
                     
                     {endpoint && method && (
-                        <div className="flex items-center gap-4 p-4 rounded-lg bg-muted border">
-                            <span className="font-semibold">Selected Operation:</span>
-                            <span className="inline-flex items-center rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">{method}</span>
-                            <span className="font-mono text-sm text-muted-foreground bg-secondary px-3 py-1 rounded-md">{endpoint}</span>
+                        <div className="flex items-center gap-6 p-4 rounded-lg bg-muted border">
+                            <div className="flex items-center gap-2">
+                                <span className="font-semibold">Method:</span>
+                                <span className="inline-flex items-center rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">{method}</span>
+                            </div>
+                             <div className="flex items-center gap-2">
+                                <span className="font-semibold">Endpoint:</span>
+                                <span className="font-mono text-sm text-muted-foreground bg-secondary px-3 py-1 rounded-md">{endpoint}</span>
+                            </div>
                         </div>
                     )}
 
