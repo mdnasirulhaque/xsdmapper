@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import type { XsdNode, MappingSets, SchemasBySet } from '@/types';
 import { Loader } from 'lucide-react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface AppState {
   soeid: string | null;
@@ -143,14 +144,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider value={contextValue}>
-      {state.isLoading && (
-         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background/20 backdrop-blur-sm">
-            <div className="flex flex-col items-center gap-4">
-                <Loader className="h-16 w-16 animate-spin text-primary" />
-                <p className="text-muted-foreground">Loading...</p>
-            </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {state.isLoading && (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 z-[200] flex items-center justify-center bg-background/20 backdrop-blur-sm"
+            >
+                <div className="flex flex-col items-center gap-4">
+                    <Loader className="h-16 w-16 animate-spin text-primary" />
+                    <p className="text-muted-foreground">Loading...</p>
+                </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
       {children}
     </AppContext.Provider>
   );
