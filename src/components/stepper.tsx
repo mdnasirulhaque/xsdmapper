@@ -28,18 +28,9 @@ export default function Stepper({ currentStep }: StepperProps) {
             const stepNumber = stepIdx + 1;
             const isCompleted = currentStep > stepNumber;
             const isCurrent = currentStep === stepNumber;
-            const isLastStep = stepIdx === steps.length - 1;
 
             return (
                 <li key={step.name} className="relative flex-1">
-                    {!isLastStep && (
-                        <div className="absolute top-5 left-1/2 w-[calc(100%-2.5rem)] -translate-x-1/2 h-0.5" aria-hidden="true">
-                            <div className={cn(
-                                "h-full w-full",
-                                isCompleted ? "bg-primary" : "bg-border"
-                            )} />
-                        </div>
-                    )}
                     <NextLink 
                         href={step.href} 
                         className={cn(
