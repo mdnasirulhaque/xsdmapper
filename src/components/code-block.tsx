@@ -2,7 +2,7 @@
 "use client"
 
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark as theme } from 'react-syntax-highlighter/dist/cjs/styles/prism/one-dark';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface CodeBlockProps {
   code: string;
@@ -13,7 +13,7 @@ export default function CodeBlock({ code, language }: CodeBlockProps) {
   return (
     <SyntaxHighlighter 
       language={language} 
-      style={theme}
+      style={oneDark}
       wrapLines={true}
       wrapLongLines={true}
       customStyle={{ 
@@ -33,5 +33,3 @@ export default function CodeBlock({ code, language }: CodeBlockProps) {
     </SyntaxHighlighter>
   );
 }
-
-    
