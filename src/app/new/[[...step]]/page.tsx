@@ -1,8 +1,7 @@
 
 "use client";
 
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import AppLayout from '@/components/layout';
 import UploadStep from '@/components/steps/upload-step';
 import PreviewStep from '@/components/steps/preview-step';
@@ -10,7 +9,6 @@ import SwaggerStep from '@/components/steps/swagger-step';
 import PreviewSwaggerStep from '@/components/steps/preview-swagger-step';
 import MapperStep from '@/components/steps/mapper-step';
 import PreviewXsltStep from '@/components/steps/preview-xslt-step';
-import { useAppContext } from '@/context/AppContext';
 
 const steps = [
   { name: 'upload', component: UploadStep, step: 1 },
@@ -23,20 +21,7 @@ const steps = [
 
 export default function NewRequestPage() {
   const params = useParams();
-  const router = useRouter();
-  const { resetState } = useAppContext();
   const stepParam = Array.isArray(params.step) ? params.step[0] : 'upload';
-
-  useEffect(() => {
-    if (stepParam === 'upload') {
-      const url = new URL(window.location.href);
-      if (!url.searchParams.has('keepState')) {
-        resetState();
-        // Use replace to avoid adding a new entry to the browser's history
-        router.replace('/new/upload', { scroll: false });
-      }
-    }
-  }, [stepParam, resetState, router]);
 
   const currentStepInfo = steps.find(s => s.name === stepParam) || steps[0];
   const StepComponent = currentStepInfo.component;
