@@ -14,6 +14,8 @@ export default function CodeBlock({ code, language }: CodeBlockProps) {
     <SyntaxHighlighter 
       language={language} 
       style={theme}
+      wrapLines={true}
+      wrapLongLines={true}
       customStyle={{ 
         margin: 0, 
         padding: '1rem',
