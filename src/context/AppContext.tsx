@@ -46,10 +46,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    // Load state from localStorage only on the client side, after the initial render.
-    const savedState = localStorage.getItem('appState');
-    if (savedState) {
-      try {
+    // Load state from localStorage only on the client side.
+    try {
+      const savedState = localStorage.getItem('appState');
+      if (savedState) {
         const parsed = JSON.parse(savedState);
         // Basic validation to ensure the parsed state has the expected shape
         if (parsed && typeof parsed === 'object' && 'sourceSchema' in parsed && 'mappings' in parsed && 'set1' in parsed.mappings) {
@@ -59,12 +59,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
             localStorage.removeItem('appState');
             setStateValue(initialState);
         }
-      } catch (e) {
-        console.error("Failed to parse state from localStorage", e);
-        setStateValue(initialState);
       }
+    } catch (e) {
+      console.error("Failed to parse state from localStorage", e);
+      // If parsing fails, we'll proceed with the initial state.
+    } finally {
+      setIsInitialized(true);
     }
-    setIsInitialized(true);
   }, []);
 
   useEffect(() => {
@@ -80,6 +81,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const resetState = () => {
     setStateValue(initialState);
+    // Also clear it from localStorage
+    localStorage.removeItem('appState');
   };
   
   const contextValue = {
@@ -87,6 +90,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setState,
     resetState,
   };
+
+  // Do not render children until the state has been initialized from localStorage
+  if (!isInitialized) {
+    return null;
+  }
 
   return (
     <AppContext.Provider value={contextValue}>
@@ -102,5 +110,3 @@ export function useAppContext() {
   }
   return context;
 }
-
-    
