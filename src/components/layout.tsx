@@ -69,11 +69,11 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
         <main className="flex flex-1 flex-col">
               <Header />
               {isCreationFlow && (
-                 <div className="mx-4 sm:mx-6 my-4 p-4 rounded-lg bg-card shadow-sm">
+                 <div className="my-4 p-4 rounded-lg bg-card shadow-sm">
                     <Stepper currentStep={currentStep} />
                 </div>
               )}
-            <div className="flex-1 flex flex-col mx-4 sm:mx-6 mb-4">
+            <div className="flex-1 flex flex-col mb-4">
                 {children}
             </div>
         </main>

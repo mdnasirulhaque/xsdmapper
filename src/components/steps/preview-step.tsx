@@ -168,7 +168,7 @@ export default function PreviewStep() {
 
     return (
         <div className="flex-1 flex items-center justify-center">
-            <Card className="w-full max-w-6xl shadow-lg">
+            <Card className="w-full shadow-lg">
                 <CardHeader>
                     <CardTitle>Preview XSDs</CardTitle>
                     <CardDescription>

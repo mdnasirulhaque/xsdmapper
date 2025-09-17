@@ -186,7 +186,7 @@ export default function SwaggerStep() {
 
     return (
         <div className="flex items-center justify-center flex-1">
-            <Card className="w-full max-w-2xl shadow-lg">
+            <Card className="w-full shadow-lg">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold">Configure Target API</CardTitle>
                     <CardDescription>Upload a Swagger/OpenAPI file and select the endpoint to define the target structure.</CardDescription>
@@ -273,7 +273,3 @@ export default function SwaggerStep() {
         </div>
     );
 }
-
-    
-
-    

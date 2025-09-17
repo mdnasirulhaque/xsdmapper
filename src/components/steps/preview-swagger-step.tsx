@@ -46,7 +46,7 @@ export default function PreviewSwaggerStep() {
 
     return (
         <div className="flex items-center justify-center flex-1">
-            <Card className="w-full max-w-2xl shadow-lg">
+            <Card className="w-full shadow-lg">
                 <CardHeader>
                     <CardTitle>Preview Swagger XSD</CardTitle>
                     <CardDescription>

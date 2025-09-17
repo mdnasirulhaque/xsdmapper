@@ -73,7 +73,9 @@ export default function UploadStep() {
           set1: [],
           set2: [],
           set3: [],
-        }
+        },
+        endpoint: null,
+        method: null,
     });
 
     router.push('/new/preview-xsd');
@@ -81,7 +83,7 @@ export default function UploadStep() {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center">
-      <Card className="w-full max-w-4xl shadow-lg">
+      <Card className="w-full shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Create Your XSLT Mapping</CardTitle>
           <CardDescription>Start by uploading your input and response XML files to generate XSD.</CardDescription>
