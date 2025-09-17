@@ -11,6 +11,7 @@ import { useAppContext } from '@/context/AppContext';
 import { parseXsdToXsdNode } from '@/lib/xsd-parser';
 import CodeBlock from '../code-block';
 import FilePreviewDialog from '../file-preview-dialog';
+import { prettyPrintXml } from '@/lib/formatter';
 
 // A mock XSD string for preview purposes.
 const mockInputXsdString = `<?xml version="1.0" encoding="UTF-8"?>
@@ -81,7 +82,8 @@ interface CodePreviewProps {
 }
 
 const CodePreview = ({ title, content, language, isLoading = false, onPreviewClick }: CodePreviewProps) => {
-    const snippet = content ? content.split('\n').slice(0, 7).join('\n') : 'No content provided.';
+    const formattedContent = content && language === 'xml' ? prettyPrintXml(content) : content;
+    const snippet = formattedContent ? formattedContent.split('\n').slice(0, 7).join('\n') : 'No content provided.';
     const canShowMore = content && content.split('\n').length > 7;
 
     return (
@@ -245,7 +247,3 @@ export default function PreviewStep() {
         </div>
     );
 }
-
-    
-
-    

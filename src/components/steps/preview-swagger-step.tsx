@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import CodeBlock from '../code-block';
 import FilePreviewDialog from '../file-preview-dialog';
+import { prettyPrintXml } from '@/lib/formatter';
 
 
 interface CodePreviewProps {
@@ -26,7 +27,8 @@ interface CodePreviewProps {
 }
 
 const CodePreview = ({ title, content, language, isLoading = false, onPreviewClick }: CodePreviewProps) => {
-    const snippet = content ? content.split('\n').slice(0, 7).join('\n') : 'No content available.';
+    const formattedContent = content && language === 'xml' ? prettyPrintXml(content) : content;
+    const snippet = formattedContent ? formattedContent.split('\n').slice(0, 7).join('\n') : 'No content available.';
     const canShowMore = content && content.split('\n').length > 7;
 
     return (
@@ -57,7 +59,7 @@ const CodePreview = ({ title, content, language, isLoading = false, onPreviewCli
 export default function PreviewSwaggerStep() {
     const router = useRouter();
     const { swaggerFile, endpoint, method } = useAppContext();
-    const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
+    const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'json' | 'yaml' } | null>(null);
 
     // A placeholder for the generated XSD from swagger for demonstration
     const swaggerXsdPreview = swaggerFile 
