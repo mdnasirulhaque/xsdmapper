@@ -99,7 +99,7 @@ const CodePreview = ({ title, content, language, isLoading = false, onPreviewCli
                     <CodeBlock code={isLoading ? '' : snippet} language={language} />
                 </div>
                 {canShowMore && (
-                    <Button variant="ghost" className="mt-2" onClick={onPreviewClick}>
+                    <Button variant="secondary" className="mt-2" onClick={onPreviewClick}>
                         <Eye className="mr-2 h-4 w-4" /> Show full preview
                     </Button>
                 )}
