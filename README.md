@@ -10,6 +10,8 @@ Welcome to XSD Mapper, a web-based visual tool designed to simplify the process 
 - **Transformation Logic**: Apply transformations to your mappings, such as converting text to uppercase or concatenating fields.
 - **Live XML Preview**: Instantly preview a sample of the transformed XML output based on your current mappings and transformations.
 - **XSLT Generation**: Automatically generate and download a valid XSLT file that represents your defined mappings, ready for use in any XML transformation workflow.
+- **Manage Submitted Requests**: View a history of all submitted mapping requests, with capabilities to search by ID and filter by status.
+- **Reusable Configurations**: Save and manage your mapping configurations to reuse them in future projects.
 - **Interactive UI**: A modern and responsive interface built with interactive elements to make the mapping process smooth and efficient.
 
 ## 🚀 Tech Stack
@@ -44,13 +46,11 @@ The application is ready to run out of the box. Follow these steps to get starte
 
 ## 🎨 How to Use
 
-1.  **Load Schemas**: Use the "Upload XSD" buttons in the "Source Schema" and "Target Schema" panels to load your respective schemas. (Note: Currently, this loads mock data for demonstration purposes).
-2.  **Create Mappings**: Click and drag a field from the source schema panel on the left to a corresponding field in the target schema panel on the right. A line will appear, connecting the two.
-3.  **Manage Mappings**:
-    - Hover over the dot in the middle of a connecting line to bring up controls.
-    - Click the **Wand** icon to open the transformation dialog.
-    - Click the **X** icon to delete the mapping.
-4.  **Set Transformations**: In the transformation dialog, you can select a transformation type (e.g., `UPPERCASE`) and configure its parameters.
-5.  **Preview & Download**:
-    - Click the **"Preview XML"** button in the header to see a sample of the final XML output.
-    - Click the **"Download XSLT"** button to download the generated transformation file.
+1.  **Create New Mapping**:
+    -   Use the "Upload XSD" buttons in the "Source Schema" and "Target Schema" panels to load your respective schemas.
+    -   Click and drag a field from the source schema panel to a corresponding field in the target schema panel. A line will appear, connecting the two.
+    -   Hover over the dot on a connecting line to manage the mapping (edit transformation or delete).
+    -   Set transformations (e.g., `UPPERCASE`) in the transformation dialog.
+    -   Preview and download the final XSLT file.
+2.  **View Submitted Requests**: Navigate to the "Submitted Requests" page from the sidebar to see a table of past requests. You can search for specific requests or filter them by their status.
+3.  **View Existing Configurations**: Navigate to the "Configurations" page from the sidebar to browse saved mapping configurations that can be viewed or reused.
