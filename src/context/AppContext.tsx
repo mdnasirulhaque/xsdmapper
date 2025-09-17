@@ -3,7 +3,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import type { XsdNode, Mapping, MappingSets } from '@/types';
+import type { XsdNode, MappingSets, SchemasBySet } from '@/types';
 import { Loader } from 'lucide-react';
 
 interface AppState {
@@ -14,8 +14,8 @@ interface AppState {
   swaggerFile: string | null;
   endpoint: string | null;
   method: string | null;
-  sourceSchema: XsdNode | null;
-  targetSchema: XsdNode | null;
+  sourceSchemas: SchemasBySet;
+  targetSchemas: SchemasBySet;
   mappings: MappingSets;
 }
 
@@ -32,8 +32,16 @@ const initialState: AppState = {
   swaggerFile: null,
   endpoint: null,
   method: null,
-  sourceSchema: null,
-  targetSchema: null,
+  sourceSchemas: {
+    set1: null,
+    set2: null,
+    set3: null,
+  },
+  targetSchemas: {
+    set1: null,
+    set2: null,
+    set3: null,
+  },
   mappings: {
     set1: [],
     set2: [],
@@ -54,7 +62,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (savedState) {
         const parsed = JSON.parse(savedState);
         // Basic validation to ensure the parsed state has the expected shape
-        if (parsed && typeof parsed === 'object' && 'sourceSchema' in parsed && 'mappings' in parsed && 'set1' in parsed.mappings) {
+        if (parsed && typeof parsed === 'object' && 'sourceSchemas' in parsed && 'mappings' in parsed && 'set1' in parsed.mappings) {
           setStateValue(parsed);
         } else {
             // If the stored state is old, reset to initial

@@ -23,13 +23,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { cn } from '@/lib/utils'
 
 export default function MapperStep() {
   const router = useRouter();
   const { 
-    sourceSchema, 
-    targetSchema, 
+    sourceSchemas, 
+    targetSchemas, 
     mappings, 
     setState, 
   } = useAppContext();
@@ -71,12 +70,19 @@ export default function MapperStep() {
             throw new Error("Could not parse the uploaded XSD file.");
         }
         
-        const resetMappings: MappingSets = { set1: [], set2: [], set3: [] };
+        // When a file is loaded for a specific set, we should only clear the mappings for that set.
+        const newMappingsForSet: Mapping[] = [];
 
         if (type === 'source') {
-          setState({ sourceSchema: newSchema, mappings: resetMappings });
+          setState({ 
+            sourceSchemas: { ...sourceSchemas, [activeSet]: newSchema },
+            mappings: { ...mappings, [activeSet]: newMappingsForSet },
+          });
         } else {
-          setState({ targetSchema: newSchema, mappings: resetMappings });
+          setState({ 
+            targetSchemas: { ...targetSchemas, [activeSet]: newSchema },
+            mappings: { ...mappings, [activeSet]: newMappingsForSet },
+          });
         }
         rerenderCanvas();
     } catch(e: any) {
@@ -97,6 +103,8 @@ export default function MapperStep() {
   }
   
   const handleDrop = (targetNode: XsdNode) => {
+    const sourceSchema = sourceSchemas[activeSet];
+    const targetSchema = targetSchemas[activeSet];
     if (!draggingNode || !sourceSchema || !targetSchema) return;
 
     const currentMappings = mappings[activeSet];
@@ -280,10 +288,10 @@ export default function MapperStep() {
                     ))}
                 </div>
             </div>
-            <div ref={canvasRef} className="relative">
+            <div ref={canvasRef} className="relative overflow-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-4 sm:p-6 md:p-8">
-                    <XsdPanel title="Source XSD" schema={sourceSchema} type="source" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')} onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeRefs={nodeRefs} mappings={mappings[activeSet]} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
-                    <XsdPanel title="Target XSD" schema={targetSchema} type="target" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')} onDrop={handleDrop} nodeRefs={nodeRefs} mappings={mappings[activeSet]} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas}/>
+                    <XsdPanel title="Source XSD" schema={sourceSchemas[activeSet]} type="source" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'source')} onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeRefs={nodeRefs} mappings={mappings[activeSet]} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas} activeSet={activeSet} />
+                    <XsdPanel title="Target XSD" schema={targetSchemas[activeSet]} type="target" onFileLoad={(schemaContent) => handleFileLoad(schemaContent, 'target')} onDrop={handleDrop} nodeRefs={nodeRefs} mappings={mappings[activeSet]} draggingNodeId={draggingNode?.id} rerenderCanvas={rerenderCanvas} activeSet={activeSet} />
                 </div>
                 {canvasRef.current && (
                     <MappingCanvas

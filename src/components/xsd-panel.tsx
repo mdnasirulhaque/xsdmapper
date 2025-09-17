@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import FileUploadButton from "@/components/file-upload-button"
-import type { XsdNode, Mapping } from "@/types"
+import type { XsdNode, Mapping, MappingSet } from "@/types"
 import { Folder, File } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "./ui/button"
@@ -123,7 +123,7 @@ const XsdNodeRecursive = ({
         />
         
         {hasChildren ? <Folder className="w-4 h-4 mr-2 text-muted-foreground" /> : <File className="w-4 h-4 mr-2 text-muted-foreground" />}
-        <span className="font-medium text-sm flex-1">{node.name}</span>
+        <span className="font-medium text-sm flex-1 break-all">{node.name}</span>
         <span className="text-xs text-muted-foreground ml-2">{node.type}</span>
       </div>
         
@@ -188,6 +188,7 @@ interface XsdPanelProps {
   mappings: Mapping[]
   draggingNodeId?: string | null
   rerenderCanvas: () => void
+  activeSet: MappingSet
 }
 
 export default function XsdPanel({
@@ -202,12 +203,20 @@ export default function XsdPanel({
   mappings,
   draggingNodeId,
   rerenderCanvas,
+  activeSet,
 }: XsdPanelProps) {
   const panelId = `${type}-panel-content`;
   const { toast } = useToast();
 
   const handleLoadDefault = async () => {
-    const fileName = type === 'source' ? 'default-source.xsd' : 'default-target.xsd';
+    const setNumber = activeSet.slice(-1);
+    let fileName = type === 'source' ? `default-source.xsd` : `default-target.xsd`;
+
+    // For sets 2 and 3, use the specific files. For set 1, use the original default.
+    if (setNumber === '2' || setNumber === '3') {
+        fileName = type === 'source' ? `default-source-set${setNumber}.xsd` : `default-target-set${setNumber}.xsd`;
+    }
+    
     try {
       const response = await fetch(`/${fileName}`);
       if (!response.ok) {

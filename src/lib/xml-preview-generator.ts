@@ -1,5 +1,5 @@
 
-import type { Mapping, MappingSets, XsdNode } from '@/types';
+import type { MappingSets, SchemasBySet, XsdNode } from '@/types';
 
 // Simple mock data for preview
 const mockSourceData: { [key: string]: string } = {
@@ -24,7 +24,9 @@ const getNodeById = (schema: XsdNode, id: string): XsdNode | null => {
     return null;
 }
 
-export const generateXmlPreview = (mappingSets: MappingSets, targetSchema: XsdNode | null): string => {
+export const generateXmlPreview = (mappingSets: MappingSets, targetSchemas: SchemasBySet): string => {
+  // For preview, we'll just use the target schema for set 1
+  const targetSchema = targetSchemas.set1;
   if (!targetSchema) return '<preview/>';
   
   const allMappings = [...mappingSets.set1, ...mappingSets.set2, ...mappingSets.set3];
@@ -95,7 +97,7 @@ export const generateXmlPreview = (mappingSets: MappingSets, targetSchema: XsdNo
   
   // The generator creates a flat structure, so we need to rebuild the hierarchy
   // This is a simplified reconstruction for preview purposes.
-  const buildHierarchy = (mappings: Mapping[], schema: XsdNode): any => {
+  const buildHierarchy = (mappings: any[], schema: XsdNode): any => {
       const output: any = {};
 
       const findPath = (targetId: string, currentNode: XsdNode, path: string[] = []): string[] | null => {

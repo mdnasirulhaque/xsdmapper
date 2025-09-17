@@ -1,5 +1,5 @@
 
-import type { Mapping, MappingSets, XsdNode } from '@/types';
+import type { Mapping, MappingSets, SchemasBySet, XsdNode } from '@/types';
 
 const findNodePath = (schema: XsdNode | null, nodeId: string): string => {
   if (!schema) return '';
@@ -29,7 +29,6 @@ const generateRecursiveTemplates = (
   targetNode: XsdNode,
   mappingsByTarget: { [key: string]: Mapping[] },
   sourceSchema: XsdNode,
-  targetSchema: XsdNode
 ) => {
   let template = '';
   const children = targetNode.children || [];
@@ -79,7 +78,7 @@ const generateRecursiveTemplates = (
     }
 
     if(hasMapping(child)){
-      template += generateRecursiveTemplates(child, mappingsByTarget, sourceSchema, targetSchema);
+      template += generateRecursiveTemplates(child, mappingsByTarget, sourceSchema);
     }
   });
 
@@ -90,16 +89,19 @@ const generateRecursiveTemplates = (
 
 export const generateXslt = (
   mappingSets: MappingSets,
-  sourceSchema: XsdNode | null,
-  targetSchema: XsdNode | null
+  sourceSchemas: SchemasBySet,
+  targetSchemas: SchemasBySet
 ): string => {
-  if (!sourceSchema || !targetSchema) {
-    return '<!-- Load schemas to generate XSLT -->';
+  const set1Source = sourceSchemas.set1;
+  const set1Target = targetSchemas.set1;
+
+  if (!set1Source || !set1Target) {
+    return '<!-- Load schemas for Set 1 to generate XSLT -->';
   }
 
   const allMappings = [...mappingSets.set1, ...mappingSets.set2, ...mappingSets.set3];
   
-  const rootSourcePath = sourceSchema.name;
+  const rootSourcePath = set1Source.name;
   
   const mappingsByTarget = allMappings.reduce((acc, mapping) => {
     if (!acc[mapping.targetId]) {
@@ -110,7 +112,7 @@ export const generateXslt = (
   }, {} as { [key: string]: Mapping[] });
 
 
-  const mappingTemplates = targetSchema.children?.map(childNode => {
+  const mappingTemplates = set1Target.children?.map(childNode => {
       const hasMapping = (node: XsdNode): boolean => {
        if (mappingsByTarget[node.id]) return true;
        if (node.children) {
@@ -119,7 +121,7 @@ export const generateXslt = (
        return false;
     }
     if(hasMapping(childNode)){
-        return generateRecursiveTemplates(childNode, mappingsByTarget, sourceSchema, targetSchema)
+        return generateRecursiveTemplates(childNode, mappingsByTarget, set1Source)
     }
     return '';
   }).join('');
@@ -130,7 +132,7 @@ export const generateXslt = (
   <xsl:output method="xml" indent="yes"/>
 
   <xsl:template match="/${rootSourcePath}">
-    <xsl:element name="${targetSchema.name}">
+    <xsl:element name="${set1Target.name}">
 ${mappingTemplates}
     </xsl:element>
   </xsl:template>

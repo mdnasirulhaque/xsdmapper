@@ -90,7 +90,7 @@ const CodePreview = ({ title, content, language, isLoading = false, onPreviewCli
                 <CardTitle className="text-lg">{title}</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col">
-                <div className="relative flex-1 p-4 text-xs rounded-md border bg-muted/50">
+                <div className="relative flex-1 p-4 text-xs rounded-md border bg-muted/50 overflow-auto">
                     {isLoading && (
                         <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
                             <Loader className="h-8 w-8 animate-spin text-primary" />
@@ -112,7 +112,7 @@ const CodePreview = ({ title, content, language, isLoading = false, onPreviewCli
 export default function PreviewStep() {
     const router = useRouter();
     const { toast } = useToast();
-    const { inputXml, responseXml, inputXsd, responseXsd, setState, sourceSchema, targetSchema } = useAppContext();
+    const { inputXml, responseXml, inputXsd, responseXsd, setState, sourceSchemas, targetSchemas } = useAppContext();
     const [isLoading, setIsLoading] = useState(false);
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
@@ -136,8 +136,8 @@ export default function PreviewStep() {
                 setState({
                     inputXsd: mockInputXsdString,
                     responseXsd: mockResponseXsdString,
-                    sourceSchema: parsedSourceSchema,
-                    targetSchema: parsedTargetSchema
+                    sourceSchemas: { ...sourceSchemas, set1: parsedSourceSchema },
+                    targetSchemas: { ...targetSchemas, set1: parsedTargetSchema },
                 });
                 
                 toast({
@@ -156,10 +156,10 @@ export default function PreviewStep() {
                 setIsLoading(false);
             }
         }, 1000);
-    }, [toast, setState]);
+    }, [toast, setState, sourceSchemas, targetSchemas]);
 
     const handleProceed = () => {
-        if (!sourceSchema || !targetSchema) {
+        if (!sourceSchemas.set1 || !targetSchemas.set1) {
              toast({
                 variant: 'destructive',
                 title: "XSDs not available",

@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
@@ -66,8 +66,8 @@ export default function UploadStep() {
     setState({
         inputXsd: null,
         responseXsd: null,
-        sourceSchema: null,
-        targetSchema: null,
+        sourceSchemas: { set1: null, set2: null, set3: null },
+        targetSchemas: { set1: null, set2: null, set3: null },
         swaggerFile: null,
         mappings: {
           set1: [],

@@ -1,4 +1,5 @@
 
+
 export interface XsdNode {
   id: string;
   name: string;
@@ -19,11 +20,13 @@ export type MappingSets = {
   [key in MappingSet]: Mapping[];
 };
 
+export type SchemasBySet = {
+  [key in MappingSet]: XsdNode | null;
+}
+
 export type TransformationType = 'NONE' | 'CONCAT' | 'UPPERCASE' | 'SPLIT' | 'MERGE' | 'CONDITION';
 
 export interface Transformation {
   type: TransformationType;
   params?: { [key: string]: any };
 }
-
-    

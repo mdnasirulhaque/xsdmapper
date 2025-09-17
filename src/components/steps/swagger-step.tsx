@@ -90,7 +90,7 @@ export default function SwaggerStep() {
     const router = useRouter();
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { swaggerFile, endpoint, method, setState } = useAppContext();
+    const { swaggerFile, endpoint, method, setState, targetSchemas } = useAppContext();
     
     const [fileName, setFileName] = useState<string | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -116,7 +116,7 @@ export default function SwaggerStep() {
             reader.onload = (e) => {
                 try {
                     const content = e.target?.result as string;
-                    setState({ swaggerFile: content, endpoint: null, method: null, targetSchema: null });
+                    setState({ swaggerFile: content, endpoint: null, method: null, targetSchemas: { ...targetSchemas, set1: null } });
                     toast({
                         variant: "success",
                         title: "Upload Successful",
@@ -124,7 +124,7 @@ export default function SwaggerStep() {
                     })
                 } catch (error) {
                     console.error("Error processing YAML/JSON file:", error);
-                    setState({ swaggerFile: null, targetSchema: null, endpoint: null, method: null });
+                    setState({ swaggerFile: null, targetSchemas: { ...targetSchemas, set1: null }, endpoint: null, method: null });
                     setFileName(null);
                     toast({
                         variant: "destructive",
@@ -148,14 +148,14 @@ export default function SwaggerStep() {
             // Auto-select the first method found for the endpoint, but don't filter the dropdown.
             const newMethod = endpointInfo && endpointInfo.methods.length > 0 ? endpointInfo.methods[0] : null;
 
-            setState({ endpoint: value, targetSchema: schema, method: newMethod });
+            setState({ endpoint: value, targetSchemas: { ...targetSchemas, set1: schema }, method: newMethod });
         }
     }
 
     const handleCustomEndpointChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const schema = generateSchemaFromEndpoint(value);
-        setState({ endpoint: value, targetSchema: schema });
+        setState({ endpoint: value, targetSchemas: { ...targetSchemas, set1: schema } });
     }
 
     const handleMethodChange = (value: string) => {
