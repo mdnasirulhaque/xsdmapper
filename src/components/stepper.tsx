@@ -31,41 +31,39 @@ export default function Stepper({ currentStep }: StepperProps) {
             const isLastStep = stepIdx === steps.length - 1;
 
             return (
-                <li key={step.name} className="relative flex-1">
-                    <div className="flex items-center">
-                        <NextLink 
-                            href={step.href} 
-                            className={cn(
-                                "relative flex flex-col items-center justify-center gap-2 transition-colors w-24",
-                                !isCompleted && !isCurrent && "cursor-not-allowed opacity-50"
-                            )}
-                            onClick={(e) => {
-                                if(!isCompleted && !isCurrent) e.preventDefault();
-                            }}
-                        >
-                            <div className={cn(
-                                "flex h-10 w-10 items-center justify-center rounded-full border-2 z-10 transition-colors",
-                                isCompleted ? "bg-primary border-primary text-primary-foreground" 
-                                : isCurrent ? "bg-background border-primary text-primary" 
-                                : "bg-background border-border text-muted-foreground"
-                            )}>
-                                {isCompleted ? <Check className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
-                            </div>
-                            <p className={cn(
-                                "text-xs font-medium text-center transition-colors",
-                                isCurrent ? "text-primary" : isCompleted ? "text-foreground" : "text-muted-foreground"
-                            )}>{step.name}</p>
-                        </NextLink>
-
+                <li key={step.name} className="relative flex-1 flex justify-center">
+                    <NextLink 
+                        href={step.href} 
+                        className={cn(
+                            "relative flex flex-col items-center justify-center gap-2 transition-colors w-24",
+                            !isCompleted && !isCurrent && "cursor-not-allowed opacity-50"
+                        )}
+                        onClick={(e) => {
+                            if(!isCompleted && !isCurrent) e.preventDefault();
+                        }}
+                    >
+                        <div className={cn(
+                            "flex h-10 w-10 items-center justify-center rounded-full border-2 z-10 transition-colors",
+                            isCompleted ? "bg-primary border-primary text-primary-foreground" 
+                            : isCurrent ? "bg-background border-primary text-primary" 
+                            : "bg-background border-border text-muted-foreground"
+                        )}>
+                            {isCompleted ? <Check className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
+                        </div>
+                        <p className={cn(
+                            "text-xs font-medium text-center transition-colors",
+                            isCurrent ? "text-primary" : isCompleted ? "text-foreground" : "text-muted-foreground"
+                        )}>{step.name}</p>
+                    
                         {!isLastStep && (
-                            <div className="absolute top-5 left-1/2 -translate-y-1/2 w-full -z-0">
+                            <div className="absolute top-5 left-1/2 w-full h-0.5 -z-10">
                                 <div className={cn(
-                                    "h-0.5 w-full transition-colors",
+                                    "h-full w-full",
                                     isCompleted ? "bg-primary" : "bg-border"
                                 )} />
                             </div>
                         )}
-                    </div>
+                    </NextLink>
                 </li>
             )
         })}
