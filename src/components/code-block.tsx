@@ -2,7 +2,7 @@
 "use client"
 
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { atomDark as theme } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneDark as theme } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface CodeBlockProps {
   code: string;
@@ -19,7 +19,7 @@ export default function CodeBlock({ code, language }: CodeBlockProps) {
         padding: '1rem',
         backgroundColor: 'transparent',
         fontSize: '0.875rem',
-        borderRadius: '0.5rem',
+        height: '100%'
       }}
       codeTagProps={{
         style: {
@@ -31,3 +31,5 @@ export default function CodeBlock({ code, language }: CodeBlockProps) {
     </SyntaxHighlighter>
   );
 }
+
+    
