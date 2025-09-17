@@ -117,15 +117,6 @@ export default function PreviewStep() {
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
     const handleGenerateXsds = useCallback(async () => {
-        if (!inputXml || !responseXml) {
-            toast({
-                variant: 'destructive',
-                title: "Missing XML",
-                description: "Please go back and upload both XML files.",
-            });
-            return;
-        }
-
         setIsLoading(true);
         toast({
             title: "Loading Schemas",
@@ -165,7 +156,7 @@ export default function PreviewStep() {
                 setIsLoading(false);
             }
         }, 1000);
-    }, [inputXml, responseXml, toast, setState]);
+    }, [toast, setState]);
 
     const handleProceed = () => {
         if (!sourceSchema || !targetSchema) {
@@ -192,7 +183,7 @@ export default function PreviewStep() {
                 <CardHeader>
                     <CardTitle>Preview XSDs</CardTitle>
                     <CardDescription>
-                        Click the button below to load mock XSD schemas based on your uploaded XML files.
+                        Click the button below to load mock XSD schemas.
                         Review the schemas before proceeding to the next step.
                     </CardDescription>
                 </CardHeader>
