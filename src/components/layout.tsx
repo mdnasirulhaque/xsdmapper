@@ -43,7 +43,7 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
   const { resetState } = useAppContext();
 
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen={false}>
         <div className="flex min-h-screen w-full bg-muted/40">
         <Sidebar variant="sidebar" collapsible="icon">
             <SidebarHeader>
