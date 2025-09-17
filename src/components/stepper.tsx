@@ -23,7 +23,7 @@ interface StepperProps {
 export default function Stepper({ currentStep }: StepperProps) {
   return (
     <nav aria-label="Progress">
-      <ol role="list" className="flex items-center">
+      <ol role="list" className="flex items-start">
         {steps.map((step, stepIdx) => {
             const stepNumber = stepIdx + 1;
             const isCompleted = currentStep > stepNumber;
@@ -35,7 +35,7 @@ export default function Stepper({ currentStep }: StepperProps) {
                     <NextLink 
                         href={step.href} 
                         className={cn(
-                            "relative flex flex-col items-center justify-center gap-2 transition-colors w-24 mx-auto",
+                            "relative flex flex-col items-center justify-start gap-2 transition-colors w-28 mx-auto",
                             !isCompleted && !isCurrent && "cursor-not-allowed opacity-50"
                         )}
                         onClick={(e) => {
@@ -51,7 +51,7 @@ export default function Stepper({ currentStep }: StepperProps) {
                             {isCompleted ? <Check className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
                         </div>
                         <p className={cn(
-                            "text-xs font-medium text-center transition-colors",
+                            "text-xs font-medium text-center transition-colors h-8",
                             isCurrent ? "text-primary" : isCompleted ? "text-foreground" : "text-muted-foreground"
                         )}>{step.name}</p>
                     </NextLink>
