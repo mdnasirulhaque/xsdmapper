@@ -28,9 +28,10 @@ export default function Stepper({ currentStep }: StepperProps) {
             const stepNumber = stepIdx + 1;
             const isCompleted = currentStep > stepNumber;
             const isCurrent = currentStep === stepNumber;
+            const isNext = currentStep + 1 === stepNumber;
 
             return (
-                <li key={step.name} className="relative flex-1">
+                <li key={step.name} className="relative flex items-center flex-1">
                     <NextLink 
                         href={step.href} 
                         className={cn(
@@ -54,6 +55,16 @@ export default function Stepper({ currentStep }: StepperProps) {
                             isCurrent ? "text-primary" : isCompleted ? "text-foreground" : "text-muted-foreground"
                         )}>{step.name}</p>
                     </NextLink>
+
+                     {stepIdx < steps.length - 1 && (
+                      <div className="absolute top-5 left-1/2 w-full -translate-y-1/2">
+                          <div className="flex items-center justify-center w-full">
+                               {isCurrent && (
+                                   <ChevronRight className="h-6 w-6 text-primary animate-pulse" />
+                               )}
+                          </div>
+                      </div>
+                    )}
                 </li>
             )
         })}
