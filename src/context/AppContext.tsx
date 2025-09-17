@@ -133,7 +133,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Do not render children until the state has been initialized from localStorage
   if (!isInitialized) {
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background/20 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background">
             <div className="flex flex-col items-center gap-4">
                 <Loader className="h-16 w-16 animate-spin text-primary" />
                 <p className="text-muted-foreground">Initializing...</p>
@@ -151,7 +151,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="fixed inset-0 z-[200] flex items-center justify-center bg-background/20 backdrop-blur-sm"
+                className="fixed inset-0 z-[200] flex items-center justify-center bg-background"
             >
                 <div className="flex flex-col items-center gap-4">
                     <Loader className="h-16 w-16 animate-spin text-primary" />
