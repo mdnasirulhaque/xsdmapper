@@ -62,30 +62,6 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
                             <span className="group-data-[collapsible=icon]:hidden">Create New Request</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
-                     <SidebarMenuItem>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <button className="peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sidebar-foreground outline-none ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent/20 hover:text-sidebar-primary focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-data-[collapsible=icon]:h-10 group-data-[collapsible=icon]:w-10 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:rounded-full h-8 text-sm">
-                                    <RotateCcw className="size-5" />
-                                    <span className="group-data-[collapsible=icon]:hidden">Reset State</span>
-                                </button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Reset Application State?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This will clear all uploaded files, mappings, and reset the entire application to its initial state. This action cannot be undone.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={resetState}>
-                                        Confirm Reset
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarContent>
             <SidebarFooter className="p-2 flex flex-col items-center gap-2">
