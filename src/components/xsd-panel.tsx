@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import FileUploadButton from "@/components/file-upload-button"
 import type { XsdNode, Mapping, MappingSet } from "@/types"
-import { Folder, File } from "lucide-react"
+import { Folder, File, Loader } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "./ui/button"
 import { useToast } from "@/hooks/use-toast"
@@ -207,6 +207,7 @@ export default function XsdPanel({
 }: XsdPanelProps) {
   const panelId = `${type}-panel-content`;
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLoadDefault = async () => {
     const setNumber = activeSet.slice(-1);
@@ -217,6 +218,7 @@ export default function XsdPanel({
         fileName = type === 'source' ? `default-source-set${setNumber}.xsd` : `default-target-set${setNumber}.xsd`;
     }
     
+    setIsLoading(true);
     try {
       const response = await fetch(`/${fileName}`);
       if (!response.ok) {
@@ -235,6 +237,8 @@ export default function XsdPanel({
         title: "Loading Error",
         description: e.message || `Could not load ${fileName}.`,
       });
+    } finally {
+        setIsLoading(false);
     }
   }
   
@@ -243,13 +247,19 @@ export default function XsdPanel({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{title}</CardTitle>
         <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={handleLoadDefault}>
+            <Button variant="ghost" size="sm" onClick={handleLoadDefault} disabled={isLoading}>
+              {isLoading ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : null}
               Load Default
             </Button>
             <FileUploadButton onFileLoad={onFileLoad} type={type} />
         </div>
       </CardHeader>
-      <CardContent id={panelId} className="flex-1 py-6">
+      <CardContent id={panelId} className="flex-1 py-6 relative">
+        {isLoading && (
+            <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
+                <Loader className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        )}
         {schema ? (
           renderSchemaTree(
             schema, 
