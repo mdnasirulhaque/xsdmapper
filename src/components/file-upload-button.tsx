@@ -43,10 +43,6 @@ export default function FileUploadButton({ onFileLoad, type }: FileUploadButtonP
       };
       reader.readAsText(file);
     }
-     // Reset the input value to allow uploading the same file again
-     if(inputRef.current) {
-      inputRef.current.value = "";
-    }
   }
 
   const handleClick = () => {

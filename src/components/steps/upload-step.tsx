@@ -39,8 +39,6 @@ export default function UploadStep() {
       });
     };
     reader.readAsText(file);
-
-    if (event.target) event.target.value = '';
   };
 
   const handleUploadInputClick = () => {
@@ -61,12 +59,28 @@ export default function UploadStep() {
       return;
     }
     
+    // We only reset the parts of the state that come *after* this step.
     setState({
         inputXsd: null,
         responseXsd: null,
         swaggerFile: null,
         endpoint: null,
         method: null,
+        mappings: {
+          set1: [],
+          set2: [],
+          set3: [],
+        },
+        sourceSchemas: {
+          set1: null,
+          set2: null,
+          set3: null,
+        },
+        targetSchemas: {
+          set1: null,
+          set2: null,
+          set3: null,
+        }
     });
 
     router.push('/new/preview-xsd');
