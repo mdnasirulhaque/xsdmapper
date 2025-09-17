@@ -1,8 +1,10 @@
 
+
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { XsdNode, Mapping, MappingSets } from '@/types';
+import { Loader } from 'lucide-react';
 
 interface AppState {
   inputXml: string | null;
@@ -93,7 +95,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Do not render children until the state has been initialized from localStorage
   if (!isInitialized) {
-    return null;
+    return (
+        <div className="flex h-screen w-full items-center justify-center bg-background">
+          <div className="flex flex-col items-center gap-4">
+            <Loader className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-muted-foreground">Initializing...</p>
+          </div>
+        </div>
+      );
   }
 
   return (
