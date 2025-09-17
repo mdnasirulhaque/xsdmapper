@@ -1,10 +1,10 @@
 
-
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { XsdNode, MappingSets, SchemasBySet } from '@/types';
 import { Loader } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface AppState {
   inputXml: string | null;
@@ -54,6 +54,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, setStateValue] = useState<AppState>(initialState);
   const [isInitialized, setIsInitialized] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     // Load state from localStorage only on the client side.
@@ -93,6 +94,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setStateValue(initialState);
     // Also clear it from localStorage
     localStorage.removeItem('appState');
+    router.push('/new/upload');
   };
   
   const contextValue = {

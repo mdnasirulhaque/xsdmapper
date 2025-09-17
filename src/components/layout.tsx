@@ -2,7 +2,7 @@
 "use client"
 
 import Header from "@/components/header"
-import { CodeXml, FilePlus } from "lucide-react"
+import { CodeXml, FilePlus, RotateCcw } from "lucide-react"
 import { 
     Sidebar, 
     SidebarProvider, 
@@ -17,6 +17,19 @@ import {
 import { usePathname } from 'next/navigation'
 import Stepper from "./stepper"
 import { ThemeToggle } from "./theme-toggle"
+import { useAppContext } from "@/context/AppContext"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from "./ui/button"
 
 
 interface AppLayoutProps {
@@ -27,6 +40,7 @@ interface AppLayoutProps {
 export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps) {
   const pathname = usePathname();
   const isCreationFlow = pathname.startsWith('/new');
+  const { resetState } = useAppContext();
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -47,6 +61,30 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
                             <FilePlus className="size-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Create New Request</span>
                         </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <button className="peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sidebar-foreground outline-none ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent/20 hover:text-sidebar-primary focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-data-[collapsible=icon]:h-10 group-data-[collapsible=icon]:w-10 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:rounded-full h-8 text-sm">
+                                    <RotateCcw className="size-5" />
+                                    <span className="group-data-[collapsible=icon]:hidden">Reset State</span>
+                                </button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Reset Application State?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This will clear all uploaded files, mappings, and reset the entire application to its initial state. This action cannot be undone.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={resetState}>
+                                        Confirm Reset
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarContent>

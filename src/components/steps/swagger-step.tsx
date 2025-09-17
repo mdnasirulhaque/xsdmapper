@@ -71,7 +71,7 @@ const generateSchemaFromEndpoint = (endpoint: string): XsdNode => {
      // This is a very simplified parser for demonstration.
     return {
         id: 'target-swagger-root',
-        name: 'Swagger API',
+        name: 'SwaggerApi',
         type: 'complexType',
         children: [
             { id: `target-swagger-${endpoint}`, name: endpoint, type: 'complexType', children: [
@@ -90,7 +90,7 @@ export default function SwaggerStep() {
     const router = useRouter();
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { swaggerFile, endpoint, method, setState, targetSchemas } = useAppContext();
+    const { swaggerFile, endpoint, method, setState, targetSchemas, mappings } = useAppContext();
     
     const [fileName, setFileName] = useState<string | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -116,7 +116,14 @@ export default function SwaggerStep() {
             reader.onload = (e) => {
                 try {
                     const content = e.target?.result as string;
-                    setState({ swaggerFile: content, endpoint: null, method: null, targetSchemas: { ...targetSchemas, set1: null } });
+                    // When a new swagger file is uploaded, reset relevant subsequent state
+                    setState({ 
+                        swaggerFile: content, 
+                        endpoint: null, 
+                        method: null, 
+                        targetSchemas: { ...targetSchemas, set2: null, set3: null },
+                        mappings: { ...mappings, set2: [], set3: [] }
+                    });
                     toast({
                         variant: "success",
                         title: "Upload Successful",
@@ -124,7 +131,7 @@ export default function SwaggerStep() {
                     })
                 } catch (error) {
                     console.error("Error processing YAML/JSON file:", error);
-                    setState({ swaggerFile: null, targetSchemas: { ...targetSchemas, set1: null }, endpoint: null, method: null });
+                    setState({ swaggerFile: null, endpoint: null, method: null });
                     setFileName(null);
                     toast({
                         variant: "destructive",
@@ -148,14 +155,24 @@ export default function SwaggerStep() {
             // Auto-select the first method found for the endpoint, but don't filter the dropdown.
             const newMethod = endpointInfo && endpointInfo.methods.length > 0 ? endpointInfo.methods[0] : null;
 
-            setState({ endpoint: value, targetSchemas: { ...targetSchemas, set1: schema }, method: newMethod });
+            // When the endpoint changes, clear the mappings for the affected sets
+            setState({ 
+                endpoint: value, 
+                targetSchemas: { ...targetSchemas, set2: schema, set3: schema }, 
+                method: newMethod,
+                mappings: { ...mappings, set2: [], set3: [] }
+            });
         }
     }
 
     const handleCustomEndpointChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const schema = generateSchemaFromEndpoint(value);
-        setState({ endpoint: value, targetSchemas: { ...targetSchemas, set1: schema } });
+        setState({ 
+            endpoint: value, 
+            targetSchemas: { ...targetSchemas, set2: schema, set3: schema },
+            mappings: { ...mappings, set2: [], set3: [] }
+        });
     }
 
     const handleMethodChange = (value: string) => {
@@ -273,5 +290,3 @@ export default function SwaggerStep() {
         </div>
     );
 }
-
-    

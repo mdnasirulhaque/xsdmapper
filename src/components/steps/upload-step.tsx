@@ -27,10 +27,22 @@ export default function UploadStep() {
     const reader = new FileReader();
     reader.onload = (e) => {
       const content = e.target?.result as string;
+       // When a new file is uploaded, clear all subsequent state.
+      const resetState = {
+        inputXsd: null,
+        responseXsd: null,
+        swaggerFile: null,
+        endpoint: null,
+        method: null,
+        mappings: { set1: [], set2: [], set3: [] },
+        sourceSchemas: { set1: null, set2: null, set3: null },
+        targetSchemas: { set1: null, set2: null, set3: null },
+      };
+
       if (fileType === 'input') {
-        setState({ inputXml: content });
+        setState({ ...resetState, inputXml: content });
       } else {
-        setState({ responseXml: content });
+        setState({ ...resetState, responseXml: content });
       }
       toast({
         variant: "success",
@@ -58,31 +70,6 @@ export default function UploadStep() {
       });
       return;
     }
-    
-    // We only reset the parts of the state that come *after* this step.
-    setState({
-        inputXsd: null,
-        responseXsd: null,
-        swaggerFile: null,
-        endpoint: null,
-        method: null,
-        mappings: {
-          set1: [],
-          set2: [],
-          set3: [],
-        },
-        sourceSchemas: {
-          set1: null,
-          set2: null,
-          set3: null,
-        },
-        targetSchemas: {
-          set1: null,
-          set2: null,
-          set3: null,
-        }
-    });
-
     router.push('/new/preview-xsd');
   }
 
