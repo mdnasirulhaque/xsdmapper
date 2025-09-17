@@ -1,3 +1,4 @@
+
 "use client"
 
 import { usePathname } from 'next/navigation'
@@ -22,10 +23,10 @@ export default function Header() {
   const isCreationFlow = pathname.startsWith('/new');
 
   return (
-    <header className="flex items-center justify-between h-16 px-6 bg-header text-header-foreground rounded-lg shadow-sm">
+    <header className="flex items-center justify-between h-16 px-6 bg-sidebar text-sidebar-foreground rounded-lg shadow-sm">
         <div className="flex items-center gap-3">
             <CodeXml className="h-8 w-8 text-primary" />
-            <h1 className="text-xl font-bold tracking-tight">
+            <h1 className="text-xl font-bold tracking-tight text-sidebar-primary">
             XSD Mapper
             </h1>
         </div>
@@ -33,7 +34,7 @@ export default function Header() {
             {isCreationFlow && (
                  <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm">
+                        <Button variant="destructive" size="sm">
                             <RotateCcw className="mr-2 h-4 w-4" />
                             Reset
                         </Button>
@@ -55,7 +56,7 @@ export default function Header() {
                 </AlertDialog>
             )}
             {soeid && (
-              <div className="bg-muted text-muted-foreground px-4 py-1.5 rounded-lg shadow-inner">
+              <div className="bg-card text-card-foreground px-4 py-1.5 rounded-lg shadow-inner">
                 <span className="text-sm font-semibold">{soeid}</span>
               </div>
             )}
