@@ -28,6 +28,7 @@ export default function CreateRequestStep() {
         sourceSchemas,
         targetSchemas,
         mappings,
+        setIsLoading,
     } = useAppContext();
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
@@ -70,6 +71,7 @@ export default function CreateRequestStep() {
     )
     
     const handleFinish = () => {
+        setIsLoading(true);
         // Placeholder data for demonstration
         const query = new URLSearchParams({
             orderId: 'ORD123456',
@@ -79,6 +81,11 @@ export default function CreateRequestStep() {
         }).toString();
 
         router.push(`/new/finish?${query}`);
+    }
+
+    const handleBack = () => {
+        setIsLoading(true);
+        router.push('/new/preview-xslt');
     }
 
     return (
@@ -134,7 +141,7 @@ export default function CreateRequestStep() {
                 </CardContent>
             </Card>
             <div className="flex items-center justify-between bg-card rounded-lg p-3 border">
-                <Button variant="outline" onClick={() => router.push('/new/preview-xslt')}>
+                <Button variant="outline" onClick={handleBack}>
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back to XSLT Preview
                 </Button>
                 <Button onClick={handleFinish}>

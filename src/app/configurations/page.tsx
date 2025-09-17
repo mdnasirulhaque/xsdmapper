@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { FileCog, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useAppContext } from '@/context/AppContext';
 
 const mockConfigurations = [
   { id: 'conf_1', name: 'Standard Order to Invoice', description: 'Maps customer orders to the standard sales invoice format.' },
@@ -21,6 +22,7 @@ const mockConfigurations = [
 ];
 
 export default function ConfigurationsPage() {
+  const { setIsLoading } = useAppContext();
   return (
     <AppLayout>
       <div className="flex-1 flex flex-col gap-6">
@@ -31,7 +33,7 @@ export default function ConfigurationsPage() {
                     Manage and reuse your saved XSLT mapping configurations.
                 </p>
             </div>
-            <Button size="lg" asChild>
+            <Button size="lg" asChild onClick={() => setIsLoading(true)}>
                 <Link href="/new/upload">
                     <PlusCircle className="mr-2 h-5 w-5" />
                     New Configuration

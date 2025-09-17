@@ -58,7 +58,7 @@ const CodePreview = ({ title, content, language, isLoading = false, onPreviewCli
 
 export default function PreviewSwaggerStep() {
     const router = useRouter();
-    const { swaggerFile, endpoint, method } = useAppContext();
+    const { swaggerFile, endpoint, method, setIsLoading } = useAppContext();
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'json' | 'yaml' } | null>(null);
 
     // A placeholder for the generated XSD from swagger for demonstration
@@ -91,6 +91,16 @@ export default function PreviewSwaggerStep() {
             setPreviewing({ content, title, language });
         }
     };
+
+    const handleProceed = () => {
+        setIsLoading(true);
+        router.push('/new/mapper');
+    }
+
+    const handleBack = () => {
+        setIsLoading(true);
+        router.push('/new/swagger');
+    }
 
 
     return (
@@ -133,10 +143,10 @@ export default function PreviewSwaggerStep() {
                     </div>
 
                     <div className="flex items-center justify-between border-t pt-6">
-                         <Button variant="outline" onClick={() => router.push('/new/swagger')}>
+                         <Button variant="outline" onClick={handleBack}>
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back to API Config
                         </Button>
-                        <Button onClick={() => router.push('/new/mapper')} disabled={!swaggerFile}>
+                        <Button onClick={handleProceed} disabled={!swaggerFile}>
                             Next: Start Mapping <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
@@ -156,5 +166,3 @@ export default function PreviewSwaggerStep() {
         </div>
     );
 }
-
-    

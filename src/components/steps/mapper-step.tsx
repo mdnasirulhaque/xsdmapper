@@ -36,7 +36,8 @@ export default function MapperStep() {
     sourceSchemas, 
     targetSchemas, 
     mappings, 
-    setState, 
+    setState,
+    setIsLoading,
   } = useAppContext();
   const { toast } = useToast();
   
@@ -228,6 +229,16 @@ export default function MapperStep() {
     });
   }
 
+  const handleProceed = () => {
+    setIsLoading(true);
+    router.push('/new/preview-xslt');
+  }
+  
+  const handleBack = () => {
+    setIsLoading(true);
+    router.push('/new/preview-swagger-xsd');
+  }
+
   const areRequiredSetsMapped = mappings.set1.length > 0 && mappings.set2.length > 0;
   
   const sets: MappingSet[] = ['set1', 'set2', 'set3'];
@@ -314,7 +325,7 @@ export default function MapperStep() {
 
 
         <div className="flex items-center justify-between bg-card rounded-lg p-3 border">
-            <Button variant="outline" onClick={() => router.push('/new/preview-swagger-xsd')}>
+            <Button variant="outline" onClick={handleBack}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Swagger Preview
             </Button>
             <AlertDialog>
@@ -332,7 +343,7 @@ export default function MapperStep() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => router.push('/new/preview-xslt')}>
+                  <AlertDialogAction onClick={handleProceed}>
                     Confirm
                   </AlertDialogAction>
                 </AlertDialogFooter>

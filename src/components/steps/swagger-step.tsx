@@ -90,7 +90,7 @@ export default function SwaggerStep() {
     const router = useRouter();
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { swaggerFile, endpoint, method, setState, targetSchemas, mappings } = useAppContext();
+    const { swaggerFile, endpoint, method, setState, targetSchemas, mappings, setIsLoading } = useAppContext();
     
     const [fileName, setFileName] = useState<string | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -192,7 +192,13 @@ export default function SwaggerStep() {
             });
             return;
         }
+        setIsLoading(true);
         router.push(`/new/preview-swagger-xsd`);
+    }
+
+    const handleBack = () => {
+        setIsLoading(true);
+        router.push('/new/preview-xsd');
     }
 
     const fileExtension = fileName?.split('.').pop()?.toLowerCase();
@@ -269,7 +275,7 @@ export default function SwaggerStep() {
 
 
                     <div className="flex items-center justify-between border-t pt-6">
-                        <Button variant="outline" onClick={() => router.push('/new/preview-xsd')}>
+                        <Button variant="outline" onClick={handleBack}>
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back to XSD Preview
                         </Button>
                         <Button onClick={handleProceed} disabled={isNextDisabled}>

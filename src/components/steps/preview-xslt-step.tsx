@@ -36,7 +36,7 @@ const sets: MappingSet[] = ['set1', 'set2', 'set3'];
 export default function PreviewXsltStep() {
   const router = useRouter();
   const { toast } = useToast();
-  const { mappings, sourceSchemas, targetSchemas } = useAppContext();
+  const { mappings, sourceSchemas, targetSchemas, setIsLoading } = useAppContext();
 
   const generatedXslt = useMemo(() => {
     return {
@@ -81,6 +81,16 @@ export default function PreviewXsltStep() {
         description: `Your ${setName} XSLT is downloading.`,
     });
   };
+
+  const handleProceed = () => {
+    setIsLoading(true);
+    router.push('/new/create-request');
+  }
+
+  const handleBack = () => {
+    setIsLoading(true);
+    router.push('/new/mapper');
+  }
 
   return (
     <div className="flex-1 flex flex-col gap-4">
@@ -155,10 +165,10 @@ export default function PreviewXsltStep() {
         </CardContent>
       </Card>
       <div className="flex items-center justify-between bg-card rounded-lg p-3 border">
-        <Button variant="outline" onClick={() => router.push('/new/mapper')}>
+        <Button variant="outline" onClick={handleBack}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Mapper
         </Button>
-        <Button onClick={() => router.push('/new/create-request')}>
+        <Button onClick={handleProceed}>
             Next: Final Review <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>

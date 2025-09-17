@@ -4,6 +4,7 @@
 import { cn } from "@/lib/utils"
 import { FileUp, Eye, FileJson, Link as LinkIcon, CheckCircle2, ChevronRight, Send, Check } from "lucide-react"
 import NextLink from 'next/link';
+import { useAppContext } from "@/context/AppContext";
 
 
 const steps = [
@@ -21,6 +22,7 @@ interface StepperProps {
 }
 
 export default function Stepper({ currentStep }: StepperProps) {
+  const { setIsLoading } = useAppContext();
   return (
     <nav aria-label="Progress">
       <ol role="list" className="flex items-start">
@@ -39,7 +41,11 @@ export default function Stepper({ currentStep }: StepperProps) {
                             !isCompleted && !isCurrent && "cursor-not-allowed opacity-50"
                         )}
                         onClick={(e) => {
-                            if(!isCompleted && !isCurrent) e.preventDefault();
+                            if(!isCompleted && !isCurrent) {
+                                e.preventDefault();
+                                return;
+                            }
+                            setIsLoading(true);
                         }}
                     >
                         <div className={cn(

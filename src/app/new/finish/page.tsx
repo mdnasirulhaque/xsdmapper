@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { PartyPopper, FilePlus } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useAppContext } from '@/context/AppContext';
 
 const DetailRow = ({ label, value }: { label: string, value: string | null }) => (
     <div className="flex justify-between items-center w-full text-sm">
@@ -17,6 +18,7 @@ const DetailRow = ({ label, value }: { label: string, value: string | null }) =>
 
 export default function FinishPage() {
   const searchParams = useSearchParams();
+  const { setIsLoading } = useAppContext();
 
   const orderId = searchParams.get('orderId');
   const csiId = searchParams.get('csiId');
@@ -46,7 +48,7 @@ export default function FinishPage() {
                     <p>
                         You can now use the downloaded XSLT files in your integration workflow. If you need to make changes, you can always start a new request.
                     </p>
-                    <Button asChild size="lg">
+                    <Button asChild size="lg" onClick={() => setIsLoading(true)}>
                         <Link href="/new/upload">
                             <FilePlus className="mr-2 h-5 w-5" /> Start New Mapping
                         </Link>

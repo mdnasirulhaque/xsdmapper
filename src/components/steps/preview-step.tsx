@@ -114,12 +114,12 @@ const CodePreview = ({ title, content, language, isLoading = false, onPreviewCli
 export default function PreviewStep() {
     const router = useRouter();
     const { toast } = useToast();
-    const { inputXml, responseXml, inputXsd, responseXsd, setState, sourceSchemas, targetSchemas } = useAppContext();
-    const [isLoading, setIsLoading] = useState(false);
+    const { inputXml, responseXml, inputXsd, responseXsd, setState, sourceSchemas, targetSchemas, setIsLoading } = useAppContext();
+    const [isGenerating, setIsGenerating] = useState(false);
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
     const handleGenerateXsds = useCallback(async () => {
-        setIsLoading(true);
+        setIsGenerating(true);
         toast({
             title: "Loading Schemas",
             description: "Loading mock schemas for demonstration...",
@@ -155,7 +155,7 @@ export default function PreviewStep() {
                     description: e.message || "An unknown error occurred.",
                 });
             } finally {
-                setIsLoading(false);
+                setIsGenerating(false);
             }
         }, 1000);
     }, [toast, setState, sourceSchemas, targetSchemas]);
@@ -169,6 +169,7 @@ export default function PreviewStep() {
             });
             return;
         }
+        setIsLoading(true);
         router.push(`/new/swagger`);
     };
     
@@ -178,6 +179,10 @@ export default function PreviewStep() {
         }
     };
 
+    const handleBack = () => {
+        setIsLoading(true);
+        router.push('/new/upload');
+    }
 
     return (
         <div className="flex-1 flex items-center justify-center">
@@ -190,9 +195,9 @@ export default function PreviewStep() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-6">
-                     <Button onClick={handleGenerateXsds} size="lg" disabled={isLoading || (!!inputXsd && !!responseXsd)}>
-                        {isLoading ? <Loader className="mr-2 h-5 w-5 animate-spin" /> : <Wand2 className="mr-2 h-5 w-5" />}
-                        {isLoading ? 'Loading...' : (!!inputXsd && !!responseXsd ? 'Loaded' : 'Load Mock XSDs')}
+                     <Button onClick={handleGenerateXsds} size="lg" disabled={isGenerating || (!!inputXsd && !!responseXsd)}>
+                        {isGenerating ? <Loader className="mr-2 h-5 w-5 animate-spin" /> : <Wand2 className="mr-2 h-5 w-5" />}
+                        {isGenerating ? 'Loading...' : (!!inputXsd && !!responseXsd ? 'Loaded' : 'Load Mock XSDs')}
                     </Button>
                     <div className="flex flex-col lg:flex-row gap-6">
                        <CodePreview 
@@ -205,7 +210,7 @@ export default function PreviewStep() {
                             title="Generated Input XSD" 
                             content={inputXsd} 
                             language="xml" 
-                            isLoading={isLoading && !inputXsd}
+                            isLoading={isGenerating && !inputXsd}
                             onPreviewClick={() => openPreview(inputXsd, 'Generated Input XSD Preview', 'xml')}
                         />
                     </div>
@@ -220,12 +225,12 @@ export default function PreviewStep() {
                             title="Generated Response XSD" 
                             content={responseXsd} 
                             language="xml" 
-                            isLoading={isLoading && !responseXsd} 
+                            isLoading={isGenerating && !responseXsd} 
                             onPreviewClick={() => openPreview(responseXsd, 'Generated Response XSD Preview', 'xml')}
                         />
                     </div>
                      <div className="flex items-center justify-between border-t pt-6">
-                        <Button variant="outline" onClick={() => router.push('/new/upload')}>
+                        <Button variant="outline" onClick={handleBack}>
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Upload
                         </Button>
                         <Button onClick={handleProceed} disabled={!inputXsd || !responseXsd}>
