@@ -104,13 +104,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Do not render children until the state has been initialized from localStorage
   if (!isInitialized) {
     return (
-        <div className="flex h-screen w-full items-center justify-center bg-background">
-          <div className="flex flex-col items-center gap-4">
-            <Loader className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground">Initializing...</p>
-          </div>
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-4">
+                <Loader className="h-16 w-16 animate-spin text-primary" />
+                <p className="text-muted-foreground">Initializing...</p>
+            </div>
         </div>
-      );
+    );
   }
 
   return (
