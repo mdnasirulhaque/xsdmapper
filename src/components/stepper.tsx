@@ -31,11 +31,19 @@ export default function Stepper({ currentStep }: StepperProps) {
             const isLastStep = stepIdx === steps.length - 1;
 
             return (
-                <li key={step.name} className="relative flex-1 flex justify-center">
+                <li key={step.name} className="relative flex-1">
+                    {!isLastStep && (
+                        <div className="absolute top-5 left-1/2 w-[calc(100%-2.5rem)] -translate-x-1/2 h-0.5" aria-hidden="true">
+                            <div className={cn(
+                                "h-full w-full",
+                                isCompleted ? "bg-primary" : "bg-border"
+                            )} />
+                        </div>
+                    )}
                     <NextLink 
                         href={step.href} 
                         className={cn(
-                            "relative flex flex-col items-center justify-center gap-2 transition-colors w-24",
+                            "relative flex flex-col items-center justify-center gap-2 transition-colors w-24 mx-auto",
                             !isCompleted && !isCurrent && "cursor-not-allowed opacity-50"
                         )}
                         onClick={(e) => {
@@ -43,10 +51,10 @@ export default function Stepper({ currentStep }: StepperProps) {
                         }}
                     >
                         <div className={cn(
-                            "flex h-10 w-10 items-center justify-center rounded-full border-2 z-10 transition-colors",
+                            "flex h-10 w-10 items-center justify-center rounded-full border-2 z-10 transition-colors bg-background",
                             isCompleted ? "bg-primary border-primary text-primary-foreground" 
-                            : isCurrent ? "bg-background border-primary text-primary" 
-                            : "bg-background border-border text-muted-foreground"
+                            : isCurrent ? "border-primary text-primary" 
+                            : "border-border text-muted-foreground"
                         )}>
                             {isCompleted ? <Check className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
                         </div>
@@ -54,15 +62,6 @@ export default function Stepper({ currentStep }: StepperProps) {
                             "text-xs font-medium text-center transition-colors",
                             isCurrent ? "text-primary" : isCompleted ? "text-foreground" : "text-muted-foreground"
                         )}>{step.name}</p>
-                    
-                        {!isLastStep && (
-                            <div className="absolute top-5 left-1/2 w-full h-0.5 -z-10">
-                                <div className={cn(
-                                    "h-full w-full",
-                                    isCompleted ? "bg-primary" : "bg-border"
-                                )} />
-                            </div>
-                        )}
                     </NextLink>
                 </li>
             )
