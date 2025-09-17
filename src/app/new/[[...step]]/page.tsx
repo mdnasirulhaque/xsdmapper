@@ -9,6 +9,7 @@ import PreviewStep from '@/components/steps/preview-step';
 import SwaggerStep from '@/components/steps/swagger-step';
 import PreviewSwaggerStep from '@/components/steps/preview-swagger-step';
 import MapperStep from '@/components/steps/mapper-step';
+import PreviewXsltStep from '@/components/steps/preview-xslt-step';
 import { useAppContext } from '@/context/AppContext';
 
 const steps = [
@@ -17,7 +18,7 @@ const steps = [
   { name: 'swagger', component: SwaggerStep, step: 3 },
   { name: 'preview-swagger-xsd', component: PreviewSwaggerStep, step: 4},
   { name: 'mapper', component: MapperStep, step: 5 },
-  { name: 'generate-xslt', component: () => <div className="text-center p-8">XSLT Generation not implemented yet.</div>, step: 6 },
+  { name: 'preview-xslt', component: PreviewXsltStep, step: 6 },
 ];
 
 export default function NewRequestPage() {

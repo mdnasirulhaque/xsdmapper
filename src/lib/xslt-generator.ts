@@ -1,5 +1,5 @@
 
-import type { Mapping, MappingSets, SchemasBySet, XsdNode } from '@/types';
+import type { Mapping, MappingSet, MappingSets, SchemasBySet, XsdNode } from '@/types';
 
 const findNodePath = (schema: XsdNode | null, nodeId: string): string => {
   if (!schema) return '';
@@ -87,23 +87,22 @@ const generateRecursiveTemplates = (
 };
 
 
-export const generateXslt = (
-  mappingSets: MappingSets,
-  sourceSchemas: SchemasBySet,
-  targetSchemas: SchemasBySet
+export const generateXsltForSet = (
+  mappings: Mapping[],
+  sourceSchema: XsdNode | null,
+  targetSchema: XsdNode | null
 ): string => {
-  const set1Source = sourceSchemas.set1;
-  const set1Target = targetSchemas.set1;
-
-  if (!set1Source || !set1Target) {
-    return '<!-- Load schemas for Set 1 to generate XSLT -->';
+  if (!sourceSchema || !targetSchema) {
+    return '<!-- Source or Target schema for this set is missing. -->';
+  }
+  
+  if (mappings.length === 0) {
+    return '<!-- No mappings defined for this set. -->';
   }
 
-  const allMappings = [...mappingSets.set1, ...mappingSets.set2, ...mappingSets.set3];
+  const rootSourcePath = sourceSchema.name;
   
-  const rootSourcePath = set1Source.name;
-  
-  const mappingsByTarget = allMappings.reduce((acc, mapping) => {
+  const mappingsByTarget = mappings.reduce((acc, mapping) => {
     if (!acc[mapping.targetId]) {
       acc[mapping.targetId] = [];
     }
@@ -112,7 +111,7 @@ export const generateXslt = (
   }, {} as { [key: string]: Mapping[] });
 
 
-  const mappingTemplates = set1Target.children?.map(childNode => {
+  const mappingTemplates = targetSchema.children?.map(childNode => {
       const hasMapping = (node: XsdNode): boolean => {
        if (mappingsByTarget[node.id]) return true;
        if (node.children) {
@@ -121,7 +120,7 @@ export const generateXslt = (
        return false;
     }
     if(hasMapping(childNode)){
-        return generateRecursiveTemplates(childNode, mappingsByTarget, set1Source)
+        return generateRecursiveTemplates(childNode, mappingsByTarget, sourceSchema)
     }
     return '';
   }).join('');
@@ -130,13 +129,11 @@ export const generateXslt = (
   return `<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output method="xml" indent="yes"/>
-
   <xsl:template match="/${rootSourcePath}">
-    <xsl:element name="${set1Target.name}">
+    <xsl:element name="${targetSchema.name}">
 ${mappingTemplates}
     </xsl:element>
   </xsl:template>
-
 </xsl:stylesheet>
 `;
 };
