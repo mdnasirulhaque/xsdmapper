@@ -332,7 +332,7 @@ export default function MapperStep() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => router.push('/new/generate-xslt')}>
+                  <AlertDialogAction onClick={() => router.push('/new/preview-xslt')}>
                     Confirm
                   </AlertDialogAction>
                 </AlertDialogFooter>
