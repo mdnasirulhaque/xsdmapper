@@ -1,56 +1,16 @@
 
 "use client"
 
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
 import { CodeXml } from "lucide-react"
-import { usePathname } from 'next/navigation'
-import { cn } from "@/lib/utils"
-
-const Breadcrumbs = () => {
-    return (
-        <Breadcrumb>
-            <BreadcrumbList>
-                <BreadcrumbItem>
-                <BreadcrumbLink href="/" className="text-muted-foreground hover:text-foreground">Home</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                <BreadcrumbPage className="text-foreground font-semibold">New Request</BreadcrumbPage>
-                </BreadcrumbItem>
-            </BreadcrumbList>
-        </Breadcrumb>
-    )
-}
 
 export default function Header() {
-  const pathname = usePathname();
-  const isCreationFlow = pathname.startsWith('/new');
-
   return (
-    <header className="relative flex flex-col gap-4 px-4 sm:px-6 pt-4">
-        {isCreationFlow && (
-            <div className="h-14 flex items-center px-4 sm:px-6 bg-secondary rounded-lg">
-                <Breadcrumbs />
-            </div>
-        )}
-        <div className={cn(
-            "bg-header text-header-foreground p-4 rounded-lg"
-        )}>
-            <div className="flex items-center justify-between h-16">
-                <div className="flex items-center gap-3">
-                    <CodeXml className="h-8 w-8 text-header-foreground" />
-                    <h1 className="text-xl font-bold tracking-tight text-header-foreground">
-                    XSD Mapper
-                    </h1>
-                </div>
-            </div>
+    <header className="flex items-center justify-between h-16 px-6 bg-card border rounded-lg shadow-sm">
+        <div className="flex items-center gap-3">
+            <CodeXml className="h-8 w-8 text-primary" />
+            <h1 className="text-xl font-bold tracking-tight">
+            XSD Mapper
+            </h1>
         </div>
     </header>
   )

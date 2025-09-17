@@ -43,9 +43,9 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
   const { resetState } = useAppContext();
 
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider defaultOpen={true}>
         <div className="flex min-h-screen w-full bg-muted/40">
-        <Sidebar variant="floating" collapsible="icon">
+        <Sidebar variant="sidebar" collapsible="icon">
             <SidebarHeader>
                 <div className="flex items-center justify-between p-2">
                     <div className="flex items-center gap-3">
@@ -54,7 +54,7 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
                     </div>
                 </div>
             </SidebarHeader>
-            <SidebarContent className="p-0">
+            <SidebarContent className="p-2">
                 <SidebarMenu>
                      <SidebarMenuItem>
                         <SidebarMenuButton href="/new/upload" tooltip="Create New Request" isActive={isCreationFlow}>
@@ -98,14 +98,14 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
                  </div>
             </SidebarFooter>
         </Sidebar>
-        <main className="flex flex-1 flex-col">
+        <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6">
               <Header />
               {isCreationFlow && (
-                 <div className="my-4 p-4 rounded-lg bg-card shadow-sm">
+                 <div className="bg-card p-4 rounded-lg shadow-sm border">
                     <Stepper currentStep={currentStep} />
                 </div>
               )}
-            <div className="flex-1 flex flex-col mb-4">
+            <div className="flex-1 flex flex-col">
                 {children}
             </div>
         </main>

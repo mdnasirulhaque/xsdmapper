@@ -40,9 +40,9 @@ export default function UploadStep() {
       };
 
       if (fileType === 'input') {
-        setState({ ...resetState, inputXml: content });
+        setState({ ...resetState, inputXml: content, responseXml: responseXml });
       } else {
-        setState({ ...resetState, responseXml: content });
+        setState({ ...resetState, inputXml: inputXml, responseXml: content });
       }
       toast({
         variant: "success",
