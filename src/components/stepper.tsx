@@ -2,7 +2,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { FileUp, Eye, FileJson, Link as LinkIcon, CheckCircle2, ChevronRight, Send } from "lucide-react"
+import { FileUp, Eye, FileJson, Link as LinkIcon, CheckCircle2, ChevronRight, Send, Check } from "lucide-react"
 import NextLink from 'next/link';
 
 
@@ -44,23 +44,23 @@ export default function Stepper({ currentStep }: StepperProps) {
                             }}
                         >
                             <div className={cn(
-                                "flex h-10 w-10 items-center justify-center rounded-full border-2 z-10",
+                                "flex h-10 w-10 items-center justify-center rounded-full border-2 z-10 transition-colors",
                                 isCompleted ? "bg-primary border-primary text-primary-foreground" 
                                 : isCurrent ? "bg-background border-primary text-primary" 
                                 : "bg-background border-border text-muted-foreground"
                             )}>
-                                <step.icon className="h-5 w-5" />
+                                {isCompleted ? <Check className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
                             </div>
                             <p className={cn(
-                                "text-xs font-medium text-center",
-                                isCurrent ? "text-primary" : isCompleted ? "text-primary" : "text-muted-foreground"
+                                "text-xs font-medium text-center transition-colors",
+                                isCurrent ? "text-primary" : isCompleted ? "text-foreground" : "text-muted-foreground"
                             )}>{step.name}</p>
                         </NextLink>
 
                         {!isLastStep && (
                             <div className="absolute top-5 left-1/2 -translate-y-1/2 w-full -z-0">
                                 <div className={cn(
-                                    "h-0.5 w-full",
+                                    "h-0.5 w-full transition-colors",
                                     isCompleted ? "bg-primary" : "bg-border"
                                 )} />
                             </div>
