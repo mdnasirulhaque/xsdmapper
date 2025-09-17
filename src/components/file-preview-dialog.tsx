@@ -14,6 +14,7 @@ import CodeBlock from "./code-block"
 import { Button } from "./ui/button"
 import { Copy } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { prettyPrintXml } from "@/lib/formatter"
 
 interface FilePreviewDialogProps {
   isOpen: boolean
@@ -25,9 +26,11 @@ interface FilePreviewDialogProps {
 
 export default function FilePreviewDialog({ isOpen, onOpenChange, content, title, language = 'xml' }: FilePreviewDialogProps) {
   const { toast } = useToast();
+  
+  const formattedContent = language === 'xml' ? prettyPrintXml(content) : content;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(content).then(() => {
+    navigator.clipboard.writeText(formattedContent).then(() => {
       toast({
         variant: 'success',
         title: "Copied to Clipboard",
@@ -55,7 +58,7 @@ export default function FilePreviewDialog({ isOpen, onOpenChange, content, title
         </DialogHeader>
         <div className="flex-1 min-h-0">
           <ScrollArea className="h-full bg-muted/50">
-              <CodeBlock code={content} language={language} />
+              <CodeBlock code={formattedContent} language={language} />
           </ScrollArea>
         </div>
         <DialogFooter className="p-4 border-t flex-row justify-between">
