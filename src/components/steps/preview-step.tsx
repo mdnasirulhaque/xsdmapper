@@ -114,7 +114,7 @@ const CodePreview = ({ title, content, language, isLoading = false, onPreviewCli
 export default function PreviewStep() {
     const router = useRouter();
     const { toast } = useToast();
-    const { inputXml, responseXml, inputXsd, responseXsd, setState, sourceSchemas, targetSchemas, setIsLoading } = useAppContext();
+    const { inputXml, responseXml, inputXsd, responseXsd, setState, sourceSchemas, targetSchemas } = useAppContext();
     const [isGenerating, setIsGenerating] = useState(false);
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
@@ -169,7 +169,6 @@ export default function PreviewStep() {
             });
             return;
         }
-        setIsLoading(true);
         router.push(`/new/swagger`);
     };
     
@@ -180,7 +179,6 @@ export default function PreviewStep() {
     };
 
     const handleBack = () => {
-        setIsLoading(true);
         router.push('/new/upload');
     }
 

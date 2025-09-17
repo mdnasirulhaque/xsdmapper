@@ -28,7 +28,6 @@ export default function CreateRequestStep() {
         sourceSchemas,
         targetSchemas,
         mappings,
-        setIsLoading,
     } = useAppContext();
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
@@ -71,7 +70,6 @@ export default function CreateRequestStep() {
     )
     
     const handleFinish = () => {
-        setIsLoading(true);
         // Placeholder data for demonstration
         const query = new URLSearchParams({
             orderId: 'ORD123456',
@@ -84,7 +82,6 @@ export default function CreateRequestStep() {
     }
 
     const handleBack = () => {
-        setIsLoading(true);
         router.push('/new/preview-xslt');
     }
 

@@ -37,7 +37,6 @@ export default function MapperStep() {
     targetSchemas, 
     mappings, 
     setState,
-    setIsLoading,
   } = useAppContext();
   const { toast } = useToast();
   
@@ -230,12 +229,10 @@ export default function MapperStep() {
   }
 
   const handleProceed = () => {
-    setIsLoading(true);
     router.push('/new/preview-xslt');
   }
   
   const handleBack = () => {
-    setIsLoading(true);
     router.push('/new/preview-swagger-xsd');
   }
 

@@ -36,7 +36,7 @@ const sets: MappingSet[] = ['set1', 'set2', 'set3'];
 export default function PreviewXsltStep() {
   const router = useRouter();
   const { toast } = useToast();
-  const { mappings, sourceSchemas, targetSchemas, setIsLoading } = useAppContext();
+  const { mappings, sourceSchemas, targetSchemas } = useAppContext();
 
   const generatedXslt = useMemo(() => {
     return {
@@ -83,12 +83,10 @@ export default function PreviewXsltStep() {
   };
 
   const handleProceed = () => {
-    setIsLoading(true);
     router.push('/new/create-request');
   }
 
   const handleBack = () => {
-    setIsLoading(true);
     router.push('/new/mapper');
   }
 

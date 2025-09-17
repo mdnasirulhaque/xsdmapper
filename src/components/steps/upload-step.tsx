@@ -13,7 +13,7 @@ import { useAppContext } from '@/context/AppContext';
 export default function UploadStep() {
   const router = useRouter();
   const { toast } = useToast();
-  const { setState, inputXml, responseXml, setIsLoading } = useAppContext();
+  const { setState, inputXml, responseXml } = useAppContext();
 
   const inputXmlRef = useRef<HTMLInputElement>(null);
   const responseXmlRef = useRef<HTMLInputElement>(null);
@@ -70,7 +70,6 @@ export default function UploadStep() {
       });
       return;
     }
-    setIsLoading(true);
     router.push('/new/preview-xsd');
   }
 

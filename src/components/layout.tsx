@@ -17,7 +17,6 @@ import {
 import { usePathname } from 'next/navigation'
 import Stepper from "./stepper"
 import { ThemeToggle } from "./theme-toggle"
-import { useAppContext } from "@/context/AppContext"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,7 +39,6 @@ interface AppLayoutProps {
 export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps) {
   const pathname = usePathname();
   const isCreationFlow = pathname.startsWith('/new');
-  const { setIsLoading } = useAppContext();
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -57,19 +55,19 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
             <SidebarContent className="p-2">
                 <SidebarMenu>
                      <SidebarMenuItem>
-                        <SidebarMenuButton href="/new/upload" tooltip="Create New Request" isActive={isCreationFlow} onClick={() => setIsLoading(true)}>
+                        <SidebarMenuButton href="/new/upload" tooltip="Create New Request" isActive={isCreationFlow}>
                             <FilePlus className="size-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Create New Request</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <SidebarMenuButton href="/requests" tooltip="View Submitted Requests" isActive={pathname.startsWith('/requests')} onClick={() => setIsLoading(true)}>
+                        <SidebarMenuButton href="/requests" tooltip="View Submitted Requests" isActive={pathname.startsWith('/requests')}>
                             <History className="size-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Submitted Requests</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <SidebarMenuButton href="/configurations" tooltip="View Existing Configurations" isActive={pathname.startsWith('/configurations')} onClick={() => setIsLoading(true)}>
+                        <SidebarMenuButton href="/configurations" tooltip="View Existing Configurations" isActive={pathname.startsWith('/configurations')}>
                             <Settings className="size-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Configurations</span>
                         </SidebarMenuButton>

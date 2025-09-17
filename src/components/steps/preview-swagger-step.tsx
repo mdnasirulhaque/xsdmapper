@@ -58,7 +58,7 @@ const CodePreview = ({ title, content, language, isLoading = false, onPreviewCli
 
 export default function PreviewSwaggerStep() {
     const router = useRouter();
-    const { swaggerFile, endpoint, method, setIsLoading } = useAppContext();
+    const { swaggerFile, endpoint, method } = useAppContext();
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'json' | 'yaml' } | null>(null);
 
     // A placeholder for the generated XSD from swagger for demonstration
@@ -93,12 +93,10 @@ export default function PreviewSwaggerStep() {
     };
 
     const handleProceed = () => {
-        setIsLoading(true);
         router.push('/new/mapper');
     }
 
     const handleBack = () => {
-        setIsLoading(true);
         router.push('/new/swagger');
     }
 

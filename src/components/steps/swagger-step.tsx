@@ -90,7 +90,7 @@ export default function SwaggerStep() {
     const router = useRouter();
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { swaggerFile, endpoint, method, setState, targetSchemas, mappings, setIsLoading } = useAppContext();
+    const { swaggerFile, endpoint, method, setState, targetSchemas, mappings } = useAppContext();
     
     const [fileName, setFileName] = useState<string | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -192,12 +192,10 @@ export default function SwaggerStep() {
             });
             return;
         }
-        setIsLoading(true);
         router.push(`/new/preview-swagger-xsd`);
     }
 
     const handleBack = () => {
-        setIsLoading(true);
         router.push('/new/preview-xsd');
     }
 
