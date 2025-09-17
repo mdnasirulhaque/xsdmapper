@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { Inter } from 'next/font/google'
 import { AppProvider } from '@/context/AppContext';
+import { ThemeProvider } from '@/context/ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'XSD Mapper',
@@ -23,10 +24,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body suppressHydrationWarning={true} className="font-body antialiased">
-        <AppProvider>
-          {children}
-        </AppProvider>
-        <Toaster />
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+        >
+          <AppProvider>
+            {children}
+          </AppProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

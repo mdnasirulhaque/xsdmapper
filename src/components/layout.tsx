@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sidebar"
 import { usePathname } from 'next/navigation'
 import Stepper from "./stepper"
+import { ThemeToggle } from "./theme-toggle"
 
 
 interface AppLayoutProps {
@@ -61,9 +62,14 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarContent>
-            <SidebarFooter className="p-2 justify-between flex flex-row items-center">
-                 <div className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">Version 1.0.0</div>
-                 <SidebarTrigger />
+            <SidebarFooter className="p-2 justify-between flex flex-col items-center gap-2">
+                 <div className="flex-1 w-full flex items-center justify-between">
+                    <div className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">Version 1.0.0</div>
+                 </div>
+                 <div className="w-full flex items-center justify-between">
+                    <ThemeToggle />
+                    <SidebarTrigger />
+                 </div>
             </SidebarFooter>
         </Sidebar>
         <main className="flex flex-1 flex-col">
