@@ -175,7 +175,7 @@ export default function SwaggerStep() {
             });
             return;
         }
-        router.push(`/new/mapper`);
+        router.push(`/new/preview-swagger-xsd`);
     }
 
     const fileExtension = fileName?.split('.').pop()?.toLowerCase();
@@ -273,3 +273,5 @@ export default function SwaggerStep() {
         </div>
     );
 }
+
+    
