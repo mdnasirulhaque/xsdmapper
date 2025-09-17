@@ -40,7 +40,6 @@ export default function UploadStep() {
     };
     reader.readAsText(file);
 
-    // Reset the input value to allow re-uploading the same file
     if (event.target) event.target.value = '';
   };
 
@@ -61,19 +60,11 @@ export default function UploadStep() {
       });
       return;
     }
-    // Since state is already global, we can just navigate.
-    // Reset other parts of the state that depend on these files.
+    
     setState({
         inputXsd: null,
         responseXsd: null,
-        sourceSchemas: { set1: null, set2: null, set3: null },
-        targetSchemas: { set1: null, set2: null, set3: null },
         swaggerFile: null,
-        mappings: {
-          set1: [],
-          set2: [],
-          set3: [],
-        },
         endpoint: null,
         method: null,
     });
@@ -91,7 +82,6 @@ export default function UploadStep() {
         <CardContent className="flex flex-col gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            {/* Input XML Section */}
             <div className="flex flex-col items-center gap-4 rounded-lg border p-6">
               <input
                 type="file"
@@ -113,7 +103,6 @@ export default function UploadStep() {
               )}
             </div>
 
-            {/* Response XML Section */}
             <div className="flex flex-col items-center gap-4 rounded-lg border p-6">
               <input
                 type="file"
