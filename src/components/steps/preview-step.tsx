@@ -2,15 +2,15 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeft, Wand2, Loader } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Wand2, Loader, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAppContext } from '@/context/AppContext';
 import { parseXsdToXsdNode } from '@/lib/xsd-parser';
 import CodeBlock from '../code-block';
+import FilePreviewDialog from '../file-preview-dialog';
 
 // A mock XSD string for preview purposes.
 const mockInputXsdString = `<?xml version="1.0" encoding="UTF-8"?>
@@ -72,36 +72,49 @@ const mockResponseXsdString = `<?xml version="1.0" encoding="UTF-8"?>
 </xs:schema>
 `;
 
+interface CodePreviewProps {
+    title: string;
+    content: string | null;
+    language: 'xml' | 'json' | 'yaml';
+    isLoading?: boolean;
+    onPreviewClick: () => void;
+}
 
-const CodePreview = ({ title, content, language, isLoading = false }: { title: string; content: string | null; language: string; isLoading?: boolean }) => (
-    <Card className="flex-1 flex flex-col min-w-[300px]">
-        <CardHeader>
-            <CardTitle className="text-lg">{title}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex-1 flex">
-            <ScrollArea className="w-full h-96 rounded-md border bg-muted/50">
-                <div className="p-4 text-xs relative">
+const CodePreview = ({ title, content, language, isLoading = false, onPreviewClick }: CodePreviewProps) => {
+    const snippet = content ? content.split('\n').slice(0, 15).join('\n') : 'No content provided.';
+    const canShowMore = content && content.split('\n').length > 15;
+
+    return (
+        <Card className="flex-1 flex flex-col min-w-[300px]">
+            <CardHeader>
+                <CardTitle className="text-lg">{title}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col">
+                <div className="relative flex-1 p-4 text-xs rounded-md border bg-muted/50">
                     {isLoading && (
                         <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
                             <Loader className="h-8 w-8 animate-spin text-primary" />
                         </div>
                     )}
-                    {content ? (
-                        <CodeBlock code={content} language={language} />
-                    ) : (
-                        <pre><code>No content provided.</code></pre>
-                    )}
+                    <CodeBlock code={isLoading ? '' : snippet} language={language} />
                 </div>
-            </ScrollArea>
-        </CardContent>
-    </Card>
-);
+                {canShowMore && (
+                    <Button variant="ghost" className="mt-2" onClick={onPreviewClick}>
+                        <Eye className="mr-2 h-4 w-4" /> Show full preview
+                    </Button>
+                )}
+            </CardContent>
+        </Card>
+    );
+};
+
 
 export default function PreviewStep() {
     const router = useRouter();
     const { toast } = useToast();
     const { inputXml, responseXml, inputXsd, responseXsd, setState, sourceSchema, targetSchema } = useAppContext();
     const [isLoading, setIsLoading] = useState(false);
+    const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
     const handleGenerateXsds = useCallback(async () => {
         if (!inputXml || !responseXml) {
@@ -165,6 +178,13 @@ export default function PreviewStep() {
         }
         router.push(`/new/swagger`);
     };
+    
+    const openPreview = (content: string | null, title: string, language: 'xml' | 'json' | 'yaml') => {
+        if (content) {
+            setPreviewing({ content, title, language });
+        }
+    };
+
 
     return (
         <div className="flex-1 flex items-center justify-center">
@@ -182,12 +202,34 @@ export default function PreviewStep() {
                         {isLoading ? 'Loading...' : (!!inputXsd && !!responseXsd ? 'Loaded' : 'Load Mock XSDs')}
                     </Button>
                     <div className="flex flex-col lg:flex-row gap-6">
-                       <CodePreview title="Input XML" content={inputXml} language="xml" />
-                       <CodePreview title="Generated Input XSD" content={inputXsd} language="xml" isLoading={isLoading && !inputXsd} />
+                       <CodePreview 
+                            title="Input XML" 
+                            content={inputXml} 
+                            language="xml" 
+                            onPreviewClick={() => openPreview(inputXml, 'Input XML Preview', 'xml')}
+                        />
+                       <CodePreview 
+                            title="Generated Input XSD" 
+                            content={inputXsd} 
+                            language="xml" 
+                            isLoading={isLoading && !inputXsd}
+                            onPreviewClick={() => openPreview(inputXsd, 'Generated Input XSD Preview', 'xml')}
+                        />
                     </div>
                     <div className="flex flex-col lg:flex-row gap-6">
-                       <CodePreview title="Response XML" content={responseXml} language="xml" />
-                       <CodePreview title="Generated Response XSD" content={responseXsd} language="xml" isLoading={isLoading && !responseXsd} />
+                       <CodePreview 
+                            title="Response XML" 
+                            content={responseXml} 
+                            language="xml"
+                            onPreviewClick={() => openPreview(responseXml, 'Response XML Preview', 'xml')}
+                        />
+                       <CodePreview 
+                            title="Generated Response XSD" 
+                            content={responseXsd} 
+                            language="xml" 
+                            isLoading={isLoading && !responseXsd} 
+                            onPreviewClick={() => openPreview(responseXsd, 'Generated Response XSD Preview', 'xml')}
+                        />
                     </div>
                      <div className="flex items-center justify-between border-t pt-6">
                         <Button variant="outline" onClick={() => router.push('/new/upload')}>
@@ -199,6 +241,16 @@ export default function PreviewStep() {
                     </div>
                 </CardContent>
             </Card>
+
+            {previewing && (
+                 <FilePreviewDialog
+                    isOpen={!!previewing}
+                    onOpenChange={() => setPreviewing(null)}
+                    content={previewing.content}
+                    title={previewing.title}
+                    language={previewing.language}
+                />
+            )}
         </div>
     );
 }
