@@ -20,7 +20,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import { ArrowLeft, CheckCircle, Copy, Download } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Copy, Download } from 'lucide-react';
 import CodeBlock from '../code-block';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '../ui/scroll-area';
@@ -158,8 +158,8 @@ export default function PreviewXsltStep() {
         <Button variant="outline" onClick={() => router.push('/new/mapper')}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Mapper
         </Button>
-        <Button onClick={() => router.push('/new/finish')}>
-            Finish & Complete <CheckCircle className="ml-2 h-4 w-4" />
+        <Button onClick={() => router.push('/new/create-request')}>
+            Next <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
     </div>

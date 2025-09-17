@@ -9,6 +9,7 @@ import SwaggerStep from '@/components/steps/swagger-step';
 import PreviewSwaggerStep from '@/components/steps/preview-swagger-step';
 import MapperStep from '@/components/steps/mapper-step';
 import PreviewXsltStep from '@/components/steps/preview-xslt-step';
+import CreateRequestStep from '@/components/steps/create-request-step';
 
 const steps = [
   { name: 'upload', component: UploadStep, step: 1 },
@@ -17,6 +18,7 @@ const steps = [
   { name: 'preview-swagger-xsd', component: PreviewSwaggerStep, step: 4},
   { name: 'mapper', component: MapperStep, step: 5 },
   { name: 'preview-xslt', component: PreviewXsltStep, step: 6 },
+  { name: 'create-request', component: CreateRequestStep, step: 7 },
 ];
 
 export default function NewRequestPage() {
