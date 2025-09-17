@@ -2,7 +2,7 @@
 "use client"
 
 import Header from "@/components/header"
-import { CodeXml, FilePlus, RotateCcw } from "lucide-react"
+import { CodeXml, FilePlus, RotateCcw, History, Settings } from "lucide-react"
 import { 
     Sidebar, 
     SidebarProvider, 
@@ -60,6 +60,18 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
                         <SidebarMenuButton href="/new/upload" tooltip="Create New Request" isActive={isCreationFlow}>
                             <FilePlus className="size-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Create New Request</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton href="/requests" tooltip="View Submitted Requests" isActive={pathname.startsWith('/requests')}>
+                            <History className="size-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Submitted Requests</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton href="/configurations" tooltip="View Existing Configurations" isActive={pathname.startsWith('/configurations')}>
+                            <Settings className="size-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Configurations</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
