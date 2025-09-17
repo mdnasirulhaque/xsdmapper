@@ -68,6 +68,18 @@ export default function CreateRequestStep() {
             {title}
         </Button>
     )
+    
+    const handleFinish = () => {
+        // Placeholder data for demonstration
+        const query = new URLSearchParams({
+            orderId: 'ORD123456',
+            csiId: 'CSI-98765',
+            approverName: 'John Doe',
+            eventId: 'EVT-ABC-123',
+        }).toString();
+
+        router.push(`/new/finish?${query}`);
+    }
 
     return (
         <div className="flex-1 flex flex-col gap-4">
@@ -125,7 +137,7 @@ export default function CreateRequestStep() {
                 <Button variant="outline" onClick={() => router.push('/new/preview-xslt')}>
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back to XSLT Preview
                 </Button>
-                <Button onClick={() => router.push('/new/finish')}>
+                <Button onClick={handleFinish}>
                     Finish & Complete <CheckCircle className="ml-2 h-4 w-4" />
                 </Button>
             </div>

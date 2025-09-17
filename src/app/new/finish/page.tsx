@@ -6,8 +6,23 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { PartyPopper, FilePlus } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+
+const DetailRow = ({ label, value }: { label: string, value: string | null }) => (
+    <div className="flex justify-between items-center w-full text-sm">
+        <span className="text-muted-foreground">{label}:</span>
+        <span className="font-semibold">{value || 'N/A'}</span>
+    </div>
+);
 
 export default function FinishPage() {
+  const searchParams = useSearchParams();
+
+  const orderId = searchParams.get('orderId');
+  const csiId = searchParams.get('csiId');
+  const approverName = searchParams.get('approverName');
+  const eventId = searchParams.get('eventId');
+
   return (
     <AppLayout>
         <div className="flex-1 flex items-center justify-center">
@@ -22,6 +37,12 @@ export default function FinishPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center gap-6">
+                    <div className="w-full max-w-md space-y-3 rounded-lg border bg-muted/50 p-4">
+                        <DetailRow label="Order ID" value={orderId} />
+                        <DetailRow label="CSI ID" value={csiId} />
+                        <DetailRow label="Approver Name" value={approverName} />
+                        <DetailRow label="Event ID" value={eventId} />
+                    </div>
                     <p>
                         You can now use the downloaded XSLT files in your integration workflow. If you need to make changes, you can always start a new request.
                     </p>
