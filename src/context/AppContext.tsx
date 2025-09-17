@@ -7,6 +7,7 @@ import { Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface AppState {
+  soeid: string | null;
   inputXml: string | null;
   responseXml: string | null;
   inputXsd: string | null;
@@ -25,6 +26,7 @@ interface AppContextType extends AppState {
 }
 
 const initialState: AppState = {
+  soeid: 'MH85983',
   inputXml: null,
   responseXml: null,
   inputXsd: null,
@@ -64,7 +66,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(savedState);
         // Basic validation to ensure the parsed state has the expected shape
         if (parsed && typeof parsed === 'object' && 'sourceSchemas' in parsed && 'mappings' in parsed && 'set1' in parsed.mappings) {
-          setStateValue(parsed);
+          setStateValue(prevState => ({ ...prevState, ...parsed }));
         } else {
             // If the stored state is old, reset to initial
             localStorage.removeItem('appState');
@@ -91,7 +93,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const resetState = () => {
-    setStateValue(initialState);
+    const soeid = state.soeid;
+    setStateValue({...initialState, soeid});
     // Also clear it from localStorage
     localStorage.removeItem('appState');
     router.push('/new/upload');
