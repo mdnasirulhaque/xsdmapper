@@ -24,6 +24,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
+const setConfig = {
+  set1: { name: 'Request Mapping' },
+  set2: { name: 'Response Mapping' },
+  set3: { name: 'Error Mapping' },
+};
+
 export default function MapperStep() {
   const router = useRouter();
   const { 
@@ -209,7 +215,7 @@ export default function MapperStep() {
     toast({
       variant: "success",
       title: "Current Set Reset",
-      description: `All mappings in Set ${activeSet.slice(-1)} have been cleared.`,
+      description: `All mappings in "${setConfig[activeSet].name}" have been cleared.`,
     });
   }
 
@@ -222,7 +228,7 @@ export default function MapperStep() {
     });
   }
 
-  const areAllSetsMapped = mappings.set1.length > 0 && mappings.set2.length > 0 && mappings.set3.length > 0;
+  const areRequiredSetsMapped = mappings.set1.length > 0 && mappings.set2.length > 0;
   
   const sets: MappingSet[] = ['set1', 'set2', 'set3'];
 
@@ -239,7 +245,7 @@ export default function MapperStep() {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action will permanently delete all your current mappings in <strong>Set {activeSet.slice(-1)}</strong>. You cannot undo this action.
+                            This action will permanently delete all your current mappings in <strong>{setConfig[activeSet].name}</strong>. You cannot undo this action.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -283,7 +289,7 @@ export default function MapperStep() {
                             onClick={() => setActiveSet(set)}
                             className="flex-1"
                         >
-                            Set {set.slice(-1)}
+                            {setConfig[set].name}
                         </Button>
                     ))}
                 </div>
@@ -313,7 +319,7 @@ export default function MapperStep() {
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button disabled={!areAllSetsMapped}>
+                <Button disabled={!areRequiredSetsMapped}>
                     Next <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
