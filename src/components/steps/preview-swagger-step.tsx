@@ -56,7 +56,7 @@ const CodePreview = ({ title, content, language, isLoading = false, onPreviewCli
 
 export default function PreviewSwaggerStep() {
     const router = useRouter();
-    const { swaggerFile } = useAppContext();
+    const { swaggerFile, endpoint, method } = useAppContext();
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
     // A placeholder for the generated XSD from swagger for demonstration
@@ -92,7 +92,7 @@ export default function PreviewSwaggerStep() {
 
 
     return (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex flex-col items-center justify-center">
             <Card className="w-full shadow-lg">
                 <CardHeader>
                     <CardTitle>Preview Swagger and Generated XSD</CardTitle>
@@ -101,6 +101,14 @@ export default function PreviewSwaggerStep() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-6">
+                    
+                    {endpoint && method && (
+                        <div className="flex items-center gap-4 p-4 rounded-lg bg-muted border">
+                            <span className="font-semibold">Selected Operation:</span>
+                            <span className="inline-flex items-center rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">{method}</span>
+                            <span className="font-mono text-sm text-muted-foreground bg-secondary px-3 py-1 rounded-md">{endpoint}</span>
+                        </div>
+                    )}
 
                     <div className="flex flex-col lg:flex-row gap-6">
                        <CodePreview 
