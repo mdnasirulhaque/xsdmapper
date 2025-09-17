@@ -23,7 +23,7 @@ export default function Header() {
   const isCreationFlow = pathname.startsWith('/new');
 
   return (
-    <header className="flex items-center justify-between h-16 px-6 bg-sidebar text-sidebar-foreground shadow-sm">
+    <header className="flex items-center justify-between h-16 px-6 bg-header text-header-foreground shadow-sm rounded-lg">
         <div className="flex items-center gap-3">
             <CodeXml className="h-8 w-8 text-primary" />
             <h1 className="text-xl font-bold tracking-tight text-sidebar-primary">
@@ -41,7 +41,7 @@ export default function Header() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Reset Application State?</AlertDialogTitle>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
                                 This will clear all uploaded files, mappings, and reset the entire application to its initial state. This action cannot be undone.
                             </AlertDialogDescription>
