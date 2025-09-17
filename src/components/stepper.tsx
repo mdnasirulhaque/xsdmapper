@@ -49,7 +49,7 @@ export default function Stepper({ currentStep }: StepperProps) {
                         }}
                     >
                         <div className={cn(
-                            "flex h-10 w-10 items-center justify-center rounded-full border-2 z-10 transition-colors bg-background",
+                            "flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors bg-background",
                             isCompleted ? "bg-primary border-primary text-primary-foreground" 
                             : isCurrent ? "border-primary text-primary" 
                             : "border-border text-muted-foreground"
@@ -78,3 +78,5 @@ export default function Stepper({ currentStep }: StepperProps) {
     </nav>
   )
 }
+
+    
