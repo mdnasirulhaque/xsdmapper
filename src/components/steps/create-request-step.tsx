@@ -92,14 +92,32 @@ export default function CreateRequestStep() {
                         {/* A placeholder for swagger XSD for now */}
                         <FileButton title="Swagger XSD" content={"<!-- Mock Swagger XSD -->"} language="xml" icon={FileText} />
                     </div>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-4">
                          <h3 className="font-semibold text-lg border-b pb-2">Mappings & Transforms</h3>
-                         <FileButton title="Request Mapping" content={getMappingSummary('set1')} language="json" icon={LinkIcon} />
-                         <FileButton title="Request XSLT" content={generatedXslt.set1} language="xml" icon={FileText} />
-                         <FileButton title="Response Mapping" content={getMappingSummary('set2')} language="json" icon={LinkIcon} />
-                         <FileButton title="Response XSLT" content={generatedXslt.set2} language="xml" icon={FileText} />
-                         <FileButton title="Error Mapping" content={getMappingSummary('set3')} language="json" icon={LinkIcon} />
-                         <FileButton title="Error XSLT" content={generatedXslt.set3} language="xml" icon={FileText} />
+                         
+                         <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
+                            <h4 className="font-semibold">Request</h4>
+                            <div className="grid grid-cols-2 gap-2">
+                                <FileButton title="Mapping" content={getMappingSummary('set1')} language="json" icon={LinkIcon} />
+                                <FileButton title="XSLT" content={generatedXslt.set1} language="xml" icon={FileText} />
+                            </div>
+                         </div>
+
+                         <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
+                            <h4 className="font-semibold">Response</h4>
+                            <div className="grid grid-cols-2 gap-2">
+                                <FileButton title="Mapping" content={getMappingSummary('set2')} language="json" icon={LinkIcon} />
+                                <FileButton title="XSLT" content={generatedXslt.set2} language="xml" icon={FileText} />
+                            </div>
+                         </div>
+
+                         <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
+                            <h4 className="font-semibold">Error</h4>
+                            <div className="grid grid-cols-2 gap-2">
+                                <FileButton title="Mapping" content={getMappingSummary('set3')} language="json" icon={LinkIcon} />
+                                <FileButton title="XSLT" content={generatedXslt.set3} language="xml" icon={FileText} />
+                            </div>
+                         </div>
                     </div>
                 </CardContent>
             </Card>
