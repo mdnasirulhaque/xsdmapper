@@ -9,10 +9,8 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Button } from "@/components/ui/button"
-import { CodeXml, FilePlus } from "lucide-react"
+import { CodeXml } from "lucide-react"
 import { usePathname } from 'next/navigation'
-import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 const Breadcrumbs = () => {
@@ -52,14 +50,6 @@ export default function Header() {
                     XSD Mapper
                     </h1>
                 </div>
-                {!isCreationFlow && (
-                     <Button asChild variant="secondary">
-                        <Link href="/new/upload?keepState=true">
-                            <FilePlus className="mr-2 h-4 w-4" />
-                            Create New Request
-                        </Link>
-                    </Button>
-                )}
             </div>
         </div>
     </header>
