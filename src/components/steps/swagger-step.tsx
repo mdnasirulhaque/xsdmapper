@@ -14,21 +14,51 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 
-const parseSwaggerForEndpoints = (yamlContent: string): string[] => {
+type EndpointInfo = {
+    path: string;
+    methods: string[];
+};
+
+const parseSwaggerForEndpoints = (yamlContent: string): EndpointInfo[] => {
     try {
         const lines = yamlContent.split('\n');
-        const pathsIndex = lines.findIndex(line => line.trim().startsWith('paths:'));
+        const pathsIndex = lines.findIndex(line => line.trim() === 'paths:');
         if (pathsIndex === -1) return [];
 
-        const endpoints: string[] = [];
+        const endpoints: EndpointInfo[] = [];
+        let currentPath = '';
+        let currentMethods: string[] = [];
+
         for (let i = pathsIndex + 1; i < lines.length; i++) {
             const line = lines[i];
-            // Stop if we hit the next top-level key
-            if (line.trim() !== '' && !line.startsWith('  ')) break;
+            const trimmedLine = line.trim();
 
-            if (line.trim().startsWith('/') && line.trim().endsWith(':')) {
-                endpoints.push(line.trim().slice(0, -1));
+            // Stop if we hit the next top-level key that is not indented
+            if (line.match(/^\S/)) {
+                 if (currentPath) {
+                    endpoints.push({ path: currentPath, methods: currentMethods });
+                    currentPath = '';
+                    currentMethods = [];
+                }
+                // Break if we're clearly outside the paths block
+                 if (!line.startsWith('  ')) {
+                    const nextTopLevel = lines.slice(i).find(l => l.match(/^\S/));
+                    if (nextTopLevel && !nextTopLevel.trim().startsWith('/')) break;
+                }
             }
+            
+            if (trimmedLine.startsWith('/') && trimmedLine.endsWith(':')) {
+                if (currentPath) {
+                    endpoints.push({ path: currentPath, methods: currentMethods });
+                }
+                currentPath = trimmedLine.slice(0, -1);
+                currentMethods = [];
+            } else if (currentPath && /^(get|post|put|delete|patch|options|head):$/i.test(trimmedLine)) {
+                currentMethods.push(trimmedLine.slice(0, -1).toUpperCase());
+            }
+        }
+        if (currentPath) {
+            endpoints.push({ path: currentPath, methods: currentMethods });
         }
         return endpoints;
     } catch (e) {
@@ -53,7 +83,7 @@ const generateSchemaFromEndpoint = (endpoint: string): XsdNode => {
     };
 }
 
-const restMethods = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"];
+const allRestMethods = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"];
 
 
 export default function SwaggerStep() {
@@ -64,15 +94,22 @@ export default function SwaggerStep() {
     
     const [fileName, setFileName] = useState<string | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-    const [availableEndpoints, setAvailableEndpoints] = useState<string[]>([]);
+    const [availableEndpoints, setAvailableEndpoints] = useState<EndpointInfo[]>([]);
+    const [availableMethods, setAvailableMethods] = useState<string[]>(allRestMethods);
     const [isCustomEndpoint, setIsCustomEndpoint] = useState(false);
 
     useEffect(() => {
         if (swaggerFile) {
             const endpoints = parseSwaggerForEndpoints(swaggerFile);
             setAvailableEndpoints(endpoints);
-            if (endpoint && !endpoints.includes(endpoint)) {
-                setIsCustomEndpoint(true);
+            if (endpoint) {
+                const currentEndpointInfo = endpoints.find(e => e.path === endpoint);
+                if (currentEndpointInfo && currentEndpointInfo.methods.length > 0) {
+                    setAvailableMethods(currentEndpointInfo.methods);
+                } else if (!endpoints.some(e => e.path === endpoint)) {
+                    setIsCustomEndpoint(true);
+                    setAvailableMethods(allRestMethods);
+                }
             }
         }
     }, [swaggerFile, endpoint]);
@@ -109,11 +146,17 @@ export default function SwaggerStep() {
     const handleEndpointChange = (value: string) => {
         if (value === 'custom') {
             setIsCustomEndpoint(true);
-            setState({ endpoint: '' });
+            setAvailableMethods(allRestMethods);
+            setState({ endpoint: '', method: null });
         } else {
             setIsCustomEndpoint(false);
             const schema = generateSchemaFromEndpoint(value);
-            setState({ endpoint: value, targetSchema: schema });
+            const endpointInfo = availableEndpoints.find(e => e.path === value);
+            const methods = endpointInfo?.methods || [];
+            const newMethod = methods.length > 0 ? methods[0] : null;
+
+            setAvailableMethods(methods.length > 0 ? methods : allRestMethods);
+            setState({ endpoint: value, targetSchema: schema, method: newMethod });
         }
     }
 
@@ -186,7 +229,7 @@ export default function SwaggerStep() {
                             </SelectTrigger>
                             <SelectContent>
                                 {availableEndpoints.map(ep => (
-                                    <SelectItem key={ep} value={ep}>{ep}</SelectItem>
+                                    <SelectItem key={ep.path} value={ep.path}>{ep.path}</SelectItem>
                                 ))}
                                 <SelectItem value="custom">Add Custom Endpoint</SelectItem>
                             </SelectContent>
@@ -208,7 +251,7 @@ export default function SwaggerStep() {
                                 <SelectValue placeholder="Select a method..." />
                             </SelectTrigger>
                             <SelectContent>
-                                {restMethods.map(m => (
+                                {availableMethods.map(m => (
                                     <SelectItem key={m} value={m}>{m}</SelectItem>
                                 ))}
                             </SelectContent>
@@ -238,3 +281,5 @@ export default function SwaggerStep() {
         </div>
     );
 }
+
+    
