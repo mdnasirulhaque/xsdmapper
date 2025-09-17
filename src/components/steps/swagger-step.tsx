@@ -95,21 +95,15 @@ export default function SwaggerStep() {
     const [fileName, setFileName] = useState<string | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [availableEndpoints, setAvailableEndpoints] = useState<EndpointInfo[]>([]);
-    const [availableMethods, setAvailableMethods] = useState<string[]>(allRestMethods);
     const [isCustomEndpoint, setIsCustomEndpoint] = useState(false);
 
     useEffect(() => {
         if (swaggerFile) {
             const endpoints = parseSwaggerForEndpoints(swaggerFile);
             setAvailableEndpoints(endpoints);
-            if (endpoint) {
-                const currentEndpointInfo = endpoints.find(e => e.path === endpoint);
-                if (currentEndpointInfo && currentEndpointInfo.methods.length > 0) {
-                    setAvailableMethods(currentEndpointInfo.methods);
-                } else if (!endpoints.some(e => e.path === endpoint)) {
-                    setIsCustomEndpoint(true);
-                    setAvailableMethods(allRestMethods);
-                }
+            // If the current endpoint is no longer in the list (e.g. new file upload), check if it's custom
+            if (endpoint && !endpoints.some(e => e.path === endpoint)) {
+                setIsCustomEndpoint(true);
             }
         }
     }, [swaggerFile, endpoint]);
@@ -146,16 +140,14 @@ export default function SwaggerStep() {
     const handleEndpointChange = (value: string) => {
         if (value === 'custom') {
             setIsCustomEndpoint(true);
-            setAvailableMethods(allRestMethods);
             setState({ endpoint: '', method: null });
         } else {
             setIsCustomEndpoint(false);
             const schema = generateSchemaFromEndpoint(value);
             const endpointInfo = availableEndpoints.find(e => e.path === value);
-            const methods = endpointInfo?.methods || [];
-            const newMethod = methods.length > 0 ? methods[0] : null;
+            // Auto-select the first method found for the endpoint, but don't filter the dropdown.
+            const newMethod = endpointInfo && endpointInfo.methods.length > 0 ? endpointInfo.methods[0] : null;
 
-            setAvailableMethods(methods.length > 0 ? methods : allRestMethods);
             setState({ endpoint: value, targetSchema: schema, method: newMethod });
         }
     }
@@ -251,7 +243,7 @@ export default function SwaggerStep() {
                                 <SelectValue placeholder="Select a method..." />
                             </SelectTrigger>
                             <SelectContent>
-                                {availableMethods.map(m => (
+                                {allRestMethods.map(m => (
                                     <SelectItem key={m} value={m}>{m}</SelectItem>
                                 ))}
                             </SelectContent>
@@ -281,5 +273,7 @@ export default function SwaggerStep() {
         </div>
     );
 }
+
+    
 
     
