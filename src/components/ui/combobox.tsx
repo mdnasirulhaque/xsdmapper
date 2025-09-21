@@ -77,7 +77,7 @@ export function Combobox({ items, value, onValueChange, placeholder }: ComboboxP
                 <CommandItem
                   key={item.value}
                   value={item.value}
-                  onSelect={handleSelect}
+                  onSelect={() => handleSelect(item.value)}
                 >
                   <Check
                     className={cn(
@@ -95,4 +95,3 @@ export function Combobox({ items, value, onValueChange, placeholder }: ComboboxP
     </Popover>
   )
 }
-
