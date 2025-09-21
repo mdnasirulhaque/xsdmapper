@@ -1,13 +1,18 @@
 
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, use } from 'react';
 import type { XsdNode, MappingSets, SchemasBySet } from '@/types';
-import { Loader } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Loader, PartyPopper } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface AppState {
   soeid: string | null;
+  profileId: string | null;
+  requestMapperId: string | null;
+  responseMapperId: string | null;
+  errorMapperId: string | null;
   inputXml: string | null;
   responseXml: string | null;
   inputXsd: string | null;
@@ -27,6 +32,10 @@ interface AppContextType extends AppState {
 
 const initialState: AppState = {
   soeid: 'MH85983',
+  profileId: null,
+  requestMapperId: null,
+  responseMapperId: null,
+  errorMapperId: null,
   inputXml: null,
   responseXml: null,
   inputXsd: null,
@@ -56,7 +65,11 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, setStateValue] = useState<AppState>(initialState);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
 
   useEffect(() => {
     // Load state from localStorage only on the client side.
@@ -97,7 +110,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setStateValue({...initialState, soeid});
     // Also clear it from localStorage
     localStorage.removeItem('appState');
-    router.push('/new/upload');
+    router.push('/new/initial');
   };
   
   const contextValue = {
@@ -110,10 +123,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
   if (!isInitialized) {
     return (
         <div className="fixed inset-0 z-[250] flex items-center justify-center bg-background">
-            <div className="flex flex-col items-center gap-4">
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                className="flex flex-col items-center gap-4"
+            >
                 <Loader className="h-16 w-16 animate-spin text-primary" />
                 <p className="text-muted-foreground">Initializing...</p>
-            </div>
+            </motion.div>
         </div>
     );
   }

@@ -2,11 +2,12 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { FileUp, Eye, FileJson, Link as LinkIcon, CheckCircle2, ChevronRight, Send, Check } from "lucide-react"
+import { FileUp, Eye, FileJson, Link as LinkIcon, CheckCircle2, ChevronRight, Send, Check, User } from "lucide-react"
 import NextLink from 'next/link';
 
 
 const steps = [
+  { name: "Initial Details", href: "/new/initial", icon: User },
   { name: "Upload XML", href: "/new/upload", icon: FileUp },
   { name: "Preview XSD", href: "/new/preview-xsd", icon: Eye },
   { name: "Upload Swagger", href: "/new/swagger", icon: FileJson },

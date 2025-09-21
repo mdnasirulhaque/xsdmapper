@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/',
-        destination: '/new/upload',
+        destination: '/new/initial',
         permanent: true,
       },
     ]

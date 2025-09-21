@@ -55,7 +55,7 @@ export default function AppLayout({ children, currentStep = 1 }: AppLayoutProps)
             <SidebarContent className="p-2">
                 <SidebarMenu>
                      <SidebarMenuItem>
-                        <SidebarMenuButton href="/new/upload" tooltip="Create New Request" isActive={isCreationFlow}>
+                        <SidebarMenuButton href="/new/initial" tooltip="Create New Request" isActive={isCreationFlow}>
                             <FilePlus className="size-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Create New Request</span>
                         </SidebarMenuButton>
