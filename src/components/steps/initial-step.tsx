@@ -12,6 +12,7 @@ import { ArrowRight, Check, Loader, CheckCircle2, XCircle } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 import { Combobox } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 const mapperIdSuggestions = [
     { value: 'mapper-001', label: 'Standard Order Mapper' },
@@ -104,9 +105,15 @@ export default function InitialStep() {
         setState({
             isRequestMapperSelected: isRequestSelected,
             isResponseMapperSelected: isResponseSelected,
+            lastVisitedStep: '/new/initial',
         });
 
         if (isRequestSelected && isResponseSelected) {
+             toast({
+                variant: 'success',
+                title: 'Skipping Steps',
+                description: 'Request and Response mappers selected. Jumping directly to mapping.',
+            });
             router.push('/new/mapper');
         } else {
             router.push('/new/upload');
@@ -214,3 +221,5 @@ export default function InitialStep() {
         </div>
     );
 }
+
+    

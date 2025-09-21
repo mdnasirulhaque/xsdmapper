@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileUp, ArrowRight, CheckCircle, Eye } from 'lucide-react';
+import { FileUp, ArrowRight, CheckCircle, Eye, ArrowLeft } from 'lucide-react';
 import { useRef, useState } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
@@ -18,7 +18,8 @@ export default function UploadStep() {
     inputXml, 
     responseXml, 
     isRequestMapperSelected, 
-    isResponseMapperSelected 
+    isResponseMapperSelected,
+    lastVisitedStep,
   } = useAppContext();
 
   const inputXmlRef = useRef<HTMLInputElement>(null);
@@ -93,7 +94,12 @@ export default function UploadStep() {
       });
       return;
     }
+    setState({ lastVisitedStep: '/new/upload' });
     router.push('/new/preview-xsd');
+  }
+
+  const handleBack = () => {
+    router.push(lastVisitedStep || '/new/initial');
   }
   
   const getGridColsClass = () => {
@@ -157,8 +163,11 @@ export default function UploadStep() {
             )}
           </div>
 
-          <div className="flex flex-col gap-2 border-t pt-6">
-            <Button onClick={handleProceed} size="lg" className="w-full">
+          <div className="flex items-center justify-between border-t pt-6">
+             <Button variant="outline" onClick={handleBack}>
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+            </Button>
+            <Button onClick={handleProceed} size="lg">
               Proceed to XSD Preview <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
@@ -178,3 +187,4 @@ export default function UploadStep() {
   );
 }
 
+    

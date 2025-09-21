@@ -25,6 +25,7 @@ interface AppState {
   sourceSchemas: SchemasBySet;
   targetSchemas: SchemasBySet;
   mappings: MappingSets;
+  lastVisitedStep: string | null;
 }
 
 interface AppContextType extends AppState {
@@ -62,6 +63,7 @@ const initialState: AppState = {
     set2: [],
     set3: [],
   },
+  lastVisitedStep: null,
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -158,3 +160,5 @@ export function useAppContext() {
   }
   return context;
 }
+
+    

@@ -37,6 +37,7 @@ export default function MapperStep() {
     targetSchemas, 
     mappings, 
     setState,
+    lastVisitedStep,
   } = useAppContext();
   const { toast } = useToast();
   
@@ -229,11 +230,12 @@ export default function MapperStep() {
   }
 
   const handleProceed = () => {
+    setState({ lastVisitedStep: '/new/mapper' });
     router.push('/new/preview-xslt');
   }
   
   const handleBack = () => {
-    router.push('/new/preview-swagger-xsd');
+    router.push(lastVisitedStep || '/new/preview-swagger-xsd');
   }
 
   const areRequiredSetsMapped = mappings.set1.length > 0 && mappings.set2.length > 0;
@@ -323,7 +325,7 @@ export default function MapperStep() {
 
         <div className="flex items-center justify-between bg-card rounded-lg p-3 border">
             <Button variant="outline" onClick={handleBack}>
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Swagger Preview
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -359,3 +361,5 @@ export default function MapperStep() {
     </div>
   )
 }
+
+    

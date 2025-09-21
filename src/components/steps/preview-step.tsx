@@ -114,7 +114,7 @@ const CodePreview = ({ title, content, language, isLoading = false, onPreviewCli
 export default function PreviewStep() {
     const router = useRouter();
     const { toast } = useToast();
-    const { inputXml, responseXml, inputXsd, responseXsd, setState, sourceSchemas, targetSchemas } = useAppContext();
+    const { inputXml, responseXml, inputXsd, responseXsd, setState, sourceSchemas, targetSchemas, lastVisitedStep } = useAppContext();
     const [isGenerating, setIsGenerating] = useState(false);
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
@@ -169,6 +169,7 @@ export default function PreviewStep() {
             });
             return;
         }
+        setState({ lastVisitedStep: '/new/preview-xsd' });
         router.push(`/new/swagger`);
     };
     
@@ -179,7 +180,7 @@ export default function PreviewStep() {
     };
 
     const handleBack = () => {
-        router.push('/new/upload');
+        router.push(lastVisitedStep || '/new/upload');
     }
 
     return (
@@ -229,7 +230,7 @@ export default function PreviewStep() {
                     </div>
                      <div className="flex items-center justify-between border-t pt-6">
                         <Button variant="outline" onClick={handleBack}>
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Upload
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back
                         </Button>
                         <Button onClick={handleProceed} disabled={!inputXsd || !responseXsd}>
                             Next: Configure API <ArrowRight className="ml-2 h-4 w-4" />
@@ -250,3 +251,5 @@ export default function PreviewStep() {
         </div>
     );
 }
+
+    
