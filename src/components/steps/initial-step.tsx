@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -7,9 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowRight, Check, Loader, PlusCircle } from 'lucide-react';
+import { ArrowRight, Check, Loader } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
-import { Combobox } from '../ui/combobox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const mapperIdSuggestions = [
     { value: 'mapper-001', label: 'Standard Order Mapper' },
@@ -134,34 +135,52 @@ export default function InitialStep() {
                         {/* Request Mapper ID */}
                         <div className="space-y-2">
                              <Label htmlFor="requestMapperId" className="font-semibold text-base">Request Mapper ID</Label>
-                             <Combobox
-                                items={mapperIdSuggestions}
-                                value={requestMapperId || ''}
-                                onValueChange={(value) => setState({ requestMapperId: value })}
-                                placeholder="Search or add new..."
-                            />
+                             <Select onValueChange={(value) => setState({ requestMapperId: value })} value={requestMapperId || ''}>
+                                <SelectTrigger className="h-12 text-base">
+                                    <SelectValue placeholder="Select a mapper ID" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {mapperIdSuggestions.map((suggestion) => (
+                                        <SelectItem key={suggestion.value} value={suggestion.value}>
+                                            {suggestion.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         {/* Response Mapper ID */}
                         <div className="space-y-2">
                              <Label htmlFor="responseMapperId" className="font-semibold text-base">Response Mapper ID</Label>
-                             <Combobox
-                                items={mapperIdSuggestions}
-                                value={responseMapperId || ''}
-                                onValueChange={(value) => setState({ responseMapperId: value })}
-                                placeholder="Search or add new..."
-                            />
+                             <Select onValueChange={(value) => setState({ responseMapperId: value })} value={responseMapperId || ''}>
+                                <SelectTrigger className="h-12 text-base">
+                                    <SelectValue placeholder="Select a mapper ID" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {mapperIdSuggestions.map((suggestion) => (
+                                        <SelectItem key={suggestion.value} value={suggestion.value}>
+                                            {suggestion.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         {/* Error Mapper ID */}
                          <div className="space-y-2">
                              <Label htmlFor="errorMapperId" className="font-semibold text-base">Error Mapper ID</Label>
-                             <Combobox
-                                items={mapperIdSuggestions}
-                                value={errorMapperId || ''}
-                                onValueChange={(value) => setState({ errorMapperId: value })}
-                                placeholder="Search or add new..."
-                            />
+                             <Select onValueChange={(value) => setState({ errorMapperId: value })} value={errorMapperId || ''}>
+                                <SelectTrigger className="h-12 text-base">
+                                    <SelectValue placeholder="Select a mapper ID" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {mapperIdSuggestions.map((suggestion) => (
+                                        <SelectItem key={suggestion.value} value={suggestion.value}>
+                                            {suggestion.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
 
