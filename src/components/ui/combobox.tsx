@@ -68,7 +68,6 @@ export function Combobox({ options, value, onChange, placeholder, createPlacehol
                   key={option.value}
                   value={option.label}
                   onSelect={(currentValue) => {
-                    // Find the option that matches the label and get its value
                     const selectedOption = options.find(opt => opt.label.toLowerCase() === currentValue.toLowerCase());
                     if (selectedOption) {
                         onChange(selectedOption.value)
