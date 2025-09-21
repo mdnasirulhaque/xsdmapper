@@ -32,7 +32,9 @@ export function Combobox({ items, value, onValueChange, placeholder }: ComboboxP
   const [inputValue, setInputValue] = React.useState("");
 
   const handleSelect = (currentValue: string) => {
-    onValueChange(currentValue === value ? "" : currentValue);
+    const selectedItem = items.find(item => item.label.toLowerCase() === currentValue.toLowerCase());
+    const newValue = selectedItem ? selectedItem.value : currentValue;
+    onValueChange(newValue === value ? "" : newValue);
     setOpen(false);
   };
   
@@ -76,8 +78,8 @@ export function Combobox({ items, value, onValueChange, placeholder }: ComboboxP
               {items.map((item) => (
                 <CommandItem
                   key={item.value}
-                  value={item.value}
-                  onSelect={() => handleSelect(item.value)}
+                  value={item.label}
+                  onSelect={handleSelect}
                 >
                   <Check
                     className={cn(
