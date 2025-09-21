@@ -30,8 +30,8 @@ export function Combobox({ items, value, onValueChange, placeholder }: ComboboxP
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
 
-  const handleSelect = (currentValue: string) => {
-    onValueChange(currentValue === value ? "" : currentValue);
+  const handleSelect = (selectedValue: string) => {
+    onValueChange(selectedValue === value ? "" : selectedValue);
     setOpen(false);
   };
   
@@ -39,6 +39,12 @@ export function Combobox({ items, value, onValueChange, placeholder }: ComboboxP
     onValueChange(inputValue);
     setOpen(false);
   }
+
+  const filteredItems = inputValue
+    ? items.filter(item =>
+        item.label.toLowerCase().includes(inputValue.toLowerCase())
+      )
+    : items;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -72,12 +78,12 @@ export function Combobox({ items, value, onValueChange, placeholder }: ComboboxP
                 </div>
             </CommandEmpty>
             <CommandGroup>
-              {items.map((item) => (
+              {filteredItems.map((item) => (
                 <CommandItem
                   key={item.value}
                   value={item.value}
-                  onSelect={(currentValue) => {
-                    handleSelect(currentValue)
+                  onSelect={() => {
+                    handleSelect(item.value)
                   }}
                 >
                   <Check
