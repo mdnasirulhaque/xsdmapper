@@ -8,9 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowRight, Check, Loader } from 'lucide-react';
+import { ArrowRight, Check, Loader, CheckCircle2, XCircle } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 import { Combobox } from '@/components/ui/combobox';
+import { cn } from '@/lib/utils';
 
 const mapperIdSuggestions = [
     { value: 'mapper-001', label: 'Standard Order Mapper' },
@@ -18,6 +19,8 @@ const mapperIdSuggestions = [
     { value: 'mapper-003', label: 'Partner API V2' },
     { value: 'mapper-004', label: 'Financial Report Mapper' },
 ];
+
+type VerificationStatus = 'idle' | 'verifying' | 'success' | 'error';
 
 export default function InitialStep() {
     const router = useRouter();
@@ -27,11 +30,14 @@ export default function InitialStep() {
         requestMapperId,
         responseMapperId,
         errorMapperId,
-        setState 
+        setState,
+        isRequestMapperSelected,
+        isResponseMapperSelected
     } = useAppContext();
 
-    const [isVerifying, setIsVerifying] = useState(false);
-    const [isVerified, setIsVerified] = useState(false);
+    const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>('idle');
+    
+    const isVerified = verificationStatus === 'success';
 
     const handleVerifyProfile = async () => {
         if (!profileId) {
@@ -40,10 +46,11 @@ export default function InitialStep() {
                 title: 'Verification Failed',
                 description: 'Please enter a Profile ID.',
             });
+            setVerificationStatus('error');
             return;
         }
 
-        setIsVerifying(true);
+        setVerificationStatus('verifying');
         try {
             const response = await fetch('/api/v1/ea/verify', {
                 method: 'POST',
@@ -59,7 +66,7 @@ export default function InitialStep() {
                     title: 'Verification Successful',
                     description: result.message,
                 });
-                setIsVerified(true);
+                setVerificationStatus('success');
             } else {
                 throw new Error(result.message || 'Verification failed');
             }
@@ -69,9 +76,7 @@ export default function InitialStep() {
                 title: 'Verification Failed',
                 description: error.message,
             });
-            setIsVerified(false);
-        } finally {
-            setIsVerifying(false);
+            setVerificationStatus('error');
         }
     };
 
@@ -108,6 +113,20 @@ export default function InitialStep() {
         }
     };
 
+    const VerificationIcon = () => {
+        switch (verificationStatus) {
+            case 'verifying':
+                return <Loader className="h-5 w-5 animate-spin" />;
+            case 'success':
+                return <CheckCircle2 className="h-5 w-5 text-success" />;
+            case 'error':
+                return <XCircle className="h-5 w-5 text-destructive" />;
+            case 'idle':
+            default:
+                return <Check className="h-5 w-5 text-primary" />;
+        }
+    };
+
     return (
         <div className="flex-1 flex flex-col items-center justify-center">
             <Card className="w-full max-w-3xl shadow-lg">
@@ -131,16 +150,22 @@ export default function InitialStep() {
                                     value={profileId || ''}
                                     onChange={(e) => {
                                         setState({ profileId: e.target.value });
-                                        setIsVerified(false);
+                                        setVerificationStatus('idle');
                                     }}
                                     className="h-12 text-base"
                                 />
                                 <Button
+                                    variant="ghost"
+                                    size="icon"
                                     onClick={handleVerifyProfile}
-                                    disabled={isVerifying || isVerified}
-                                    className="h-12 w-32"
+                                    disabled={verificationStatus === 'verifying' || verificationStatus === 'success'}
+                                    className={cn(
+                                        "h-12 w-12 flex-shrink-0 border",
+                                        verificationStatus === 'success' && "border-success bg-success/10",
+                                        verificationStatus === 'error' && "border-destructive bg-destructive/10",
+                                    )}
                                 >
-                                    {isVerifying ? <Loader className="animate-spin" /> : (isVerified ? <Check /> : 'Verify')}
+                                    <VerificationIcon />
                                 </Button>
                             </div>
                         </div>
@@ -151,9 +176,8 @@ export default function InitialStep() {
                              <Combobox
                                 options={mapperIdSuggestions}
                                 value={requestMapperId}
-                                onChange={(value) => setState({ requestMapperId: value })}
+                                onValueChange={(value) => setState({ requestMapperId: value })}
                                 placeholder="Select a mapper ID..."
-                                createPlaceholder="Create new mapper..."
                              />
                         </div>
 
@@ -163,9 +187,8 @@ export default function InitialStep() {
                              <Combobox
                                 options={mapperIdSuggestions}
                                 value={responseMapperId}
-                                onChange={(value) => setState({ responseMapperId: value })}
+                                onValueChange={(value) => setState({ responseMapperId: value })}
                                 placeholder="Select a mapper ID..."
-                                createPlaceholder="Create new mapper..."
                              />
                         </div>
 
@@ -175,9 +198,8 @@ export default function InitialStep() {
                               <Combobox
                                 options={mapperIdSuggestions}
                                 value={errorMapperId}
-                                onChange={(value) => setState({ errorMapperId: value })}
+                                onValueChange={(value) => setState({ errorMapperId: value })}
                                 placeholder="Select a mapper ID..."
-                                createPlaceholder="Create new mapper..."
                              />
                         </div>
                     </div>

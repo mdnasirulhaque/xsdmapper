@@ -23,12 +23,11 @@ import {
 interface ComboboxProps {
     options: { value: string; label: string; }[];
     value?: string | null;
-    onChange: (value: string) => void;
+    onValueChange: (value: string) => void;
     placeholder?: string;
-    createPlaceholder?: string;
 }
 
-export function Combobox({ options, value, onChange, placeholder, createPlaceholder }: ComboboxProps) {
+export function Combobox({ options, value, onValueChange, placeholder }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
 
   return (
@@ -48,30 +47,17 @@ export function Combobox({ options, value, onChange, placeholder, createPlacehol
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command>
-          <CommandInput placeholder={placeholder} />
+          <CommandInput placeholder="Search..." />
           <CommandList>
-            <CommandEmpty>
-                <div className="p-1">
-                    <Button variant="ghost" className="w-full" onClick={() => {
-                        // This would ideally open a dialog to create a new item
-                        console.log("Create new item clicked");
-                        setOpen(false);
-                    }}>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        {createPlaceholder || "Create new"}
-                    </Button>
-                </div>
-            </CommandEmpty>
+            <CommandEmpty>No option found.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
                   value={option.label}
                   onSelect={(currentValue) => {
-                    const selectedOption = options.find(opt => opt.label.toLowerCase() === currentValue.toLowerCase());
-                    if (selectedOption) {
-                        onChange(selectedOption.value)
-                    }
+                    const selectedValue = options.find(opt => opt.label.toLowerCase() === currentValue.toLowerCase())?.value;
+                    onValueChange(selectedValue === value ? "" : selectedValue || "");
                     setOpen(false)
                   }}
                 >
