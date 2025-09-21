@@ -76,8 +76,10 @@ export function Combobox({ items, value, onValueChange, placeholder }: ComboboxP
               {items.map((item) => (
                 <CommandItem
                   key={item.value}
-                  value={item.label}
-                  onSelect={() => handleSelect(item.value)}
+                  value={item.value}
+                  onSelect={(currentValue) => {
+                    handleSelect(currentValue)
+                  }}
                 >
                   <Check
                     className={cn(
