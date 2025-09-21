@@ -13,6 +13,8 @@ interface AppState {
   requestMapperId: string | null;
   responseMapperId: string | null;
   errorMapperId: string | null;
+  isRequestMapperSelected: boolean;
+  isResponseMapperSelected: boolean;
   inputXml: string | null;
   responseXml: string | null;
   inputXsd: string | null;
@@ -36,6 +38,8 @@ const initialState: AppState = {
   requestMapperId: null,
   responseMapperId: null,
   errorMapperId: null,
+  isRequestMapperSelected: false,
+  isResponseMapperSelected: false,
   inputXml: null,
   responseXml: null,
   inputXsd: null,
@@ -65,10 +69,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, setStateValue] = useState<AppState>(initialState);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
 
 
   useEffect(() => {
@@ -107,9 +108,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const resetState = () => {
     const soeid = state.soeid;
-    setStateValue({...initialState, soeid});
+    const clearedState = {
+      ...initialState,
+      soeid,
+      isRequestMapperSelected: false,
+      isResponseMapperSelected: false,
+    };
+    setStateValue(clearedState);
     // Also clear it from localStorage
-    localStorage.removeItem('appState');
+    localStorage.setItem('appState', JSON.stringify(clearedState));
     router.push('/new/initial');
   };
   

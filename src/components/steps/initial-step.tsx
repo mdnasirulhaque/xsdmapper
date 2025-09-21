@@ -92,7 +92,20 @@ export default function InitialStep() {
             });
             return;
         }
-        router.push('/new/upload');
+
+        const isRequestSelected = !!requestMapperId;
+        const isResponseSelected = !!responseMapperId;
+
+        setState({
+            isRequestMapperSelected: isRequestSelected,
+            isResponseMapperSelected: isResponseSelected,
+        });
+
+        if (isRequestSelected && isResponseSelected) {
+            router.push('/new/mapper');
+        } else {
+            router.push('/new/upload');
+        }
     };
 
     return (
@@ -171,7 +184,7 @@ export default function InitialStep() {
 
                     <div className="flex flex-col gap-2 border-t pt-6">
                         <Button onClick={handleProceed} size="lg" className="w-full" disabled={!profileId || !isVerified}>
-                            Proceed to XML Upload <ArrowRight className="ml-2 h-5 w-5" />
+                            Proceed <ArrowRight className="ml-2 h-5 w-5" />
                         </Button>
                     </div>
                 </CardContent>
