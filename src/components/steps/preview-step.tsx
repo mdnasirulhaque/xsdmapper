@@ -2,7 +2,7 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft, Wand2, Loader, Eye } from 'lucide-react';
@@ -125,13 +125,15 @@ export default function PreviewStep() {
         lastVisitedStep,
         isRequestMapperSelected,
         isResponseMapperSelected,
+        errorMapperId,
     } = useAppContext();
 
     const [isGenerating, setIsGenerating] = useState(false);
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
-    const showInputXsdFlow = !isRequestMapperSelected || isResponseMapperSelected;
-    const showResponseXsdFlow = !isResponseMapperSelected || isRequestMapperSelected;
+    const showInputXsdFlow = !isResponseMapperSelected || isRequestMapperSelected;
+    const showResponseXsdFlow = !isRequestMapperSelected || isResponseMapperSelected;
+
 
     const handleGenerateXsds = useCallback(async () => {
         setIsGenerating(true);
@@ -193,8 +195,19 @@ export default function PreviewStep() {
             return;
         }
 
-        setState({ lastVisitedStep: '/new/preview-xsd' });
-        router.push(`/new/swagger`);
+        const anyMapperSelected = isRequestMapperSelected || isResponseMapperSelected || !!errorMapperId;
+        
+        if (anyMapperSelected) {
+             toast({
+                title: "Skipping Step",
+                description: "A mapper ID was selected, so the Swagger upload step is not necessary.",
+            });
+            setState({ lastVisitedStep: '/new/preview-xsd' });
+            router.push('/new/mapper');
+        } else {
+            setState({ lastVisitedStep: '/new/preview-xsd' });
+            router.push(`/new/swagger`);
+        }
     };
     
     const openPreview = (content: string | null, title: string, language: 'xml' | 'json' | 'yaml') => {
@@ -234,41 +247,46 @@ export default function PreviewStep() {
                         {loadButtonText}
                     </Button>
 
-                    {showInputXsdFlow && (
-                        <div className="flex flex-col lg:flex-row gap-6">
-                           <CodePreview 
-                                title="Input XML" 
-                                content={inputXml} 
-                                language="xml" 
-                                onPreviewClick={() => openPreview(inputXml, 'Input XML Preview', 'xml')}
-                            />
-                           <CodePreview 
-                                title="Generated Input XSD" 
-                                content={inputXsd} 
-                                language="xml" 
-                                isLoading={isGenerating && !inputXsd}
-                                onPreviewClick={() => openPreview(inputXsd, 'Generated Input XSD Preview', 'xml')}
-                            />
-                        </div>
-                    )}
+                    <div className="flex flex-col lg:flex-row gap-6">
+                        {showInputXsdFlow && (
+                            <>
+                               <CodePreview 
+                                    title="Input XML" 
+                                    content={inputXml} 
+                                    language="xml" 
+                                    onPreviewClick={() => openPreview(inputXml, 'Input XML Preview', 'xml')}
+                                />
+                               <CodePreview 
+                                    title="Generated Input XSD" 
+                                    content={inputXsd} 
+                                    language="xml" 
+                                    isLoading={isGenerating && !inputXsd}
+                                    onPreviewClick={() => openPreview(inputXsd, 'Generated Input XSD Preview', 'xml')}
+                                />
+                            </>
+                        )}
+                    </div>
 
-                    {showResponseXsdFlow && (
-                        <div className="flex flex-col lg:flex-row gap-6">
-                           <CodePreview 
-                                title="Response XML" 
-                                content={responseXml} 
-                                language="xml"
-                                onPreviewClick={() => openPreview(responseXml, 'Response XML Preview', 'xml')}
-                            />
-                           <CodePreview 
-                                title="Generated Response XSD" 
-                                content={responseXsd} 
-                                language="xml" 
-                                isLoading={isGenerating && !responseXsd} 
-                                onPreviewClick={() => openPreview(responseXsd, 'Generated Response XSD Preview', 'xml')}
-                            />
-                        </div>
-                    )}
+
+                    <div className="flex flex-col lg:flex-row gap-6">
+                        {showResponseXsdFlow && (
+                            <>
+                               <CodePreview 
+                                    title="Response XML" 
+                                    content={responseXml} 
+                                    language="xml"
+                                    onPreviewClick={() => openPreview(responseXml, 'Response XML Preview', 'xml')}
+                                />
+                               <CodePreview 
+                                    title="Generated Response XSD" 
+                                    content={responseXsd} 
+                                    language="xml" 
+                                    isLoading={isGenerating && !responseXsd} 
+                                    onPreviewClick={() => openPreview(responseXsd, 'Generated Response XSD Preview', 'xml')}
+                                />
+                            </>
+                        )}
+                    </div>
 
                      <div className="flex items-center justify-between border-t pt-6">
                         <Button variant="outline" onClick={handleBack}>
@@ -293,3 +311,5 @@ export default function PreviewStep() {
         </div>
     );
 }
+
+    

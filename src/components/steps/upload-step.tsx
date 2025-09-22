@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileUp, ArrowRight, CheckCircle, Eye, ArrowLeft } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { useAppContext } from '@/context/AppContext';
 
@@ -29,6 +29,16 @@ export default function UploadStep() {
 
   const showInputUpload = !isResponseMapperSelected || isRequestMapperSelected;
   const showResponseUpload = !isRequestMapperSelected || isResponseMapperSelected;
+
+  useEffect(() => {
+    const isSingleUpload = (showInputUpload && !showResponseUpload) || (!showInputUpload && showResponseUpload);
+    if (isSingleUpload) {
+      toast({
+        title: "Single File Upload",
+        description: "A mapper ID was pre-selected, so only one XML file is required for schema generation.",
+      });
+    }
+  }, [showInputUpload, showResponseUpload, toast]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, fileType: 'input' | 'response') => {
     const file = event.target.files?.[0];
