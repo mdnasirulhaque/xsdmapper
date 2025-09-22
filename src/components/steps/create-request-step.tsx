@@ -6,9 +6,11 @@ import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, CheckCircle, FileText, FileJson, Link as LinkIcon } from 'lucide-react';
+import { ArrowLeft, CheckCircle, FileText, FileJson, Link as LinkIcon, User } from 'lucide-react';
 import FilePreviewDialog from '../file-preview-dialog';
 import { generateXsltForSet } from '@/lib/xslt-generator';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 
 const setConfig = {
   set1: { name: 'Request' },
@@ -28,6 +30,11 @@ export default function CreateRequestStep() {
         sourceSchemas,
         targetSchemas,
         mappings,
+        profileId,
+        requestMapperId,
+        responseMapperId,
+        errorMapperId,
+        setState,
     } = useAppContext();
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
@@ -68,6 +75,23 @@ export default function CreateRequestStep() {
             {title}
         </Button>
     )
+
+    const IdentifierField = ({ label, value, onValueChange, placeholder }: { label: string; value: string | null; onValueChange?: (val: string) => void; placeholder?: string }) => (
+        <div className="space-y-2">
+            <Label className="text-sm font-medium">{label}</Label>
+            {onValueChange ? (
+                <Input 
+                    value={value || ''} 
+                    onChange={(e) => onValueChange(e.target.value)} 
+                    placeholder={placeholder}
+                />
+            ) : (
+                <div className="flex h-10 w-full items-center rounded-md border border-input bg-muted px-3 py-2 text-sm">
+                    {value || <span className="text-muted-foreground">Not provided</span>}
+                </div>
+            )}
+        </div>
+    );
     
     const handleFinish = () => {
         // Placeholder data for demonstration
@@ -94,13 +118,41 @@ export default function CreateRequestStep() {
                         Review all your uploaded files, generated schemas, and mappings one last time before finishing.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {/* Column 1: Request Identifiers */}
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-3 border-b pb-2">
+                            <User className="h-5 w-5 text-primary"/>
+                            <h3 className="font-semibold text-lg">Request Identifiers</h3>
+                        </div>
+                        <IdentifierField label="Profile ID" value={profileId} />
+                        <IdentifierField 
+                            label="Request Mapper ID" 
+                            value={requestMapperId} 
+                            onValueChange={!requestMapperId ? (val) => setState({ requestMapperId: val }) : undefined}
+                            placeholder="Enter Request Mapper ID"
+                        />
+                         <IdentifierField 
+                            label="Response Mapper ID" 
+                            value={responseMapperId} 
+                            onValueChange={!responseMapperId ? (val) => setState({ responseMapperId: val }) : undefined}
+                            placeholder="Enter Response Mapper ID"
+                        />
+                         <IdentifierField 
+                            label="Error Mapper ID" 
+                            value={errorMapperId} 
+                            onValueChange={!errorMapperId ? (val) => setState({ errorMapperId: val }) : undefined}
+                            placeholder="Enter Error Mapper ID"
+                        />
+                    </div>
+                    {/* Column 2: Inputs */}
                     <div className="flex flex-col gap-3">
                         <h3 className="font-semibold text-lg border-b pb-2">Inputs</h3>
                         <FileButton title="Input XML" content={inputXml} language="xml" icon={FileText} />
                         <FileButton title="Response XML" content={responseXml} language="xml" icon={FileText} />
                         <FileButton title="Swagger/OpenAPI" content={swaggerFile} language={swaggerFileLanguage} icon={FileJson} />
                     </div>
+                     {/* Column 3: Generated Schemas */}
                      <div className="flex flex-col gap-3">
                         <h3 className="font-semibold text-lg border-b pb-2">Generated Schemas</h3>
                         <FileButton title="Input XSD" content={inputXsd} language="xml" icon={FileText} />
@@ -108,6 +160,7 @@ export default function CreateRequestStep() {
                         {/* A placeholder for swagger XSD for now */}
                         <FileButton title="Swagger XSD" content={"<!-- Mock Swagger XSD -->"} language="xml" icon={FileText} />
                     </div>
+                    {/* Column 4: Mappings & Transforms */}
                     <div className="flex flex-col gap-4">
                          <h3 className="font-semibold text-lg border-b pb-2">Mappings & Transforms</h3>
                          
