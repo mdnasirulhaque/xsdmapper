@@ -11,6 +11,7 @@ import FilePreviewDialog from '../file-preview-dialog';
 import { generateXsltForSet } from '@/lib/xslt-generator';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const setConfig = {
   set1: { name: 'Request' },
@@ -35,6 +36,8 @@ export default function CreateRequestStep() {
         responseMapperId,
         errorMapperId,
         setState,
+        isRequestMapperSelected,
+        isResponseMapperSelected,
     } = useAppContext();
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
@@ -64,17 +67,37 @@ export default function CreateRequestStep() {
         }).join('\n');
     }
 
-    const FileButton = ({ title, content, language, icon: Icon }: { title: string, content: string | null, language: 'xml' | 'yaml' | 'json', icon: React.ElementType }) => (
-         <Button 
-            variant="outline" 
-            className="w-full justify-start h-12"
-            onClick={() => openPreview(content, title, language)}
-            disabled={!content}
-        >
-            <Icon className="mr-3 h-5 w-5 text-muted-foreground" />
-            {title}
-        </Button>
-    )
+    const FileButton = ({ title, content, language, icon: Icon, tooltipContent }: { title: string, content: string | null, language: 'xml' | 'yaml' | 'json', icon: React.ElementType, tooltipContent?: string }) => {
+        const button = (
+             <Button 
+                variant="outline" 
+                className="w-full justify-start h-12"
+                onClick={() => openPreview(content, title, language)}
+                disabled={!content}
+            >
+                <Icon className="mr-3 h-5 w-5 text-muted-foreground" />
+                {title}
+            </Button>
+        );
+
+        if (!content && tooltipContent) {
+            return (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            {/* The div wrapper is necessary for the tooltip to work on a disabled button */}
+                            <div className="w-full">{button}</div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{tooltipContent}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            );
+        }
+
+        return button;
+    }
 
     const IdentifierField = ({ label, value, onValueChange, placeholder }: { label: string; value: string | null; onValueChange?: (val: string) => void; placeholder?: string }) => (
         <div className="space-y-2">
@@ -148,17 +171,40 @@ export default function CreateRequestStep() {
                     {/* Column 2: Inputs */}
                     <div className="flex flex-col gap-3">
                         <h3 className="font-semibold text-lg border-b pb-2">Inputs</h3>
-                        <FileButton title="Input XML" content={inputXml} language="xml" icon={FileText} />
-                        <FileButton title="Response XML" content={responseXml} language="xml" icon={FileText} />
-                        <FileButton title="Swagger/OpenAPI" content={swaggerFile} language={swaggerFileLanguage} icon={FileJson} />
+                        <FileButton 
+                            title="Input XML" 
+                            content={inputXml} 
+                            language="xml" 
+                            icon={FileText} 
+                            tooltipContent={isRequestMapperSelected ? "Not required for the selected Request Mapper ID." : "No file uploaded."}
+                        />
+                        <FileButton 
+                            title="Response XML" 
+                            content={responseXml} 
+                            language="xml" 
+                            icon={FileText} 
+                            tooltipContent={isResponseMapperSelected ? "Not required for the selected Response Mapper ID." : "No file uploaded."}
+                        />
+                        <FileButton title="Swagger/OpenAPI" content={swaggerFile} language={swaggerFileLanguage} icon={FileJson} tooltipContent="Not required when Mapper IDs are used." />
                     </div>
                      {/* Column 3: Generated Schemas */}
                      <div className="flex flex-col gap-3">
                         <h3 className="font-semibold text-lg border-b pb-2">Generated Schemas</h3>
-                        <FileButton title="Input XSD" content={inputXsd} language="xml" icon={FileText} />
-                        <FileButton title="Response XSD" content={responseXsd} language="xml" icon={FileText} />
-                        {/* A placeholder for swagger XSD for now */}
-                        <FileButton title="Swagger XSD" content={"<!-- Mock Swagger XSD -->"} language="xml" icon={FileText} />
+                        <FileButton 
+                            title="Input XSD" 
+                            content={inputXsd} 
+                            language="xml" 
+                            icon={FileText} 
+                            tooltipContent={isRequestMapperSelected ? "Not generated for the selected Request Mapper." : "Not generated."}
+                        />
+                        <FileButton 
+                            title="Response XSD" 
+                            content={responseXsd} 
+                            language="xml" 
+                            icon={FileText} 
+                            tooltipContent={isResponseMapperSelected ? "Not generated for the selected Response Mapper." : "Not generated."}
+                        />
+                        <FileButton title="Swagger XSD" content={swaggerFile ? "<!-- Mock Swagger XSD -->" : null} language="xml" icon={FileText} tooltipContent="Not generated when Mapper IDs are used." />
                     </div>
                     {/* Column 4: Mappings & Transforms */}
                     <div className="flex flex-col gap-4">
@@ -210,3 +256,5 @@ export default function CreateRequestStep() {
         </div>
     );
 }
+
+    
