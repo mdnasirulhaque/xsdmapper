@@ -33,7 +33,8 @@ export default function InitialStep() {
         errorMapperId,
         setState,
         isRequestMapperSelected,
-        isResponseMapperSelected
+        isResponseMapperSelected,
+        lastVisitedStep,
     } = useAppContext();
 
     const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>('idle');
@@ -221,5 +222,3 @@ export default function InitialStep() {
         </div>
     );
 }
-
-    

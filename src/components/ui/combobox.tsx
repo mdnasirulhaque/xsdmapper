@@ -1,7 +1,8 @@
+
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -22,12 +23,17 @@ import {
 interface ComboboxProps {
     options: { value: string; label: string; }[];
     value?: string | null;
-    onValueChange: (value: string) => void;
+    onValueChange: (value: string | null) => void;
     placeholder?: string;
 }
 
 export function Combobox({ options, value, onValueChange, placeholder }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent the popover from opening
+    onValueChange(null);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -36,21 +42,32 @@ export function Combobox({ options, value, onValueChange, placeholder }: Combobo
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between h-12 text-base md:text-sm"
+          className="w-full justify-between h-12 text-base md:text-sm group"
         >
-          {value
-            ? options.find((option) => option.value === value)?.label
-            : placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <span className="truncate">
+            {value
+              ? options.find((option) => option.value === value)?.label
+              : placeholder}
+          </span>
+          <div className="flex items-center">
+            {value && (
+              <X
+                className="mr-2 h-4 w-4 shrink-0 opacity-50 transition-opacity hover:opacity-100"
+                onClick={handleClear}
+              />
+            )}
+            <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+          </div>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command
             filter={(value, search) => {
-              const option = options.find(option => option.value === value);
+              const option = options.find(option => option.value.toLowerCase() === value.toLowerCase());
               if (option) {
-                  return option.label.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
+                return option.label.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
               }
+              if(value.toLowerCase().includes(search.toLowerCase())) return 1;
               return 0;
             }}
         >
@@ -63,7 +80,7 @@ export function Combobox({ options, value, onValueChange, placeholder }: Combobo
                   key={option.value}
                   value={option.value}
                   onSelect={(currentValue) => {
-                    onValueChange(currentValue === value ? "" : currentValue)
+                    onValueChange(currentValue === value ? null : currentValue)
                     setOpen(false)
                   }}
                 >
