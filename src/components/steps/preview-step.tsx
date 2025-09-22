@@ -131,8 +131,8 @@ export default function PreviewStep() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
 
-    const showInputXsdFlow = !isResponseMapperSelected || isRequestMapperSelected;
-    const showResponseXsdFlow = !isRequestMapperSelected || isResponseMapperSelected;
+    const showInputXsdFlow = isResponseMapperSelected || (!isRequestMapperSelected && !isResponseMapperSelected);
+    const showResponseXsdFlow = isRequestMapperSelected || (!isRequestMapperSelected && !isResponseMapperSelected);
 
 
     const handleGenerateXsds = useCallback(async () => {
@@ -265,11 +265,7 @@ export default function PreviewStep() {
                                 />
                             </>
                         )}
-                    </div>
-
-
-                    <div className="flex flex-col lg:flex-row gap-6">
-                        {showResponseXsdFlow && (
+                         {showResponseXsdFlow && (
                             <>
                                <CodePreview 
                                     title="Response XML" 
@@ -311,5 +307,3 @@ export default function PreviewStep() {
         </div>
     );
 }
-
-    

@@ -27,8 +27,8 @@ export default function UploadStep() {
 
   const [previewing, setPreviewing] = useState<{ content: string; title: string } | null>(null);
 
-  const showInputUpload = !isResponseMapperSelected || isRequestMapperSelected;
-  const showResponseUpload = !isRequestMapperSelected || isResponseMapperSelected;
+  const showInputUpload = isResponseMapperSelected || (!isRequestMapperSelected && !isResponseMapperSelected);
+  const showResponseUpload = isRequestMapperSelected || (!isRequestMapperSelected && !isResponseMapperSelected);
 
   useEffect(() => {
     const isSingleUpload = (showInputUpload && !showResponseUpload) || (!showInputUpload && showResponseUpload);
@@ -196,5 +196,3 @@ export default function UploadStep() {
     </div>
   );
 }
-
-    
