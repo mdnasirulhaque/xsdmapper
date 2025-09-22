@@ -114,9 +114,24 @@ const CodePreview = ({ title, content, language, isLoading = false, onPreviewCli
 export default function PreviewStep() {
     const router = useRouter();
     const { toast } = useToast();
-    const { inputXml, responseXml, inputXsd, responseXsd, setState, sourceSchemas, targetSchemas, lastVisitedStep } = useAppContext();
+    const { 
+        inputXml, 
+        responseXml, 
+        inputXsd, 
+        responseXsd, 
+        setState, 
+        sourceSchemas, 
+        targetSchemas, 
+        lastVisitedStep,
+        isRequestMapperSelected,
+        isResponseMapperSelected,
+    } = useAppContext();
+
     const [isGenerating, setIsGenerating] = useState(false);
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
+
+    const showInputXsdFlow = !isRequestMapperSelected || isResponseMapperSelected;
+    const showResponseXsdFlow = !isResponseMapperSelected || isRequestMapperSelected;
 
     const handleGenerateXsds = useCallback(async () => {
         setIsGenerating(true);
@@ -128,24 +143,28 @@ export default function PreviewStep() {
         // Simulate a network delay
         setTimeout(() => {
             try {
-                const parsedSourceSchema = parseXsdToXsdNode(mockInputXsdString, 'source');
-                const parsedTargetSchema = parseXsdToXsdNode(mockResponseXsdString, 'target');
+                const newState: Partial<ReturnType<typeof useAppContext>> = {};
 
-                if (!parsedSourceSchema || !parsedTargetSchema) {
-                    throw new Error("Could not parse the mock XSDs.");
+                if (showInputXsdFlow) {
+                    const parsedSourceSchema = parseXsdToXsdNode(mockInputXsdString, 'source');
+                     if (!parsedSourceSchema) throw new Error("Could not parse the mock Input XSD.");
+                    newState.inputXsd = mockInputXsdString;
+                    newState.sourceSchemas = { ...sourceSchemas, set1: parsedSourceSchema };
                 }
 
-                setState({
-                    inputXsd: mockInputXsdString,
-                    responseXsd: mockResponseXsdString,
-                    sourceSchemas: { ...sourceSchemas, set1: parsedSourceSchema },
-                    targetSchemas: { ...targetSchemas, set1: parsedTargetSchema },
-                });
+                if (showResponseXsdFlow) {
+                    const parsedTargetSchema = parseXsdToXsdNode(mockResponseXsdString, 'target');
+                    if (!parsedTargetSchema) throw new Error("Could not parse the mock Response XSD.");
+                    newState.responseXsd = mockResponseXsdString;
+                    newState.targetSchemas = { ...targetSchemas, set1: parsedTargetSchema };
+                }
+
+                setState(newState);
                 
                 toast({
                     variant: 'success',
                     title: "Schemas Loaded",
-                    description: "Successfully loaded mock XSDs for both files.",
+                    description: "Successfully loaded mock XSDs.",
                 });
 
             } catch(e: any) {
@@ -158,10 +177,14 @@ export default function PreviewStep() {
                 setIsGenerating(false);
             }
         }, 1000);
-    }, [toast, setState, sourceSchemas, targetSchemas]);
+    }, [toast, setState, sourceSchemas, targetSchemas, showInputXsdFlow, showResponseXsdFlow]);
 
     const handleProceed = () => {
-        if (!sourceSchemas.set1 || !targetSchemas.set1) {
+        let isReady = true;
+        if (showInputXsdFlow && !sourceSchemas.set1) isReady = false;
+        if (showResponseXsdFlow && !targetSchemas.set1) isReady = false;
+        
+        if (!isReady) {
              toast({
                 variant: 'destructive',
                 title: "XSDs not available",
@@ -169,6 +192,7 @@ export default function PreviewStep() {
             });
             return;
         }
+
         setState({ lastVisitedStep: '/new/preview-xsd' });
         router.push(`/new/swagger`);
     };
@@ -183,6 +207,17 @@ export default function PreviewStep() {
         router.push(lastVisitedStep || '/new/upload');
     }
 
+    const isLoadButtonDisabled = (isGenerating) || (showInputXsdFlow && !!inputXsd) || (showResponseXsdFlow && !!responseXsd);
+    
+    let loadButtonText = 'Load Mock XSDs';
+    if (isGenerating) {
+        loadButtonText = 'Loading...';
+    } else if (isLoadButtonDisabled) {
+        loadButtonText = 'Loaded';
+    }
+
+    const isProceedDisabled = (showInputXsdFlow && !inputXsd) || (showResponseXsdFlow && !responseXsd);
+
     return (
         <div className="flex-1 flex items-center justify-center">
             <Card className="w-full shadow-lg">
@@ -194,45 +229,52 @@ export default function PreviewStep() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-6">
-                     <Button onClick={handleGenerateXsds} size="lg" disabled={isGenerating || (!!inputXsd && !!responseXsd)}>
+                     <Button onClick={handleGenerateXsds} size="lg" disabled={isLoadButtonDisabled}>
                         {isGenerating ? <Loader className="mr-2 h-5 w-5 animate-spin" /> : <Wand2 className="mr-2 h-5 w-5" />}
-                        {isGenerating ? 'Loading...' : (!!inputXsd && !!responseXsd ? 'Loaded' : 'Load Mock XSDs')}
+                        {loadButtonText}
                     </Button>
-                    <div className="flex flex-col lg:flex-row gap-6">
-                       <CodePreview 
-                            title="Input XML" 
-                            content={inputXml} 
-                            language="xml" 
-                            onPreviewClick={() => openPreview(inputXml, 'Input XML Preview', 'xml')}
-                        />
-                       <CodePreview 
-                            title="Generated Input XSD" 
-                            content={inputXsd} 
-                            language="xml" 
-                            isLoading={isGenerating && !inputXsd}
-                            onPreviewClick={() => openPreview(inputXsd, 'Generated Input XSD Preview', 'xml')}
-                        />
-                    </div>
-                    <div className="flex flex-col lg:flex-row gap-6">
-                       <CodePreview 
-                            title="Response XML" 
-                            content={responseXml} 
-                            language="xml"
-                            onPreviewClick={() => openPreview(responseXml, 'Response XML Preview', 'xml')}
-                        />
-                       <CodePreview 
-                            title="Generated Response XSD" 
-                            content={responseXsd} 
-                            language="xml" 
-                            isLoading={isGenerating && !responseXsd} 
-                            onPreviewClick={() => openPreview(responseXsd, 'Generated Response XSD Preview', 'xml')}
-                        />
-                    </div>
+
+                    {showInputXsdFlow && (
+                        <div className="flex flex-col lg:flex-row gap-6">
+                           <CodePreview 
+                                title="Input XML" 
+                                content={inputXml} 
+                                language="xml" 
+                                onPreviewClick={() => openPreview(inputXml, 'Input XML Preview', 'xml')}
+                            />
+                           <CodePreview 
+                                title="Generated Input XSD" 
+                                content={inputXsd} 
+                                language="xml" 
+                                isLoading={isGenerating && !inputXsd}
+                                onPreviewClick={() => openPreview(inputXsd, 'Generated Input XSD Preview', 'xml')}
+                            />
+                        </div>
+                    )}
+
+                    {showResponseXsdFlow && (
+                        <div className="flex flex-col lg:flex-row gap-6">
+                           <CodePreview 
+                                title="Response XML" 
+                                content={responseXml} 
+                                language="xml"
+                                onPreviewClick={() => openPreview(responseXml, 'Response XML Preview', 'xml')}
+                            />
+                           <CodePreview 
+                                title="Generated Response XSD" 
+                                content={responseXsd} 
+                                language="xml" 
+                                isLoading={isGenerating && !responseXsd} 
+                                onPreviewClick={() => openPreview(responseXsd, 'Generated Response XSD Preview', 'xml')}
+                            />
+                        </div>
+                    )}
+
                      <div className="flex items-center justify-between border-t pt-6">
                         <Button variant="outline" onClick={handleBack}>
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back
                         </Button>
-                        <Button onClick={handleProceed} disabled={!inputXsd || !responseXsd}>
+                        <Button onClick={handleProceed} disabled={isProceedDisabled}>
                             Next: Configure API <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
@@ -251,5 +293,3 @@ export default function PreviewStep() {
         </div>
     );
 }
-
-    
