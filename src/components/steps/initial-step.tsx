@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowRight, Check, Loader, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowRight, Check, Loader, CheckCircle2, XCircle, X } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 import { Combobox } from '@/components/ui/combobox';
 import { cn } from '@/lib/utils';
@@ -181,34 +181,67 @@ export default function InitialStep() {
                         {/* Request Mapper ID */}
                         <div className="space-y-2">
                              <Label htmlFor="requestMapperId" className="font-semibold text-base">Request Mapper ID</Label>
-                             <Combobox
-                                options={mapperIdSuggestions}
-                                value={requestMapperId}
-                                onValueChange={(value) => setState({ requestMapperId: value })}
-                                placeholder="Select a mapper ID..."
-                             />
+                             <div className="flex items-center gap-2">
+                                 <Combobox
+                                    options={mapperIdSuggestions}
+                                    value={requestMapperId}
+                                    onValueChange={(value) => setState({ requestMapperId: value })}
+                                    placeholder="Select a mapper ID..."
+                                 />
+                                 <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setState({ requestMapperId: null })}
+                                    disabled={!requestMapperId}
+                                    className="h-12 w-12 flex-shrink-0 border"
+                                >
+                                    <X className="h-5 w-5 text-muted-foreground" />
+                                </Button>
+                             </div>
                         </div>
 
                         {/* Response Mapper ID */}
                         <div className="space-y-2">
                              <Label htmlFor="responseMapperId" className="font-semibold text-base">Response Mapper ID</Label>
-                             <Combobox
-                                options={mapperIdSuggestions}
-                                value={responseMapperId}
-                                onValueChange={(value) => setState({ responseMapperId: value })}
-                                placeholder="Select a mapper ID..."
-                             />
+                             <div className="flex items-center gap-2">
+                                <Combobox
+                                    options={mapperIdSuggestions}
+                                    value={responseMapperId}
+                                    onValueChange={(value) => setState({ responseMapperId: value })}
+                                    placeholder="Select a mapper ID..."
+                                />
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setState({ responseMapperId: null })}
+                                    disabled={!responseMapperId}
+                                    className="h-12 w-12 flex-shrink-0 border"
+                                >
+                                    <X className="h-5 w-5 text-muted-foreground" />
+                                </Button>
+                             </div>
                         </div>
 
                         {/* Error Mapper ID */}
                          <div className="space-y-2">
                              <Label htmlFor="errorMapperId" className="font-semibold text-base">Error Mapper ID</Label>
-                              <Combobox
-                                options={mapperIdSuggestions}
-                                value={errorMapperId}
-                                onValueChange={(value) => setState({ errorMapperId: value })}
-                                placeholder="Select a mapper ID..."
-                             />
+                              <div className="flex items-center gap-2">
+                                <Combobox
+                                    options={mapperIdSuggestions}
+                                    value={errorMapperId}
+                                    onValueChange={(value) => setState({ errorMapperId: value })}
+                                    placeholder="Select a mapper ID..."
+                                />
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setState({ errorMapperId: null })}
+                                    disabled={!errorMapperId}
+                                    className="h-12 w-12 flex-shrink-0 border"
+                                >
+                                    <X className="h-5 w-5 text-muted-foreground" />
+                                </Button>
+                              </div>
                         </div>
                     </div>
 

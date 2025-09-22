@@ -49,15 +49,7 @@ export function Combobox({ options, value, onValueChange, placeholder }: Combobo
               ? options.find((option) => option.value === value)?.label
               : placeholder}
           </span>
-          <div className="flex items-center">
-            {value && (
-              <X
-                className="mr-2 h-4 w-4 shrink-0 opacity-50 transition-opacity hover:opacity-100"
-                onClick={handleClear}
-              />
-            )}
-            <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-          </div>
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
@@ -65,8 +57,10 @@ export function Combobox({ options, value, onValueChange, placeholder }: Combobo
             filter={(value, search) => {
               const option = options.find(option => option.value.toLowerCase() === value.toLowerCase());
               if (option) {
-                return option.label.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
+                // search against the label
+                if(option.label.toLowerCase().includes(search.toLowerCase())) return 1;
               }
+              // Also check if the value includes the search term, for cases where value and label are the same
               if(value.toLowerCase().includes(search.toLowerCase())) return 1;
               return 0;
             }}
