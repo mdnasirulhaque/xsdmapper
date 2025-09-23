@@ -176,102 +176,104 @@ export default function CreateRequestStep() {
                         Review all your uploaded files, generated schemas, and mappings one last time before finishing.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 flex-1">
-                    {/* Column 1: Request Identifiers */}
-                    <div className="flex flex-col gap-4">
-                        <div className="flex items-center gap-3 border-b pb-2">
-                            <User className="h-5 w-5 text-primary"/>
-                            <h3 className="font-semibold text-lg">Request Identifiers</h3>
-                        </div>
-                        <IdentifierField label="Profile ID" value={profileId} />
-                        <IdentifierField 
-                            label="Request Mapper ID" 
-                            value={requestMapperId} 
-                            onValueChange={!requestMapperId ? (val) => setState({ requestMapperId: val }) : undefined}
-                            placeholder="Enter Request Mapper ID"
-                        />
-                         <IdentifierField 
-                            label="Response Mapper ID" 
-                            value={responseMapperId} 
-                            onValueChange={!responseMapperId ? (val) => setState({ responseMapperId: val }) : undefined}
-                            placeholder="Enter Response Mapper ID"
-                        />
-                         <IdentifierField 
-                            label="Error Mapper ID" 
-                            value={errorMapperId} 
-                            onValueChange={!errorMapperId ? (val) => setState({ errorMapperId: val }) : undefined}
-                            placeholder="Enter Error Mapper ID"
-                        />
-                    </div>
-                    {/* Column 2: Inputs & Generated */}
-                    <div className="flex flex-col gap-3">
-                         <div className="flex items-center gap-3 border-b pb-2">
-                            <FileText className="h-5 w-5 text-primary"/>
-                            <h3 className="font-semibold text-lg">Inputs &amp; Schemas</h3>
-                        </div>
-                        <FileButton 
-                            title="Input XML" 
-                            content={inputXml} 
-                            language="xml" 
-                            icon={FileText} 
-                            tooltipContent={isRequestMapperSelected ? "Not required for the selected Request Mapper ID." : "No file uploaded."}
-                        />
-                        <FileButton 
-                            title="Generated Input XSD" 
-                            content={inputXsd} 
-                            language="xml" 
-                            icon={FileText} 
-                            tooltipContent={isRequestMapperSelected ? "Not generated for the selected Request Mapper." : "Not generated."}
-                        />
-                        <FileButton 
-                            title="Response XML" 
-                            content={responseXml} 
-                            language="xml" 
-                            icon={FileText} 
-                            tooltipContent={isResponseMapperSelected ? "Not required for the selected Response Mapper ID." : "No file uploaded."}
-                        />
-                         <FileButton 
-                            title="Generated Response XSD" 
-                            content={responseXsd} 
-                            language="xml" 
-                            icon={FileText} 
-                            tooltipContent={isResponseMapperSelected ? "Not generated for the selected Response Mapper." : "Not generated."}
-                        />
-                        <FileButton title="Swagger/OpenAPI" content={swaggerFile} language={swaggerFileLanguage} icon={FileJson} tooltipContent="Not required when Mapper IDs are used." />
-                        <FileButton title="Generated Swagger XSD" content={swaggerFile ? "&lt;!-- Mock Swagger XSD --&gt;" : null} language="xml" icon={FileText} tooltipContent="Not generated when Mapper IDs are used." />
-                    </div>
-                    {/* Column 3: Mappings */}
-                    <div className="flex flex-col gap-4">
-                        <div className="flex items-center gap-3 border-b pb-2">
-                            <LinkIcon className="h-5 w-5 text-primary"/>
-                            <h3 className="font-semibold text-lg">Mappings &amp; Transforms</h3>
-                        </div>
-                        
-                        <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
-                            <h4 className="font-semibold text-center">Request</h4>
-                            <div className="grid grid-cols-2 gap-2">
-                                <FileButton title="Mapping" content={getMappingSummary('set1')} language="json" icon={LinkIcon} />
-                                <FileButton title="XSLT" content={generatedXslt.set1} language="xml" icon={FileText} />
+                <CardContent className="flex flex-col gap-6 flex-1">
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                        {/* Column 1: Request Identifiers */}
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center gap-3 border-b pb-2">
+                                <User className="h-5 w-5 text-primary"/>
+                                <h3 className="font-semibold text-lg">Request Identifiers</h3>
                             </div>
+                            <IdentifierField label="Profile ID" value={profileId} />
+                            <IdentifierField 
+                                label="Request Mapper ID" 
+                                value={requestMapperId} 
+                                onValueChange={!requestMapperId ? (val) => setState({ requestMapperId: val }) : undefined}
+                                placeholder="Enter Request Mapper ID"
+                            />
+                            <IdentifierField 
+                                label="Response Mapper ID" 
+                                value={responseMapperId} 
+                                onValueChange={!responseMapperId ? (val) => setState({ responseMapperId: val }) : undefined}
+                                placeholder="Enter Response Mapper ID"
+                            />
+                            <IdentifierField 
+                                label="Error Mapper ID" 
+                                value={errorMapperId} 
+                                onValueChange={!errorMapperId ? (val) => setState({ errorMapperId: val }) : undefined}
+                                placeholder="Enter Error Mapper ID"
+                            />
                         </div>
+                        {/* Column 2: Inputs & Generated */}
+                        <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-3 border-b pb-2">
+                                <FileText className="h-5 w-5 text-primary"/>
+                                <h3 className="font-semibold text-lg">Inputs &amp; Schemas</h3>
+                            </div>
+                            <FileButton 
+                                title="Input XML" 
+                                content={inputXml} 
+                                language="xml" 
+                                icon={FileText} 
+                                tooltipContent={isRequestMapperSelected ? "Not required for the selected Request Mapper ID." : "No file uploaded."}
+                            />
+                            <FileButton 
+                                title="Generated Input XSD" 
+                                content={inputXsd} 
+                                language="xml" 
+                                icon={FileText} 
+                                tooltipContent={isRequestMapperSelected ? "Not generated for the selected Request Mapper." : "Not generated."}
+                            />
+                            <FileButton 
+                                title="Response XML" 
+                                content={responseXml} 
+                                language="xml" 
+                                icon={FileText} 
+                                tooltipContent={isResponseMapperSelected ? "Not required for the selected Response Mapper ID." : "No file uploaded."}
+                            />
+                            <FileButton 
+                                title="Generated Response XSD" 
+                                content={responseXsd} 
+                                language="xml" 
+                                icon={FileText} 
+                                tooltipContent={isResponseMapperSelected ? "Not generated for the selected Response Mapper." : "Not generated."}
+                            />
+                            <FileButton title="Swagger/OpenAPI" content={swaggerFile} language={swaggerFileLanguage} icon={FileJson} tooltipContent="Not required when Mapper IDs are used." />
+                            <FileButton title="Generated Swagger XSD" content={swaggerFile ? "&lt;!-- Mock Swagger XSD --&gt;" : null} language="xml" icon={FileText} tooltipContent="Not generated when Mapper IDs are used." />
+                        </div>
+                        {/* Column 3: Mappings */}
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center gap-3 border-b pb-2">
+                                <LinkIcon className="h-5 w-5 text-primary"/>
+                                <h3 className="font-semibold text-lg">Mappings &amp; Transforms</h3>
+                            </div>
+                            
+                            <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
+                                <h4 className="font-semibold text-center">Request</h4>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <FileButton title="Mapping" content={getMappingSummary('set1')} language="json" icon={LinkIcon} />
+                                    <FileButton title="XSLT" content={generatedXslt.set1} language="xml" icon={FileText} />
+                                </div>
+                            </div>
 
-                        <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
-                            <h4 className="font-semibold text-center">Response</h4>
-                            <div className="grid grid-cols-2 gap-2">
-                                <FileButton title="Mapping" content={getMappingSummary('set2')} language="json" icon={LinkIcon} />
-                                <FileButton title="XSLT" content={generatedXslt.set2} language="xml" icon={FileText} />
+                            <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
+                                <h4 className="font-semibold text-center">Response</h4>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <FileButton title="Mapping" content={getMappingSummary('set2')} language="json" icon={LinkIcon} />
+                                    <FileButton title="XSLT" content={generatedXslt.set2} language="xml" icon={FileText} />
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
-                            <h4 className="font-semibold text-center">Error</h4>
-                            <div className="grid grid-cols-2 gap-2">
-                                <FileButton title="Mapping" content={getMappingSummary('set3')} language="json" icon={LinkIcon} />
-                                <FileButton title="XSLT" content={generatedXslt.set3} language="xml" icon={FileText} />
+                            <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
+                                <h4 className="font-semibold text-center">Error</h4>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <FileButton title="Mapping" content={getMappingSummary('set3')} language="json" icon={LinkIcon} />
+                                    <FileButton title="XSLT" content={generatedXslt.set3} language="xml" icon={FileText} />
+                                </div>
                             </div>
                         </div>
                     </div>
-                    {/* Column 4: Rest Flow */}
+                    {/* Row 2: Rest Flow */}
                     <div className="flex flex-col gap-4 flex-1 min-h-0">
                         <div className="flex items-center gap-3 border-b pb-2">
                             <Component className="h-5 w-5 text-primary"/>
