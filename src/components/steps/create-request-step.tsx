@@ -176,7 +176,7 @@ export default function CreateRequestStep() {
                         Review all your uploaded files, generated schemas, and mappings one last time before finishing.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 flex-1">
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-1">
                     {/* Column 1: Request Identifiers */}
                     <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-3 border-b pb-2">
