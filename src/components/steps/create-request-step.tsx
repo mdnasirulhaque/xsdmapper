@@ -239,11 +239,11 @@ export default function CreateRequestStep() {
                             icon={FileText} 
                             tooltipContent={isResponseMapperSelected ? "Not generated for the selected Response Mapper." : "Not generated."}
                         />
-                        <FileButton title="Swagger XSD" content={swaggerFile ? "<!-- Mock Swagger XSD -->" : null} language="xml" icon={FileText} tooltipContent="Not generated when Mapper IDs are used." />
+                        <FileButton title="Swagger XSD" content={swaggerFile ? "&lt;!-- Mock Swagger XSD --&gt;" : null} language="xml" icon={FileText} tooltipContent="Not generated when Mapper IDs are used." />
                     </div>
                     {/* Column 4: Mappings & Transforms */}
                     <div className="flex flex-col gap-4">
-                         <h3 className="font-semibold text-lg border-b pb-2">Mappings & Transforms</h3>
+                         <h3 className="font-semibold text-lg border-b pb-2">Mappings &amp; Transforms</h3>
                          
                          <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
                             <h4 className="font-semibold">Request</h4>
@@ -270,7 +270,7 @@ export default function CreateRequestStep() {
                          </div>
                     </div>
                     {/* Column 5: Rest Flow */}
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-4 lg:col-span-2">
                          <div className="flex items-center gap-3 border-b pb-2">
                             <Component className="h-5 w-5 text-primary"/>
                             <h3 className="font-semibold text-lg">Rest Flow</h3>
@@ -349,7 +349,7 @@ export default function CreateRequestStep() {
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back to XSLT Preview
                 </Button>
                 <Button onClick={handleFinish}>
-                    Finish & Complete <CheckCircle className="ml-2 h-4 w-4" />
+                    Finish &amp; Complete <CheckCircle className="ml-2 h-4 w-4" />
                 </Button>
             </div>
              {previewing && (
@@ -364,3 +364,5 @@ export default function CreateRequestStep() {
         </div>
     );
 }
+
+    
