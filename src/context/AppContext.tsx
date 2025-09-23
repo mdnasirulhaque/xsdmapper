@@ -26,6 +26,11 @@ interface AppState {
   targetSchemas: SchemasBySet;
   mappings: MappingSets;
   lastVisitedStep: string | null;
+  restFlowAnswers: {
+    [key: string]: any;
+    radio: string;
+    checkbox: { a: boolean; b: boolean };
+  };
 }
 
 interface AppContextType extends AppState {
@@ -64,6 +69,12 @@ const initialState: AppState = {
     set3: [],
   },
   lastVisitedStep: null,
+  restFlowAnswers: {
+    q1: '', q2: '', q3: '', q4: '', q5: '',
+    q6: '', q7: '', q8: '', q9: '', q10: '',
+    radio: 'option-one',
+    checkbox: { a: false, b: false },
+  },
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -82,7 +93,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(savedState);
         // Basic validation to ensure the parsed state has the expected shape
         if (parsed && typeof parsed === 'object' && 'sourceSchemas' in parsed && 'mappings' in parsed && 'set1' in parsed.mappings) {
-          setStateValue(prevState => ({ ...prevState, ...parsed }));
+          // Deep merge to ensure new properties in initialState are not lost
+           const mergedState = {
+            ...initialState,
+            ...parsed,
+            restFlowAnswers: {
+              ...initialState.restFlowAnswers,
+              ...(parsed.restFlowAnswers || {})
+            }
+          };
+          setStateValue(mergedState);
         } else {
             // If the stored state is old, reset to initial
             localStorage.removeItem('appState');
@@ -160,5 +180,3 @@ export function useAppContext() {
   }
   return context;
 }
-
-    

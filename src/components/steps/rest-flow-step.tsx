@@ -1,7 +1,6 @@
 
 "use client";
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,7 @@ import { Separator } from '../ui/separator';
 
 export default function RestFlowStep() {
     const router = useRouter();
-    const { setState, lastVisitedStep } = useAppContext();
+    const { setState, lastVisitedStep, restFlowAnswers } = useAppContext();
 
     const handleProceed = () => {
         setState({ lastVisitedStep: '/new/rest-flow' });
@@ -25,6 +24,10 @@ export default function RestFlowStep() {
     const handleBack = () => {
         router.push(lastVisitedStep || '/new/preview-swagger-xsd');
     };
+    
+    const handleInputChange = (question: string, value: string) => {
+        setState({ restFlowAnswers: { ...restFlowAnswers, [question]: value }});
+    }
 
     return (
         <div className="flex-1 flex flex-col">
@@ -40,7 +43,12 @@ export default function RestFlowStep() {
                         {Array.from({ length: 5 }).map((_, i) => (
                             <div key={`question-${i + 1}`} className="space-y-2">
                                 <Label htmlFor={`question-${i + 1}`}>Question {i + 1}</Label>
-                                <Input id={`question-${i + 1}`} placeholder={`Answer for question ${i + 1}`} />
+                                <Input 
+                                    id={`question-${i + 1}`} 
+                                    placeholder={`Answer for question ${i + 1}`} 
+                                    value={restFlowAnswers[`q${i+1}`]}
+                                    onChange={(e) => handleInputChange(`q${i+1}`, e.target.value)}
+                                />
                             </div>
                         ))}
                     </div>
@@ -55,6 +63,8 @@ export default function RestFlowStep() {
                                         id={`question-${i + 6}`}
                                         placeholder={`Answer...`}
                                         type={(i + 6) >= 8 ? 'number' : 'text'}
+                                        value={restFlowAnswers[`q${i+6}`]}
+                                        onChange={(e) => handleInputChange(`q${i+6}`, e.target.value)}
                                     />
                                 </div>
                             ))}
@@ -64,7 +74,11 @@ export default function RestFlowStep() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-6">
                         <div className="space-y-3">
                              <Label>Radio Button Question</Label>
-                             <RadioGroup defaultValue="option-one" className="flex gap-4">
+                             <RadioGroup 
+                                value={restFlowAnswers.radio} 
+                                onValueChange={(value) => setState({ restFlowAnswers: { ...restFlowAnswers, radio: value }})} 
+                                className="flex gap-4"
+                             >
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="option-one" id="r1" />
                                     <Label htmlFor="r1">Option One</Label>
@@ -79,12 +93,20 @@ export default function RestFlowStep() {
                              <Label>Checkbox Question</Label>
                              <div className="flex gap-4">
                                 <div className="flex items-center space-x-2">
-                                    <Checkbox id="c1" />
-                                    <label htmlFor="c1" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Option A</label>
+                                    <Checkbox 
+                                        id="c1" 
+                                        checked={restFlowAnswers.checkbox.a}
+                                        onCheckedChange={(checked) => setState({ restFlowAnswers: { ...restFlowAnswers, checkbox: { ...restFlowAnswers.checkbox, a: !!checked }}})}
+                                    />
+                                    <Label htmlFor="c1">Option A</Label>
                                 </div>
                                  <div className="flex items-center space-x-2">
-                                    <Checkbox id="c2" />
-                                    <label htmlFor="c2" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Option B</label>
+                                    <Checkbox 
+                                        id="c2" 
+                                        checked={restFlowAnswers.checkbox.b}
+                                        onCheckedChange={(checked) => setState({ restFlowAnswers: { ...restFlowAnswers, checkbox: { ...restFlowAnswers.checkbox, b: !!checked }}})}
+                                    />
+                                    <Label htmlFor="c2">Option B</Label>
                                 </div>
                             </div>
                         </div>
