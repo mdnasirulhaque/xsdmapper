@@ -36,10 +36,19 @@ export default function RestFlowStep() {
                 </CardHeader>
                 <CardContent className="flex flex-col gap-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {Array.from({ length: 10 }).map((_, i) => (
+                        {Array.from({ length: 5 }).map((_, i) => (
                             <div key={`question-${i + 1}`} className="space-y-2">
                                 <Label htmlFor={`question-${i + 1}`}>Question {i + 1}</Label>
                                 <Input id={`question-${i + 1}`} placeholder={`Answer for question ${i + 1}`} />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                         {Array.from({ length: 5 }).map((_, i) => (
+                            <div key={`question-${i + 6}`} className="space-y-2">
+                                <Label htmlFor={`question-${i + 6}`}>Question {i + 6}</Label>
+                                <Input id={`question-${i + 6}`} placeholder={`Answer...`} />
                             </div>
                         ))}
                     </div>
