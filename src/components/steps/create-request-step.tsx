@@ -11,7 +11,7 @@ import FilePreviewDialog from '../file-preview-dialog';
 import { generateXsltForSet } from '@/lib/xslt-generator';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Tooltip, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Checkbox } from '../ui/checkbox';
 import { Separator } from '../ui/separator';
