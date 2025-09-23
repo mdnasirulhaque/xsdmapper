@@ -278,16 +278,18 @@ export default function CreateRequestStep() {
                                 {isRestFlowEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
                             </Button>
                         </div>
-                        <div ref={restFlowScrollRef} className="space-y-3 p-2 rounded-md border bg-muted/20 flex-1 overflow-y-auto">
-                            {Array.from({ length: 10 }).map((_, i) => (
-                                <RestFlowAnswerField
-                                    key={`q${i+1}-ans`}
-                                    question={`Question ${i + 1}`}
-                                    isEditing={isRestFlowEditing}
-                                    value={restFlowAnswers[`q${i+1}`]}
-                                    onChange={(val) => setState({ restFlowAnswers: { ...restFlowAnswers, [`q${i+1}`]: val }})}
-                                />
-                            ))}
+                        <div ref={restFlowScrollRef} className="space-y-4 p-2 rounded-md border bg-muted/20 flex-1 overflow-y-auto">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {Array.from({ length: 10 }).map((_, i) => (
+                                    <RestFlowAnswerField
+                                        key={`q${i+1}-ans`}
+                                        question={`Question ${i + 1}`}
+                                        isEditing={isRestFlowEditing}
+                                        value={restFlowAnswers[`q${i+1}`]}
+                                        onChange={(val) => setState({ restFlowAnswers: { ...restFlowAnswers, [`q${i+1}`]: val }})}
+                                    />
+                                ))}
+                            </div>
                             <Separator />
                              <div className="space-y-2 pt-2">
                                 <Label className="text-xs text-muted-foreground">Radio Button Question</Label>
