@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState } from 'react';
+import { useState, useRef, useLayoutEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -45,6 +45,16 @@ export default function CreateRequestStep() {
     } = useAppContext();
     const [previewing, setPreviewing] = useState<{ content: string; title: string; language: 'xml' | 'yaml' | 'json' } | null>(null);
     const [isRestFlowEditing, setIsRestFlowEditing] = useState(false);
+    
+    const restFlowScrollRef = useRef<HTMLDivElement>(null);
+    const scrollPositionRef = useRef(0);
+
+    useLayoutEffect(() => {
+        if (restFlowScrollRef.current) {
+            restFlowScrollRef.current.scrollTop = scrollPositionRef.current;
+        }
+    }, [isRestFlowEditing]);
+
 
     const openPreview = (content: string | null, title: string, language: 'xml' | 'yaml' | 'json' = 'xml') => {
         if (content) {
@@ -149,6 +159,13 @@ export default function CreateRequestStep() {
             )}
         </div>
     )
+
+    const handleToggleRestFlowEdit = () => {
+        if (restFlowScrollRef.current) {
+            scrollPositionRef.current = restFlowScrollRef.current.scrollTop;
+        }
+        setIsRestFlowEditing(!isRestFlowEditing);
+    };
 
     return (
         <div className="flex-1 flex flex-col gap-4">
@@ -257,11 +274,11 @@ export default function CreateRequestStep() {
                          <div className="flex items-center gap-3 border-b pb-2">
                             <Component className="h-5 w-5 text-primary"/>
                             <h3 className="font-semibold text-lg">Rest Flow</h3>
-                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setIsRestFlowEditing(!isRestFlowEditing)}>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleToggleRestFlowEdit}>
                                 {isRestFlowEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
                             </Button>
                         </div>
-                        <div className="space-y-3 p-2 rounded-md border bg-muted/20 max-h-[450px] overflow-y-auto">
+                        <div ref={restFlowScrollRef} className="space-y-3 p-2 rounded-md border bg-muted/20 max-h-[450px] overflow-y-auto">
                             {Array.from({ length: 10 }).map((_, i) => (
                                 <RestFlowAnswerField
                                     key={`q${i+1}-ans`}
