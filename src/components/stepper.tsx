@@ -2,7 +2,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { FileUp, Eye, FileJson, Link as LinkIcon, CheckCircle2, ChevronRight, Send, Check, User } from "lucide-react"
+import { FileUp, Eye, FileJson, Link as LinkIcon, CheckCircle2, ChevronRight, Send, Check, User, Component } from "lucide-react"
 import NextLink from 'next/link';
 
 
@@ -12,6 +12,7 @@ const steps = [
   { name: "Preview XSD", href: "/new/preview-xsd", icon: Eye },
   { name: "Upload Swagger", href: "/new/swagger", icon: FileJson },
   { name: "Preview Swagger XSD", href: "/new/preview-swagger-xsd", icon: Eye },
+  { name: "Rest Flow", href: "/new/rest-flow", icon: Component },
   { name: "Map XSDs", href: "/new/mapper", icon: LinkIcon },
   { name: "Preview XSLT", href: "/new/preview-xslt", icon: Eye },
   { name: "Create Request", href: "/new/create-request", icon: Send },

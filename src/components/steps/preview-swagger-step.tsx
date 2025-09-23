@@ -94,7 +94,7 @@ export default function PreviewSwaggerStep() {
 
     const handleProceed = () => {
         setState({ lastVisitedStep: '/new/preview-swagger-xsd' });
-        router.push('/new/mapper');
+        router.push('/new/rest-flow');
     }
 
     const handleBack = () => {
@@ -146,7 +146,7 @@ export default function PreviewSwaggerStep() {
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back
                         </Button>
                         <Button onClick={handleProceed} disabled={!swaggerFile}>
-                            Next: Start Mapping <ArrowRight className="ml-2 h-4 w-4" />
+                            Next: Rest Flow <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
 
@@ -165,5 +165,3 @@ export default function PreviewSwaggerStep() {
         </div>
     );
 }
-
-    

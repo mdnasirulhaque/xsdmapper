@@ -235,7 +235,7 @@ export default function MapperStep() {
   }
   
   const handleBack = () => {
-    router.push(lastVisitedStep || '/new/preview-swagger-xsd');
+    router.push(lastVisitedStep || '/new/rest-flow');
   }
 
   const areRequiredSetsMapped = mappings.set1.length > 0 && mappings.set2.length > 0;
@@ -361,5 +361,3 @@ export default function MapperStep() {
     </div>
   )
 }
-
-    
