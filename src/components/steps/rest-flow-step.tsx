@@ -11,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
+import { Separator } from '../ui/separator';
 
 export default function RestFlowStep() {
     const router = useRouter();
@@ -44,13 +45,16 @@ export default function RestFlowStep() {
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-                         {Array.from({ length: 5 }).map((_, i) => (
-                            <div key={`question-${i + 6}`} className="space-y-2">
-                                <Label htmlFor={`question-${i + 6}`}>Question {i + 6}</Label>
-                                <Input id={`question-${i + 6}`} placeholder={`Answer...`} />
-                            </div>
-                        ))}
+                    <div className="space-y-6">
+                        <Separator />
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                                <div key={`question-${i + 6}`} className="space-y-2">
+                                    <Label htmlFor={`question-${i + 6}`}>Question {i + 6}</Label>
+                                    <Input id={`question-${i + 6}`} placeholder={`Answer...`} />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-6">
