@@ -26,15 +26,15 @@ export default function RestFlowStep() {
     };
 
     return (
-        <div className="flex-1 flex flex-col items-center justify-center">
-            <Card className="w-full max-w-4xl shadow-lg">
+        <div className="flex-1 flex flex-col">
+            <Card className="w-full shadow-lg flex-1 flex flex-col">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold">Rest Flow</CardTitle>
                     <CardDescription>
                         Please fill out the details for the rest flow.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-8">
+                <CardContent className="flex flex-col gap-8 flex-1">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {Array.from({ length: 5 }).map((_, i) => (
                             <div key={`question-${i + 1}`} className="space-y-2">
@@ -82,7 +82,7 @@ export default function RestFlowStep() {
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between border-t pt-6">
+                    <div className="flex items-center justify-between border-t pt-6 mt-auto">
                         <Button variant="outline" onClick={handleBack}>
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back
                         </Button>
