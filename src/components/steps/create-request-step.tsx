@@ -14,7 +14,6 @@ import { Label } from '../ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Checkbox } from '../ui/checkbox';
-import { Separator } from '../ui/separator';
 
 const setConfig = {
   set1: { name: 'Request' },
@@ -176,7 +175,7 @@ export default function CreateRequestStep() {
                         Review all your uploaded files, generated schemas, and mappings one last time before finishing.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-1">
+                <CardContent className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
                     {/* Column 1: Request Identifiers */}
                     <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-3 border-b pb-2">
@@ -203,9 +202,12 @@ export default function CreateRequestStep() {
                             placeholder="Enter Error Mapper ID"
                         />
                     </div>
-                    {/* Column 2: Inputs */}
+                    {/* Column 2: Inputs & Generated */}
                     <div className="flex flex-col gap-3">
-                        <h3 className="font-semibold text-lg border-b pb-2">Inputs</h3>
+                         <div className="flex items-center gap-3 border-b pb-2">
+                            <FileText className="h-5 w-5 text-primary"/>
+                            <h3 className="font-semibold text-lg">Inputs &amp; Schemas</h3>
+                        </div>
                         <FileButton 
                             title="Input XML" 
                             content={inputXml} 
@@ -214,133 +216,138 @@ export default function CreateRequestStep() {
                             tooltipContent={isRequestMapperSelected ? "Not required for the selected Request Mapper ID." : "No file uploaded."}
                         />
                         <FileButton 
-                            title="Response XML" 
-                            content={responseXml} 
-                            language="xml" 
-                            icon={FileText} 
-                            tooltipContent={isResponseMapperSelected ? "Not required for the selected Response Mapper ID." : "No file uploaded."}
-                        />
-                        <FileButton title="Swagger/OpenAPI" content={swaggerFile} language={swaggerFileLanguage} icon={FileJson} tooltipContent="Not required when Mapper IDs are used." />
-                    </div>
-                     {/* Column 3: Generated Schemas */}
-                     <div className="flex flex-col gap-3">
-                        <h3 className="font-semibold text-lg border-b pb-2">Generated Schemas</h3>
-                        <FileButton 
-                            title="Input XSD" 
+                            title="Generated Input XSD" 
                             content={inputXsd} 
                             language="xml" 
                             icon={FileText} 
                             tooltipContent={isRequestMapperSelected ? "Not generated for the selected Request Mapper." : "Not generated."}
                         />
                         <FileButton 
-                            title="Response XSD" 
+                            title="Response XML" 
+                            content={responseXml} 
+                            language="xml" 
+                            icon={FileText} 
+                            tooltipContent={isResponseMapperSelected ? "Not required for the selected Response Mapper ID." : "No file uploaded."}
+                        />
+                         <FileButton 
+                            title="Generated Response XSD" 
                             content={responseXsd} 
                             language="xml" 
                             icon={FileText} 
                             tooltipContent={isResponseMapperSelected ? "Not generated for the selected Response Mapper." : "Not generated."}
                         />
-                        <FileButton title="Swagger XSD" content={swaggerFile ? "&lt;!-- Mock Swagger XSD --&gt;" : null} language="xml" icon={FileText} tooltipContent="Not generated when Mapper IDs are used." />
+                        <FileButton title="Swagger/OpenAPI" content={swaggerFile} language={swaggerFileLanguage} icon={FileJson} tooltipContent="Not required when Mapper IDs are used." />
+                        <FileButton title="Generated Swagger XSD" content={swaggerFile ? "&lt;!-- Mock Swagger XSD --&gt;" : null} language="xml" icon={FileText} tooltipContent="Not generated when Mapper IDs are used." />
                     </div>
-                    {/* Column 4: Mappings & Transforms */}
-                    <div className="flex flex-col gap-4">
-                         <h3 className="font-semibold text-lg border-b pb-2">Mappings &amp; Transforms</h3>
-                         
-                         <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
-                            <h4 className="font-semibold">Request</h4>
-                            <div className="grid grid-cols-2 gap-2">
-                                <FileButton title="Mapping" content={getMappingSummary('set1')} language="json" icon={LinkIcon} />
-                                <FileButton title="XSLT" content={generatedXslt.set1} language="xml" icon={FileText} />
-                            </div>
-                         </div>
-
-                         <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
-                            <h4 className="font-semibold">Response</h4>
-                            <div className="grid grid-cols-2 gap-2">
-                                <FileButton title="Mapping" content={getMappingSummary('set2')} language="json" icon={LinkIcon} />
-                                <FileButton title="XSLT" content={generatedXslt.set2} language="xml" icon={FileText} />
-                            </div>
-                         </div>
-
-                         <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
-                            <h4 className="font-semibold">Error</h4>
-                            <div className="grid grid-cols-2 gap-2">
-                                <FileButton title="Mapping" content={getMappingSummary('set3')} language="json" icon={LinkIcon} />
-                                <FileButton title="XSLT" content={generatedXslt.set3} language="xml" icon={FileText} />
-                            </div>
-                         </div>
-                    </div>
-                    {/* Column 5: Rest Flow */}
+                    {/* Column 3 & 4: Mappings & Rest Flow */}
                     <div className="flex flex-col gap-4 lg:col-span-2">
-                         <div className="flex items-center gap-3 border-b pb-2">
-                            <Component className="h-5 w-5 text-primary"/>
-                            <h3 className="font-semibold text-lg">Rest Flow</h3>
-                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleToggleRestFlowEdit}>
-                                {isRestFlowEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
-                            </Button>
+                        {/* Mappings */}
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center gap-3 border-b pb-2">
+                                <LinkIcon className="h-5 w-5 text-primary"/>
+                                <h3 className="font-semibold text-lg">Mappings &amp; Transforms</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
+                                    <h4 className="font-semibold text-center">Request</h4>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <FileButton title="Mapping" content={getMappingSummary('set1')} language="json" icon={LinkIcon} />
+                                        <FileButton title="XSLT" content={generatedXslt.set1} language="xml" icon={FileText} />
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
+                                    <h4 className="font-semibold text-center">Response</h4>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <FileButton title="Mapping" content={getMappingSummary('set2')} language="json" icon={LinkIcon} />
+                                        <FileButton title="XSLT" content={generatedXslt.set2} language="xml" icon={FileText} />
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-3 p-3 rounded-md border bg-muted/20">
+                                    <h4 className="font-semibold text-center">Error</h4>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <FileButton title="Mapping" content={getMappingSummary('set3')} language="json" icon={LinkIcon} />
+                                        <FileButton title="XSLT" content={generatedXslt.set3} language="xml" icon={FileText} />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div ref={restFlowScrollRef} className="space-y-4 p-2 rounded-md border bg-muted/20 flex-1 overflow-y-auto">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {Array.from({ length: 10 }).map((_, i) => (
-                                    <RestFlowAnswerField
-                                        key={`q${i+1}-ans`}
-                                        question={`Question ${i + 1}`}
-                                        isEditing={isRestFlowEditing}
-                                        value={restFlowAnswers[`q${i+1}`]}
-                                        onChange={(val) => setState({ restFlowAnswers: { ...restFlowAnswers, [`q${i+1}`]: val }})}
-                                    />
-                                ))}
+
+                        {/* Rest Flow */}
+                        <div className="flex flex-col gap-4 flex-1 min-h-0">
+                            <div className="flex items-center gap-3 border-b pb-2">
+                                <Component className="h-5 w-5 text-primary"/>
+                                <h3 className="font-semibold text-lg">Rest Flow</h3>
+                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleToggleRestFlowEdit}>
+                                    {isRestFlowEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+                                </Button>
                             </div>
-                            <Separator />
-                             <div className="space-y-2 pt-2">
-                                <Label className="text-xs text-muted-foreground">Radio Button Question</Label>
-                                {isRestFlowEditing ? (
-                                    <RadioGroup 
-                                        value={restFlowAnswers.radio} 
-                                        onValueChange={(val) => setState({ restFlowAnswers: { ...restFlowAnswers, radio: val }})} 
-                                        className="flex gap-4"
-                                    >
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="option-one" id="r1-edit" />
-                                            <Label htmlFor="r1-edit">Option One</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="option-two" id="r2-edit" />
-                                            <Label htmlFor="r2-edit">Option Two</Label>
-                                        </div>
-                                    </RadioGroup>
-                                ) : (
-                                    <div className="flex h-8 w-full items-center rounded-md bg-muted/30 px-3 py-1 text-sm">
-                                        {restFlowAnswers.radio || <span className="text-muted-foreground italic">No selection</span>}
+                            <div ref={restFlowScrollRef} className="space-y-4 p-4 rounded-md border bg-muted/20 flex-1 overflow-y-auto">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {Array.from({ length: 10 }).map((_, i) => (
+                                        <RestFlowAnswerField
+                                            key={`q${i+1}-ans`}
+                                            question={`Question ${i + 1}`}
+                                            isEditing={isRestFlowEditing}
+                                            value={restFlowAnswers[`q${i+1}`]}
+                                            onChange={(val) => setState({ restFlowAnswers: { ...restFlowAnswers, [`q${i+1}`]: val }})}
+                                        />
+                                    ))}
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-xs text-muted-foreground">Radio Button Question</Label>
+                                        {isRestFlowEditing ? (
+                                            <RadioGroup 
+                                                value={restFlowAnswers.radio} 
+                                                onValueChange={(val) => setState({ restFlowAnswers: { ...restFlowAnswers, radio: val }})} 
+                                                className="flex gap-4 pt-1"
+                                            >
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="option-one" id="r1-edit" />
+                                                    <Label htmlFor="r1-edit" className="font-normal">Option One</Label>
+                                                </div>
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="option-two" id="r2-edit" />
+                                                    <Label htmlFor="r2-edit" className="font-normal">Option Two</Label>
+                                                </div>
+                                            </RadioGroup>
+                                        ) : (
+                                            <div className="flex h-8 w-full items-center rounded-md bg-muted/30 px-3 py-1 text-sm">
+                                                {restFlowAnswers.radio || <span className="text-muted-foreground italic">No selection</span>}
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
-                            <Separator />
-                            <div className="space-y-2 pt-2">
-                                <Label className="text-xs text-muted-foreground">Checkbox Question</Label>
-                                {isRestFlowEditing ? (
-                                     <div className="flex gap-4">
-                                        <div className="flex items-center space-x-2">
-                                            <Checkbox 
-                                                id="c1-edit" 
-                                                checked={restFlowAnswers.checkbox.a}
-                                                onCheckedChange={(checked) => setState({ restFlowAnswers: { ...restFlowAnswers, checkbox: { ...restFlowAnswers.checkbox, a: !!checked } }})}
-                                            />
-                                            <Label htmlFor="c1-edit">Option A</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <Checkbox 
-                                                id="c2-edit" 
-                                                checked={restFlowAnswers.checkbox.b}
-                                                onCheckedChange={(checked) => setState({ restFlowAnswers: { ...restFlowAnswers, checkbox: { ...restFlowAnswers.checkbox, b: !!checked } }})}
-                                            />
-                                            <Label htmlFor="c2-edit">Option B</Label>
-                                        </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs text-muted-foreground">Checkbox Question</Label>
+                                        {isRestFlowEditing ? (
+                                            <div className="flex gap-4 pt-1">
+                                                <div className="flex items-center space-x-2">
+                                                    <Checkbox 
+                                                        id="c1-edit" 
+                                                        checked={restFlowAnswers.checkbox.a}
+                                                        onCheckedChange={(checked) => setState({ restFlowAnswers: { ...restFlowAnswers, checkbox: { ...restFlowAnswers.checkbox, a: !!checked } }})}
+                                                    />
+                                                    <Label htmlFor="c1-edit" className="font-normal">Option A</Label>
+                                                </div>
+                                                <div className="flex items-center space-x-2">
+                                                    <Checkbox 
+                                                        id="c2-edit" 
+                                                        checked={restFlowAnswers.checkbox.b}
+                                                        onCheckedChange={(checked) => setState({ restFlowAnswers: { ...restFlowAnswers, checkbox: { ...restFlowAnswers.checkbox, b: !!checked } }})}
+                                                    />
+                                                    <Label htmlFor="c2-edit" className="font-normal">Option B</Label>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="flex h-8 w-full items-center rounded-md bg-muted/30 px-3 py-1 text-sm">
+                                                {Object.entries(restFlowAnswers.checkbox).filter(([, val]) => val).map(([key]) => key.toUpperCase()).join(', ') || <span className="text-muted-foreground italic">No selection</span>}
+                                            </div>
+                                        )}
                                     </div>
-                                ) : (
-                                    <div className="flex h-8 w-full items-center rounded-md bg-muted/30 px-3 py-1 text-sm">
-                                        {Object.entries(restFlowAnswers.checkbox).filter(([, val]) => val).map(([key]) => key.toUpperCase()).join(', ') || <span className="text-muted-foreground italic">No selection</span>}
-                                    </div>
-                                )}
+                                </div>
                             </div>
                         </div>
                     </div>
