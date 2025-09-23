@@ -51,7 +51,11 @@ export default function RestFlowStep() {
                             {Array.from({ length: 5 }).map((_, i) => (
                                 <div key={`question-${i + 6}`} className="space-y-2">
                                     <Label htmlFor={`question-${i + 6}`}>Question {i + 6}</Label>
-                                    <Input id={`question-${i + 6}`} placeholder={`Answer...`} />
+                                    <Input
+                                        id={`question-${i + 6}`}
+                                        placeholder={`Answer...`}
+                                        type={(i + 6) >= 8 ? 'number' : 'text'}
+                                    />
                                 </div>
                             ))}
                         </div>
@@ -76,11 +80,11 @@ export default function RestFlowStep() {
                              <div className="flex gap-4">
                                 <div className="flex items-center space-x-2">
                                     <Checkbox id="c1" />
-                                    <Label htmlFor="c1">Option A</Label>
+                                    <label htmlFor="c1" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Option A</label>
                                 </div>
                                  <div className="flex items-center space-x-2">
                                     <Checkbox id="c2" />
-                                    <Label htmlFor="c2">Option B</Label>
+                                    <label htmlFor="c2" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Option B</label>
                                 </div>
                             </div>
                         </div>
