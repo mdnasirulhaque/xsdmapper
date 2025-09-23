@@ -11,7 +11,7 @@ import FilePreviewDialog from '../file-preview-dialog';
 import { generateXsltForSet } from '@/lib/xslt-generator';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Checkbox } from '../ui/checkbox';
 import { Separator } from '../ui/separator';
@@ -169,14 +169,14 @@ export default function CreateRequestStep() {
 
     return (
         <div className="flex-1 flex flex-col gap-4">
-            <Card className="w-full shadow-lg">
+            <Card className="w-full shadow-lg flex-1 flex flex-col">
                 <CardHeader>
                     <CardTitle>Create Request</CardTitle>
                     <CardDescription>
                         Review all your uploaded files, generated schemas, and mappings one last time before finishing.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 flex-1">
                     {/* Column 1: Request Identifiers */}
                     <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-3 border-b pb-2">
@@ -278,7 +278,7 @@ export default function CreateRequestStep() {
                                 {isRestFlowEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
                             </Button>
                         </div>
-                        <div ref={restFlowScrollRef} className="space-y-3 p-2 rounded-md border bg-muted/20 max-h-[450px] overflow-y-auto">
+                        <div ref={restFlowScrollRef} className="space-y-3 p-2 rounded-md border bg-muted/20 flex-1 overflow-y-auto">
                             {Array.from({ length: 10 }).map((_, i) => (
                                 <RestFlowAnswerField
                                     key={`q${i+1}-ans`}
